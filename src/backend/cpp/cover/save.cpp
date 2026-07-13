@@ -1,3 +1,6 @@
+#include <algorithm>
+
+#include "common.hpp"
 #include "cover/save.hpp"
 
 void cover::save_polygon(const std::string& dir, const ClosedConvexPolygonQ& polygon) {
@@ -13,6 +16,22 @@ void cover::save_square(const std::string& dir, const ClosedRectangleQ& square) 
 
     file << square.interval_x().lower() << ' ' << square.interval_x().upper() << ' '
          << square.interval_y().lower() << ' ' << square.interval_y().upper() << '\n';
+}
+
+void cover::save_holes(const std::string& dir, const std::vector<ClosedRectangleQ>& not_filled, size_t empties) {
+    (void)dir;
+
+    // The UI expects the newest uncovered-square centers in tmp/holes.txt so
+    // it can load them as one-by-one coordinate probes after any cover run.
+    auto file = open_file_write("tmp/holes.txt");
+
+    const size_t num_to_print = std::min(not_filled.size(), empties);
+    if (num_to_print != 0) {
+        const size_t inc = not_filled.size() / num_to_print;
+        for (size_t i = 0; i < num_to_print * inc; i += inc) {
+            file << center_degrees(not_filled.at(i)) << '\n';
+        }
+    }
 }
 
 void cover::save_digits(const std::string& dir, const uint32_t digits) {

@@ -29,7 +29,15 @@ import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public final class Database {
 
@@ -310,19 +318,77 @@ public final class Database {
     // return the string containing the SVG path, nothing more
     // That would be uber nice
     // But right now we can't do that.
+    // Native GMP/MPFR allocations are outside the Java heap, so cap concurrent
+    // C++ computes and cache repeated code sequences from OBO/AutoVary passes.
+    private static final Semaphore COMPUTE_SEMAPHORE =
+            new Semaphore(Math.max(1, Runtime.getRuntime().availableProcessors() / 4));
+
+    private static final int CACHE_MAX_SIZE = 1000;
+    private static final Map<ClassifiedCodeSequence, Optional<Storage>> STORAGE_CACHE =
+            Collections.synchronizedMap(new LinkedHashMap<ClassifiedCodeSequence, Optional<Storage>>() {
+                @Override
+                protected boolean removeEldestEntry(final Map.Entry<ClassifiedCodeSequence, Optional<Storage>> eldest) {
+                    return size() > CACHE_MAX_SIZE;
+                }
+            });
+
+    private static final ScheduledExecutorService HEARTBEAT_SCHEDULER =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                final Thread t = new Thread(r, "native-compute-heartbeat");
+                t.setDaemon(true);
+                return t;
+            });
+
     public static Optional<Storage> loadStorage(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
 
-        final Optional<Picture> opt = Wrapper.loadPicture(codeSeq, pool);
-
-        if (!opt.isPresent()) {
-            return Optional.empty();
+        synchronized (STORAGE_CACHE) {
+            if (STORAGE_CACHE.containsKey(codeSeq)) {
+                return STORAGE_CACHE.get(codeSeq);
+            }
         }
 
-        final Picture picture = opt.get();
+        COMPUTE_SEMAPHORE.acquireUninterruptibly();
+        try {
+            // Another worker may have finished this code while this thread was
+            // waiting for native-compute capacity.
+            synchronized (STORAGE_CACHE) {
+                if (STORAGE_CACHE.containsKey(codeSeq)) {
+                    return STORAGE_CACHE.get(codeSeq);
+                }
+            }
 
-        final Storage storage = convertToStorage(codeSeq, picture.initialAngles, picture.points, picture.equations);
+            final long startMs = System.currentTimeMillis();
+            final ScheduledFuture<?> heartbeat = HEARTBEAT_SCHEDULER.scheduleAtFixedRate(() -> {
+                final long elapsed = System.currentTimeMillis() - startMs;
+                // Uncomment while diagnosing stuck native calls:
+                // System.out.println("[CPP] still computing " + codeSeq + " after " + elapsed / 1000 + "s");
+            }, 30, 30, TimeUnit.SECONDS);
 
-        return Optional.of(storage);
+            try {
+                final Optional<Picture> opt = Wrapper.loadPicture(codeSeq, pool);
+
+                if (!opt.isPresent()) {
+                    synchronized (STORAGE_CACHE) {
+                        STORAGE_CACHE.put(codeSeq, Optional.empty());
+                    }
+                    return Optional.empty();
+                }
+
+                final Picture picture = opt.get();
+
+                final Storage storage = convertToStorage(codeSeq, picture.initialAngles, picture.points, picture.equations);
+
+                synchronized (STORAGE_CACHE) {
+                    STORAGE_CACHE.put(codeSeq, Optional.of(storage));
+                }
+
+                return Optional.of(storage);
+            } finally {
+                heartbeat.cancel(false);
+            }
+        } finally {
+            COMPUTE_SEMAPHORE.release();
+        }
     }
 
     public static Optional<Tuple2<Storage, ImmutableList<LeftRight>>> loadStorageShowLR(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {

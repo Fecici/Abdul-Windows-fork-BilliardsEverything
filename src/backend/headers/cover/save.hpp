@@ -17,4 +17,6 @@ void save_cover(const std::string& dir, const cover::Cover& cover,
                 const std::map<TriplePair, size_t>& triples);
 
 void save_digits(const std::string& dir, const uint32_t digits);
+
+void save_holes(const std::string& dir, const std::vector<ClosedRectangleQ>& not_filled, size_t empties);
 }

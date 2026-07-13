@@ -71,3 +71,8 @@ boost::optional<IntervalPolygon> refine_polygon(const IntervalPolygon& polygon, 
 
 extern template boost::optional<IntervalPolygon> refine_polygon<Equation<Sin>>(const IntervalPolygon& polygon, const Equation<Sin>& curve);
 extern template boost::optional<IntervalPolygon> refine_polygon<Equation<Cos>>(const IntervalPolygon& polygon, const Equation<Cos>& curve);
+
+// QUESTION: what is this for? why is it needed?
+extern template boost::optional<IntervalPolygon> refine_polygon<LinComArrZ<XYEta>>(const IntervalPolygon& polygon, const LinComArrZ<XYEta>& curve);
+
+boost::optional<IntervalPolygon> intersect_polygons(const IntervalPolygon& a, const IntervalPolygon& b);

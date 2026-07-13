@@ -549,6 +549,7 @@ std::string getEmpties(const std::string& polygon_str, const std::string& single
 
         cover::save_cover(dir, cover, single_index_info, triple_index_info);
         cover::save_digits(dir, digits);
+        cover::save_holes(dir, cover_info.not_filled, empty);
     }
 
     return new_coordinates;
@@ -736,6 +737,7 @@ std::string cover_polygon(const cover::Cover& old_cover,
 
     cover::save_cover(dir, cover, single_index_info, triple_index_info);
     cover::save_digits(dir, digits);
+    cover::save_holes(dir, cover_info.not_filled, empties);
 
     const auto hours = std::chrono::duration_cast<std::chrono::hours>(end - begin).count();
     const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() % 60;
@@ -989,6 +991,7 @@ std::string cover_small_polygon(const cover::Cover& old_cover,
 
     cover::save_cover(dir, cover, single_index_info, triple_index_info);
     cover::save_digits(dir, digits);
+    cover::save_holes(dir, cover_info.not_filled, empties);
 
     const auto hours = std::chrono::duration_cast<std::chrono::hours>(end - begin).count();
     const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() % 60;

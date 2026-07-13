@@ -103,6 +103,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -504,6 +505,7 @@ public final class Viewer {
     final CheckBox autoFillerCheckBox = new CheckBox();
     final TextField labelMainWindow = new TextField();
     final Button coverBtn = new Button();
+    final Button loadHolesBtn = new Button();
 //    final Button halfTripleBtn = new Button();
 //    final Button unstableBtn = new Button();
 //    final Button cornerBtn = new Button();
@@ -2516,6 +2518,11 @@ public final class Viewer {
         Utils.colorButton(coverBtn, Color.LIGHTPINK, clickColor);
         coverBtn.setOnAction(e -> coverWindow.show());
 
+        loadHolesBtn.setText("Load Holes");
+        loadHolesBtn.setTooltip(Utils.toolTip("Load uncovered cover coordinates from tmp/holes.txt"));
+        Utils.colorButton(loadHolesBtn, Color.LIGHTPINK, clickColor);
+        loadHolesBtn.setOnAction(e -> loadHolesFromFile());
+
 //        halfTripleBtn.setText("Half Triple");
 //        halfTripleBtn.setTooltip(Utils.toolTip("Brings up a window that allows you to check if some code"
 //                + " sequences cover a specified polygon. See instructions for details"));
@@ -3731,7 +3738,7 @@ public final class Viewer {
             boyanZoomHBox.getChildren().addAll(zoomButton, xMinTextField, yMinTextField);
             //boyanMenuExtra.getChildren().addAll(coverBtn, btnLoadFile, loadLRCheckBox);
 
-            boyanMenuExtra.getChildren().addAll(keepPolys, covRectsColorBox, coverColorCycle,coverBtn, btnLoadFile);
+            boyanMenuExtra.getChildren().addAll(keepPolys, covRectsColorBox, coverColorCycle, coverBtn, loadHolesBtn, btnLoadFile);
             zoomFeildsVBox.getChildren().addAll(boyanZoomHBox, boyanMenuExtra);
 
             zoomHBox.getChildren().clear();
@@ -3785,7 +3792,7 @@ public final class Viewer {
         clickActionHBox.getChildren().addAll(selectRdoBtn, magnifyRdoBtn, demagnifyRdoBtn, centerBtn);
         twoHBox.getChildren().addAll(txtCodeSequence, btnCalculate, zoomRegionButton, iterateToLimitBtn);
         boyanZoomHBox.getChildren().addAll(zoomButton, xMinTextField, yMinTextField);
-        boyanMenuExtra.getChildren().addAll(loadDirectoryButton, coverBtn, btnLoadFile, compareCheckBox, saveV3Btn);
+        boyanMenuExtra.getChildren().addAll(loadDirectoryButton, coverBtn, loadHolesBtn, btnLoadFile, compareCheckBox, saveV3Btn);
         //coverExtraHBox.getChildren().addAll(halfTripleBtn, cornerBtn, unstableBtn);
         zoomFeildsVBox.getChildren().addAll(boyanZoomHBox, boyanMenuExtra);
         backForthHBox.getChildren().addAll(
@@ -6655,6 +6662,68 @@ public final class Viewer {
             } else {
                 renderUnstable((Storage.Unstable) region, pixelWriter, viewRectangle, color);
             }
+        }
+    }
+
+    public void loadHolesFromFile() {
+        final Path path = Paths.get("tmp/holes.txt");
+        if (!Files.exists(path)) {
+            final Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Load Holes");
+            alert.setHeaderText("File Not Found");
+            alert.setContentText("tmp/holes.txt does not exist. Run a cover calculation first.");
+            alert.showAndWait();
+            return;
+        }
+
+        final ArrayList<String> lines;
+        try {
+            lines = new ArrayList<>(Files.readAllLines(path));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        lines.removeIf(String::isBlank);
+
+        final int maxLines = lines.size();
+        final TextInputDialog dialog = new TextInputDialog(String.valueOf(maxLines));
+        dialog.setTitle("Load Holes");
+        dialog.setHeaderText("How many holes to load?");
+        dialog.setContentText("How many holes to load? (max " + maxLines + "):");
+
+        final Optional<String> result = dialog.showAndWait();
+        result.ifPresent(input -> {
+            try {
+                final int n = Math.min(Integer.parseInt(input.trim()), maxLines);
+                final StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < n; i++) {
+                    sb.append(lines.get(i)).append('\n');
+                }
+                loadHolesAsOBO(sb.toString());
+            } catch (final NumberFormatException e) {
+                final Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Load Holes");
+                alert.setHeaderText("Invalid Number");
+                alert.setContentText("Please enter a valid integer.");
+                alert.showAndWait();
+            }
+        });
+    }
+
+    public void loadHolesAsOBO(final String coords) {
+        final Path path = Paths.get("tmp/holes_obo.txt");
+        try {
+            Files.write(path, coords.getBytes());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Reuse the one-by-one parser/renderer so holes behave like any other
+        // coordinate OBO file and inherit existing forward/back controls.
+        fileCodeSequences = parseOBOFile(path);
+        if (!fileCodeSequences.isEmpty()) {
+            lineNumberTxt.setText("1");
+            setOBO(0, pool, executorService);
         }
     }
 

@@ -25,6 +25,12 @@ public final class CInfoAll extends Structure {
 
     @Override
     public List<String> getFieldOrder() {
-        return FastList.newListWith("initial_angles", "points", "equations", "left_rights", "code_seq_lr","sinEquations","cosEquations","vectorX","vectorY");
+        // JNA lays out native structures in this exact order. Keep this in
+        // sync with CInfoAll in src/backend/headers/wrapper.hpp or Java will
+        // read and free the wrong native char* fields.
+        return FastList.newListWith("initial_angles", "points", "equations",
+                                    "sinEquations", "cosEquations",
+                                    "left_rights", "code_seq_lr",
+                                    "vectorX", "vectorY");
     }
 }

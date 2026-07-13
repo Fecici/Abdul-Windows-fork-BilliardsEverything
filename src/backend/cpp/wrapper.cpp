@@ -470,9 +470,24 @@ static bool save_to_database(const std::vector<LeftRight>& left_rights, const Co
 
 static void copy_to_cpicture(const Picture& picture, CPicture* const cpicture) {
 
-    cpicture->initial_angles = to_cstr(picture.initial_angles);
-    cpicture->points = to_cstr(picture.points);
-    cpicture->equations = to_cstr(picture.equations);
+    char* initial_angles = nullptr;
+    char* points = nullptr;
+    char* equations = nullptr;
+    try {
+        initial_angles = to_cstr(picture.initial_angles);
+        points = to_cstr(picture.points);
+        equations = to_cstr(picture.equations);
+    } catch (...) {
+        // Roll back partial native ownership if a later allocation fails.
+        delete[] initial_angles;
+        delete[] points;
+        delete[] equations;
+        throw;
+    }
+
+    cpicture->initial_angles = initial_angles;
+    cpicture->points = points;
+    cpicture->equations = equations;
 }
 
 // -1 means error doing calculation
@@ -652,17 +667,49 @@ int32_t load_picture_lr(const int32_t* const base_code_numbers_ptr, const int32_
 
 // Works for Stable and Unstable
 static void copy_to_cinfoAll(const CodeInfo& info, CInfoAll* const cinfoAll) {
-    //cinfo->points = to_cstr(info.points);
-    cinfoAll->sinEquations = to_cstr(database::serialize(info.sin_equations));
-    cinfoAll->cosEquations = to_cstr(database::serialize(info.cos_equations));
-    cinfoAll->initial_angles = to_cstr("");
-    cinfoAll->points = to_cstr("");
-    cinfoAll->equations = to_cstr("");
-    cinfoAll->left_rights = to_cstr("");
-    cinfoAll->code_seq_lr = to_cstr("");
-    cinfoAll->vectorX=to_cstr("");
-    cinfoAll->vectorY=to_cstr("");
+    char* sin_equations = nullptr;
+    char* cos_equations = nullptr;
+    char* initial_angles = nullptr;
+    char* points = nullptr;
+    char* equations = nullptr;
+    char* left_rights = nullptr;
+    char* code_seq_lr = nullptr;
+    char* vector_x = nullptr;
+    char* vector_y = nullptr;
+    try {
+        sin_equations = to_cstr(database::serialize(info.sin_equations));
+        cos_equations = to_cstr(database::serialize(info.cos_equations));
+        initial_angles = to_cstr("");
+        points = to_cstr("");
+        equations = to_cstr("");
+        left_rights = to_cstr("");
+        code_seq_lr = to_cstr("");
+        vector_x = to_cstr("");
+        vector_y = to_cstr("");
+    } catch (...) {
+        // CInfoAll crosses the JNA boundary; Java only owns fields after every
+        // allocation succeeds, so C++ must clean up any partial result here.
+        delete[] sin_equations;
+        delete[] cos_equations;
+        delete[] initial_angles;
+        delete[] points;
+        delete[] equations;
+        delete[] left_rights;
+        delete[] code_seq_lr;
+        delete[] vector_x;
+        delete[] vector_y;
+        throw;
+    }
 
+    cinfoAll->sinEquations = sin_equations;
+    cinfoAll->cosEquations = cos_equations;
+    cinfoAll->initial_angles = initial_angles;
+    cinfoAll->points = points;
+    cinfoAll->equations = equations;
+    cinfoAll->left_rights = left_rights;
+    cinfoAll->code_seq_lr = code_seq_lr;
+    cinfoAll->vectorX = vector_x;
+    cinfoAll->vectorY = vector_y;
 }
 
 int32_t load_all_equations(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfoAll* const cinfoAll, sqlite::ConnectionPool* const pool){
@@ -724,11 +771,31 @@ int32_t load_info_all(const int32_t* const code_numbers_ptr, const int32_t code_
 // Works for Stable and Unstable
 static void copy_to_cinfo(const Info& info, CInfo* const cinfo) {
 
-    cinfo->initial_angles = to_cstr(info.initial_angles);
-    cinfo->points = to_cstr(info.points);
-    cinfo->equations = to_cstr(info.equations);
-    cinfo->left_rights = to_cstr(info.left_rights);
-    cinfo->code_seq_lr = to_cstr(info.code_seq_lr);
+    char* initial_angles = nullptr;
+    char* points = nullptr;
+    char* equations = nullptr;
+    char* left_rights = nullptr;
+    char* code_seq_lr = nullptr;
+    try {
+        initial_angles = to_cstr(info.initial_angles);
+        points = to_cstr(info.points);
+        equations = to_cstr(info.equations);
+        left_rights = to_cstr(info.left_rights);
+        code_seq_lr = to_cstr(info.code_seq_lr);
+    } catch (...) {
+        delete[] initial_angles;
+        delete[] points;
+        delete[] equations;
+        delete[] left_rights;
+        delete[] code_seq_lr;
+        throw;
+    }
+
+    cinfo->initial_angles = initial_angles;
+    cinfo->points = points;
+    cinfo->equations = equations;
+    cinfo->left_rights = left_rights;
+    cinfo->code_seq_lr = code_seq_lr;
 }
 
 
@@ -770,16 +837,47 @@ int32_t load_info(const int32_t* const code_numbers_ptr, const int32_t code_numb
 }
 
 static void copy_to_cinfoAll_2(const CodeInfo& info, CInfoAll* const cinfoAll) {
-    cinfoAll->sinEquations = to_cstr("");
-    cinfoAll->cosEquations = to_cstr("");
-    cinfoAll->initial_angles = to_cstr("");
-    cinfoAll->points = to_cstr("");
-    cinfoAll->equations = to_cstr("");
-    cinfoAll->left_rights = to_cstr("");
-    cinfoAll->code_seq_lr =to_cstr("");
-    cinfoAll->vectorX = to_cstr(database::serialize(info.sin_equations));
-    cinfoAll->vectorY = to_cstr(database::serialize(info.cos_equations));
+    char* sin_equations = nullptr;
+    char* cos_equations = nullptr;
+    char* initial_angles = nullptr;
+    char* points = nullptr;
+    char* equations = nullptr;
+    char* left_rights = nullptr;
+    char* code_seq_lr = nullptr;
+    char* vector_x = nullptr;
+    char* vector_y = nullptr;
+    try {
+        sin_equations = to_cstr("");
+        cos_equations = to_cstr("");
+        initial_angles = to_cstr("");
+        points = to_cstr("");
+        equations = to_cstr("");
+        left_rights = to_cstr("");
+        code_seq_lr = to_cstr("");
+        vector_x = to_cstr(database::serialize(info.sin_equations));
+        vector_y = to_cstr(database::serialize(info.cos_equations));
+    } catch (...) {
+        delete[] sin_equations;
+        delete[] cos_equations;
+        delete[] initial_angles;
+        delete[] points;
+        delete[] equations;
+        delete[] left_rights;
+        delete[] code_seq_lr;
+        delete[] vector_x;
+        delete[] vector_y;
+        throw;
+    }
 
+    cinfoAll->sinEquations = sin_equations;
+    cinfoAll->cosEquations = cos_equations;
+    cinfoAll->initial_angles = initial_angles;
+    cinfoAll->points = points;
+    cinfoAll->equations = equations;
+    cinfoAll->left_rights = left_rights;
+    cinfoAll->code_seq_lr = code_seq_lr;
+    cinfoAll->vectorX = vector_x;
+    cinfoAll->vectorY = vector_y;
 }
 
 int32_t load_slope_info(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfoAll* const cinfoAll, sqlite::ConnectionPool* const pool) {
