@@ -1,7 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include <string>
-#include "math/symbols.hpp"
+#include "symbols.hpp"
 
 inline XYZ otherAngle(XYZ angle1, XYZ angle2) {
     if ((angle1 == XYZ::X && angle2 == XYZ::Y) || (angle1 == XYZ::Y && angle2 == XYZ::X)) {

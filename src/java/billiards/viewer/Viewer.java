@@ -185,7 +185,7 @@ public final class Viewer {
 
     final ConnectionPool pool;
 
-    final PixelRadianMap map = new PixelRadianMap(SIDE);
+    final PixelRadianMap map = new PixelRadianMap(SIDE);  // QUESTION: figure out how this works
 
     // The map has the default viewing rectangle, and that is the beginning place to go
     final BackwardForward<Rectangle> viewRectangleBF =
@@ -466,6 +466,7 @@ public final class Viewer {
     final TextField iterationEnd = new TextField();
 
     final CheckBox reflectCheckBox = new CheckBox();
+    private final Affine reflectionTransform = new Affine();
     final CheckBox allCheckBox = new CheckBox();
     final Button queryButton = new Button();
     final Button polyLoadButton = new Button();
@@ -2656,31 +2657,14 @@ public final class Viewer {
         //imageStack.getTransforms().add(startReflect);
         // Based on https://gist.github.com/jewelsea/1436935
         reflectCheckBox.setSelected(true);
-        reflectCheckBox.setOnAction(event -> {
-            if (reflectCheckBox.isSelected()) {
-                final Affine reflectTransform = new Affine();
-                reflectTransform.setMyy(-1);
-                reflectTransform.setTy(imageStack.getBoundsInLocal().getHeight());
-                imageStack.getTransforms().add(reflectTransform);
-            } else {
-                imageStack.getTransforms().clear();
-            }
-        });
 
         reflectCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) { // If true (selected)
-                final Affine reflectTransform = new Affine();
-                reflectTransform.setMyy(-1);
-                reflectTransform.setTy(imageStack.getBoundsInLocal().getHeight());
-                imageStack.getTransforms().add(reflectTransform);
-            } else {
-                imageStack.getTransforms().clear();
-            }
+            updateReflection();
         });
 
         Platform.runLater(() -> {
     // If you want it checked on boot:
-            reflectCheckBox.setSelected(true); 
+            updateReflection();
             
             // OR, if you want it to process its default state (even if false):
             // Just extract to a method like in Option 2 and call it here.
@@ -3925,14 +3909,15 @@ public final class Viewer {
     });
     }
     private void updateReflection() {
-    if (reflectCheckBox.isSelected()) {
-        final Affine reflectTransform = new Affine();
-        reflectTransform.setMyy(-1);
-        reflectTransform.setTy(imageStack.getBoundsInLocal().getHeight());
-        imageStack.getTransforms().add(reflectTransform);
-    } else {
-        imageStack.getTransforms().clear();
-    }
+        if (reflectCheckBox.isSelected()) {
+            reflectionTransform.setMyy(-1);
+            reflectionTransform.setTy(imageStack.getBoundsInLocal().getHeight());
+            if (!imageStack.getTransforms().contains(reflectionTransform)) {
+                imageStack.getTransforms().add(reflectionTransform);
+            }
+        } else {
+            imageStack.getTransforms().remove(reflectionTransform);
+        }
     }
 
     //expando code sequance

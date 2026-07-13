@@ -5,14 +5,14 @@
 
 ClosedConvexPolygonQ parse_polygon(const std::string& str);
 
-const char* getEmpties(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+std::string getEmpties(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
     uint32_t digits, uint32_t max_depth, size_t empty, bool mrr, sqlite::ConnectionPool& pool, bool is_last_cycle);
 
-const char* check_cover(const std::string& polygon_str, const std::string& stables_str, const std::string& triples_str,
+std::string check_cover(const std::string& polygon_str, const std::string& stables_str, const std::string& triples_str,
                  uint32_t digits, uint32_t subdivide, size_t empty,
                  bool mrr, sqlite::ConnectionPool& pool);
 
-const char* check_small_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+std::string check_small_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
                  uint32_t digits, uint32_t max_depth, size_t empty,
                  bool mrr, sqlite::ConnectionPool& pool, bool printInfo);
                 

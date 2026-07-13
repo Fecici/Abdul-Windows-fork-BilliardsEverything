@@ -499,7 +499,7 @@ uint64_t get_or(const std::map<K, uint64_t>& m, const K& k, const uint64_t v) {
     }
 }
 
-const char* getEmpties(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+std::string getEmpties(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
     const uint32_t digits, const uint32_t max_depth, const size_t empty,
     const bool mrr, sqlite::ConnectionPool& pool, const bool is_last_cycle) {
 
@@ -528,8 +528,7 @@ const char* getEmpties(const std::string& polygon_str, const std::string& single
     const auto cover_info = cover_to_info(polygon, square, cover);
 
     const size_t num_to_print = falgo::min(cover_info.not_filled.size(), empty);
-    static std::string new_coordinates;
-    new_coordinates.clear();
+    std::string new_coordinates;
     if (num_to_print != 0) {
         const size_t inc = cover_info.not_filled.size() / num_to_print;
         for (size_t i = 0; i < num_to_print * inc; i += inc) {
@@ -552,10 +551,10 @@ const char* getEmpties(const std::string& polygon_str, const std::string& single
         cover::save_digits(dir, digits);
     }
 
-    return new_coordinates.c_str();
+    return new_coordinates;
 }
 
-const char* cover_polygon(const cover::Cover& old_cover,
+std::string cover_polygon(const cover::Cover& old_cover,
                           const ClosedRectangleQ& square, const ClosedConvexPolygonQ& polygon,
                           const StableInfos& single_infos, const TripleInfos& triple_infos,
                           const uint32_t digits, const uint32_t max_mag, const size_t empties, const bool mrr) {
@@ -662,8 +661,7 @@ const char* cover_polygon(const cover::Cover& old_cover,
     std::cout << cover_info.not_filled.size() << " squares were not filled in" << std::endl;
     file << "// " << cover_info.not_filled.size() << " squares were not filled in" << '\n';
 
-    static std::string res;
-    res.clear();
+    std::string res;
     const size_t num_to_print = falgo::min(cover_info.not_filled.size(), empties);
     if (num_to_print != 0) {
         const size_t inc = cover_info.not_filled.size() / num_to_print;
@@ -758,12 +756,12 @@ const char* cover_polygon(const cover::Cover& old_cover,
     std::cout << "Time elapsed: " << oss.str() << std::endl;
     file << "// Time elapsed: " << oss.str() << '\n';
 
-    return res.c_str();
+    return res;
 }
 
 // Static variables need to be reset between each invocation. They are saved, surprisingly
 
-const char* check_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+std::string check_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
                  const uint32_t digits, const uint32_t max_depth, const size_t empty,
                  const bool mrr, sqlite::ConnectionPool& pool) {
 
@@ -804,7 +802,7 @@ const char* check_cover(const std::string& polygon_str, const std::string& singl
     return cover_polygon(cover, square, polygon, single_infos, triple_infos, digits, max_depth, empty, mrr);
 }
 
-const char* cover_small_polygon(const cover::Cover& old_cover,
+std::string cover_small_polygon(const cover::Cover& old_cover,
                           const ClosedRectangleQ& square, const ClosedConvexPolygonQ& polygon,
                           const StableInfos& single_infos, const TripleInfos& triple_infos,
                           const uint32_t digits, const uint32_t max_mag, const size_t empties, const bool mrr, const bool printInfo) {
@@ -873,8 +871,7 @@ const char* cover_small_polygon(const cover::Cover& old_cover,
 
     Integer total_single_cost = 0;
 
-    static std::string res;
-    res.clear();
+    std::string res;
 
     if (printInfo) std::cout << "The following stables colored squares:" << std::endl;
     file << "// The following stables colored squares:" << '\n';
@@ -1012,7 +1009,7 @@ const char* cover_small_polygon(const cover::Cover& old_cover,
     if (printInfo) std::cout << "Time elapsed: " << oss.str() << std::endl << "// ----------" << std::endl;
     file << "// Time elapsed: " << oss.str() << '\n';
 
-    return res.c_str();
+    return res;
 }
 
 // Zhao Yu Li, Aug 1, 2025.
@@ -1050,7 +1047,7 @@ double parse_fraction_to_double(const std::string& fractionString) {
     }
 }
 
-const char* check_small_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+std::string check_small_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
                  const uint32_t digits, const uint32_t max_depth, const size_t empty,
                  const bool mrr, sqlite::ConnectionPool& pool, const bool printInfo) {
 

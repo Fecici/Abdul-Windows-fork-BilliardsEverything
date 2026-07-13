@@ -33,7 +33,7 @@ void iterateFireAway4(
     };
 
     std::vector<Frame> stack;
-    int32_t depth = 0;
+    int32_t depth = static_cast<int32_t>(code.size());
 
     stack.push_back(Frame{0,billiard,false,false,false});
 
@@ -56,7 +56,7 @@ void iterateFireAway4(
 				if (depth >= max) {
 					code.pop_back();
 					depth--;
-					frame.goLeft? sideSum.sub(frame.swapValue) : sideSum.add(frame.swapValue);
+					frame.goLeft ? sideSum.sub(frame.swapValue) : sideSum.add(frame.swapValue);
 					stack.pop_back();
 					continue;
 				}
@@ -124,7 +124,7 @@ void iterateFireAway4(
 				// Both directions done — backtrack
 				if (!code.empty()) code.pop_back();  // safeguard
 				depth--;
-				frame.goLeft? sideSum.sub(frame.swapValue) : sideSum.add(frame.swapValue);
+				frame.goLeft ? sideSum.sub(frame.swapValue) : sideSum.add(frame.swapValue);
 				stack.pop_back();
 				
 			}
@@ -132,6 +132,7 @@ void iterateFireAway4(
 
 	}catch (const std::exception& ex){
 		std::cerr << "Exception caught: " << ex.what() << '\n';
+        throw;
 	}
 }
 
@@ -200,21 +201,32 @@ std::vector<TriangleStart> lazySort(std::vector<TriangleStart> array) {
 std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_t movesMax,
 		const float64_t xAngle, const float64_t yAngle,const std::string reqType) {
 
-    unsigned int cores = std::thread::hardware_concurrency();
+    unsigned int cores = std::max(1u, std::thread::hardware_concurrency());  // get cores
 
 		
 	TriangleBilliard4 startBilliard = TriangleBilliard4::create(xAngle, yAngle);
     SideSum sideSum = SideSum::create(xAngle, yAngle);
     std::vector<int32_t> startCode ;
 
-    std::vector<TriangleStart> starts = makeStarts(startBilliard,movesMax, cores, startCode, sideSum);
+    int32_t splitDepth = 0;
+    int32_t targetStarts = 1;
+    while (targetStarts < static_cast<int32_t>(cores) && splitDepth < std::max(0, movesMax - 1)) {
+        targetStarts *= 2;
+        splitDepth++;
+    }
+
+    // check what starts are
+    std::vector<TriangleStart> starts = makeStarts(startBilliard, 0, splitDepth, startCode, sideSum);
     
     auto sortStarts = lazySort(std::move(starts));
 
      std::vector<std::vector<int32_t>> allCodes;
     std::mutex codesMutex;
+    std::mutex errorMutex;
+    bool workerFailed = false;
+    std::string firstWorkerError;
 
-    boost::asio::thread_pool pool(cores);
+    boost::asio::thread_pool pool(cores);  // pool cores
     std::atomic<int> inflight {0};
 
     // Optional: limit inflight to reduce memory pressure
@@ -228,12 +240,12 @@ std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_
 
         inflight.fetch_add(1, std::memory_order_relaxed);
 
-        boost::asio::post(pool, [=, &allCodes, &codesMutex, &inflight]() {
+        boost::asio::post(pool, [=, &allCodes, &codesMutex, &inflight, &errorMutex, &workerFailed, &firstWorkerError]() {
             try {
                 std::vector<std::vector<int32_t>> codesf;
                 SideSum localSum = std::get<2>(T);  // copy the SideSum
                 std::vector<int32_t> localcode =std::get<1>(T);
-                iterateFireAway4(movesMin,movesMax,0,cores,                
+                iterateFireAway4(movesMin,movesMax,0,cores,
                 localSum, // SideSum
                 std::get<0>(T), // TriangleBilliard4
                 localcode, // Code)
@@ -246,6 +258,17 @@ std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Task failed: " << e.what() << std::endl;
+                std::lock_guard<std::mutex> lock(errorMutex);
+                if (!workerFailed) {
+                    workerFailed = true;
+                    firstWorkerError = e.what();
+                }
+            } catch (...) {
+                std::lock_guard<std::mutex> lock(errorMutex);
+                if (!workerFailed) {
+                    workerFailed = true;
+                    firstWorkerError = "unknown Vary4 worker exception";
+                }
             }
 
             inflight.fetch_sub(1, std::memory_order_relaxed);
@@ -253,6 +276,9 @@ std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_
     }
 
     pool.join();
+    if (workerFailed) {
+        throw std::runtime_error(firstWorkerError);
+    }
     return allCodes;
 
 

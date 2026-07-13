@@ -8,6 +8,7 @@ public final class Interval {
     public final double min;
     public final double max;
 
+    // QUESTION: why use static create? why not sort them in constructor?
     private Interval(final double min, final double max) {
         this.min = min;
         this.max = max;

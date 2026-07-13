@@ -6,6 +6,7 @@ import javaslang.Tuple2;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
+// QUESTION: how much is this class really used?
 public abstract class Equation {
 
     // The coeffs and bound are all ints, but the calculations are faster
@@ -27,6 +28,8 @@ public abstract class Equation {
         return doubleCoeffs;
     }
 
+    // QUESTION: what does this actually bound? is it the sum of sin and cos from the paper? 
+    // ie for the mrr bound and mean value theorem stuff?
     private static int calculateBound(final int[] intCoeffs) {
         int bound = 0;
 
@@ -117,7 +120,7 @@ public abstract class Equation {
 
         int index = 0;
         int length = 0;
-        for (int i = 0; i < str.length(); i += 1) {
+        for (int i = 0; i < str.length(); i++) {
             final char ch = str.charAt(i);
             if (ch == '-') {
                 index = i;

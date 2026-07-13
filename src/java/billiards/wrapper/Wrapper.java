@@ -66,13 +66,13 @@ public final class Wrapper {
 
     public static native void backend_cancel();
 
-    private static native String cover_wrapper(String polygon, String codes, String unstables,
+    private static native int cover_wrapper(String polygon, String codes, String unstables,
                                             int digits, int subdivide, int empty,
-                                            boolean mrr, Pointer pool);
+                                            boolean mrr, Pointer pool, CString result);
 
-    private static native String small_cover_wrapper(String polygon, String codes, String unstables,
+    private static native int small_cover_wrapper(String polygon, String codes, String unstables,
                                             int digits, int subdivide, int empty,
-                                            boolean mrr, Pointer pool, boolean printInfo);
+                                            boolean mrr, Pointer pool, boolean printInfo, CString result);
 
     private static native int cover_wrapper_duplicate_stables(String polygon, String codes, String unstables,
                                             int digits, int subdivide, int empty,
@@ -88,19 +88,33 @@ public final class Wrapper {
                                        final int digits, final int subdivide, final int empty,
                                        final boolean mrr, final ConnectionPool pool) {
 
-        return cover_wrapper(polygon, codes, unstables, digits, subdivide, empty, mrr, pool.pointer);
+        final CString result = new CString();
+        final int rval = cover_wrapper(polygon, codes, unstables, digits, subdivide, empty, mrr, pool.pointer, result);
+        return stringResultOrEmpty(rval, result);
     }
 
     public static String smallCoverWrapper(final String polygon, final String codes, final String unstables,
                                        final int digits, final int subdivide, final int empty,
                                        final boolean mrr, final ConnectionPool pool, final boolean printInfo) {
 
-       return small_cover_wrapper(polygon, codes, unstables, digits, subdivide, empty, mrr, pool.pointer, printInfo);
+       final CString result = new CString();
+       final int rval = small_cover_wrapper(polygon, codes, unstables, digits, subdivide, empty, mrr, pool.pointer, printInfo, result);
+       return stringResultOrEmpty(rval, result);
     }
 
-    public static native String getNotFilledCoordinates(String polygon, String codes, String unstables,
-                                                        int digits, int subdivide, int empty,
-                                                        boolean mrr, Pointer pool, boolean isLastCycle);
+    private static native int get_not_filled_coordinates(String polygon, String codes, String unstables,
+                                                         int digits, int subdivide, int empty,
+                                                         boolean mrr, Pointer pool, boolean isLastCycle,
+                                                         CString result);
+
+    public static String getNotFilledCoordinates(String polygon, String codes, String unstables,
+                                                 int digits, int subdivide, int empty,
+                                                 boolean mrr, Pointer pool, boolean isLastCycle) {
+        final CString result = new CString();
+        final int rval = get_not_filled_coordinates(polygon, codes, unstables, digits, subdivide, empty,
+                mrr, pool, isLastCycle, result);
+        return stringResultOrEmpty(rval, result);
+    }
     
     public static int coverWrapperDuplicateStables(final String polygon, final String codes, final String unstables,
                                        final int digits, final int subdivide, final int empty,
@@ -157,6 +171,8 @@ public final class Wrapper {
                                             CInfoAll cInfoAll, Pointer poolPtr);
     private static native int load_all_equations(int[] codeNumbers, int codeNumbersLength,
                                                 CInfoAll cInfoAll, Pointer poolPtr);
+    private static native void cleanup_cinfo_all(CInfoAll cInfoAll);
+
     public static Optional<InfoAll> loadAllEquation(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool ){
         final int[] codeNumbersArray = codeSeq.codeSequence.codeNumbers.toArray();
 
@@ -178,6 +194,8 @@ public final class Wrapper {
             }
             catch (NullPointerException e) {
                 return  Optional.empty();
+            } finally {
+                cleanup_cinfo_all(cinfoAll);
             }
 
         } else if (rval == 0) {
@@ -214,6 +232,8 @@ public final class Wrapper {
             }
             catch (NullPointerException e) {
                 return  Optional.empty();
+            } finally {
+                cleanup_cinfo_all(cinfoAll);
             }
 
         } else if (rval == 0) {
@@ -434,6 +454,27 @@ public final class Wrapper {
 
     private static native void cleanup_string(CString cstring);
 
+    private static void cleanupStringIfPresent(final CString cstring) {
+        if (cstring.string != null) {
+            cleanup_string(cstring);
+            cstring.string = null;
+        }
+    }
+
+    private static String stringResultOrEmpty(final int rval, final CString result) {
+        if (rval == 1) {
+            try {
+                return result.string == null ? "" : result.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(result);
+            }
+        } else if (rval == -1) {
+            return "";
+        } else {
+            throw new RuntimeException("unknown native string return value: " + rval);
+        }
+    }
+
     public static String search(final CodeType type, final int length, final ConnectionPool pool) {
 
         final CString cstring = new CString();
@@ -442,11 +483,11 @@ public final class Wrapper {
 
         if (rval == 1) {
 
-            final String str = cstring.string.getString(0);
-
-            cleanup_string(cstring);
-
-            return str;
+            try {
+                return cstring.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(cstring);
+            }
 
         } else if (rval == -1) {
             throw new RuntimeException("searching failed");
@@ -463,11 +504,11 @@ public final class Wrapper {
 
         if (rval == 1) {
 
-            final String str = cstring.string.getString(0);
-
-            cleanup_string(cstring);
-
-            return str;
+            try {
+                return cstring.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(cstring);
+            }
 
         } else if (rval == -1) {
             throw new RuntimeException("searching failed");
@@ -506,11 +547,11 @@ public final class Wrapper {
 
         if (rval == 1) {
 
-            final String str = cstring.string.getString(0);
-
-            cleanup_string(cstring);
-
-            return str;
+            try {
+                return cstring.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(cstring);
+            }
         } else {
             throw new RuntimeException("bounding polygon failed");
         }
@@ -531,6 +572,8 @@ public final class Wrapper {
             }
             catch (NullPointerException e) {
                 return Optional.empty();
+            } finally {
+                cleanup_cinfo_all(cInfoAll);
             }
         }
         else if (rval == 0) {
@@ -554,9 +597,12 @@ public final class Wrapper {
         double y = Math.toRadians(Double.parseDouble(y_str));
         final double rval = calculate_gradient(euqation_str, x, y, from_database, cstring,cstring2);
         if (rval != -1) {
-            final String str = cstring.string.getString(0);
-            cleanup_string(cstring);
-            return str;
+            try {
+                return cstring.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(cstring);
+                cleanupStringIfPresent(cstring2);
+            }
         } else {
             throw new RuntimeException("calculating gradient failed");
         }
@@ -570,9 +616,12 @@ public final class Wrapper {
         double y = Math.toRadians(Double.parseDouble(y_str));
         final double rval = calculate_gradient(euqation_str, x, y, from_database, cstring,cstring2);
         if (rval != -1) {
-            final String str = cstring2.string.getString(0);
-            cleanup_string(cstring);
-            return str;
+            try {
+                return cstring2.string.getString(0);
+            } finally {
+                cleanupStringIfPresent(cstring);
+                cleanupStringIfPresent(cstring2);
+            }
         } else {
             throw new RuntimeException("unknown return value for calculateGradient: " + rval);
         }
@@ -586,29 +635,11 @@ public final class Wrapper {
         final CString result = new CString();
         final int rval = vary_cs_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
         if (rval > 0) {
-            String strseq = result.string.getString(0);
-
-            // Estimate number of lines
-            int estimatedLines = (int) strseq.chars().filter(c -> c == '\n').count() + 1;
-            List<ClassifiedCodeSequence> tmp = Collections.synchronizedList(new ArrayList<>(estimatedLines));
-
-            Arrays.stream(strseq.split("\\R")).parallel().forEach(line -> {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    try {
-                        int[] dirty = Arrays.stream(trimmed.split("\\s+"))
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-                        IntList list = IntArrayList.newListWith(dirty);
-                        Optional<ClassifiedCodeSequence> codeSeq = Utils.convert(list);
-                        codeSeq.ifPresent(tmp::add); // now thread-safe
-                    } catch (Exception ignored) {
-                        // skip malformed
-                    }
-                }
-            });
-
-            return Optional.of(Lists.mutable.ofAll(tmp));
+            try {
+                return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
+            } finally {
+                cleanupStringIfPresent(result);
+            }
 
         } else {
             throw new RuntimeException("unknown return value for calculateGradient: " + rval);
@@ -623,28 +654,11 @@ public final class Wrapper {
         final CString result = new CString();
         final int rval = vary_3_cpp(movesMin, movesMax, initPosition, xAngle, yAngle, result, reqTypes);
         if (rval > 0) {
-            String strseq = result.string.getString(0);
-
-            // Estimate number of lines
-            int estimatedLines = (int) strseq.chars().filter(c -> c == '\n').count() + 1;
-            List<ClassifiedCodeSequence> tmp = new ArrayList<>(estimatedLines);
-
-            Arrays.stream(strseq.split("\\R")).parallel().forEach(line -> {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    try {
-                        int[] dirty = Arrays.stream(trimmed.split("\\s+"))
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-                        IntList list = IntArrayList.newListWith(dirty);
-                        Optional<ClassifiedCodeSequence> codeSeq = Utils.convert(list);
-                        codeSeq.ifPresent(tmp::add); // thread safety issue here, see below
-                    } catch (Exception ignored) {
-                        // skip malformed
-                    }
-                }
-            });
-            return Optional.of(Lists.mutable.ofAll(tmp));
+            try {
+                return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
+            } finally {
+                cleanupStringIfPresent(result);
+            }
         } else {
             throw new RuntimeException("unknown return value for calculateGradient: " + rval);
         }
@@ -658,31 +672,37 @@ public final class Wrapper {
         final CString result = new CString();
         final int rval = vary_4_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
         if (rval > 0) {
-            String strseq = result.string.getString(0);
-
-            // Estimate number of lines
-            int estimatedLines = (int) strseq.chars().filter(c -> c == '\n').count() + 1;
-            List<ClassifiedCodeSequence> tmp = new ArrayList<>(estimatedLines);
-
-            Arrays.stream(strseq.split("\\R")).parallel().forEach(line -> {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    try {
-                        int[] dirty = Arrays.stream(trimmed.split("\\s+"))
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-                        IntList list = IntArrayList.newListWith(dirty);
-                        Optional<ClassifiedCodeSequence> codeSeq = Utils.convert(list);
-                        codeSeq.ifPresent(tmp::add); // thread safety issue here, see below
-                    } catch (Exception ignored) {
-                        // skip malformed
-                    }
-                }
-            });
-            return Optional.of(Lists.mutable.ofAll(tmp));
+            try {
+                return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
+            } finally {
+                cleanupStringIfPresent(result);
+            }
         } else {
             throw new RuntimeException("unknown return value for calculateGradient: " + rval);
         }
+    }
+
+    private static MutableList<ClassifiedCodeSequence> parseNativeCodeSequences(final String strseq) {
+        final int estimatedLines = (int) strseq.chars().filter(c -> c == '\n').count() + 1;
+        final List<ClassifiedCodeSequence> tmp = new ArrayList<>(estimatedLines);
+
+        Arrays.stream(strseq.split("\\R")).forEach(line -> {
+            final String trimmed = line.trim();
+            if (!trimmed.isEmpty()) {
+                try {
+                    final int[] dirty = Arrays.stream(trimmed.split("\\s+"))
+                            .mapToInt(Integer::parseInt)
+                            .toArray();
+                    final IntList list = IntArrayList.newListWith(dirty);
+                    final Optional<ClassifiedCodeSequence> codeSeq = Utils.convert(list);
+                    codeSeq.ifPresent(tmp::add);
+                } catch (Exception ignored) {
+                    // Preserve existing behavior: malformed native output lines are skipped.
+                }
+            }
+        });
+
+        return Lists.mutable.ofAll(tmp);
     }
 
 }

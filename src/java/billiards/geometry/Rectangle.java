@@ -5,12 +5,13 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.util.Objects;
 
-public final class Rectangle implements Project {
+public final class Rectangle implements Projectable {
     public final Interval intervalX;
     public final Interval intervalY;
 
-    public boolean trimable;
+    public boolean trimable;  // DEVNOTE: make this private and use getters
 
+    // DEVNOTE: just make this public, the intervals can be sorted automatically in their constructor.
     private Rectangle(final Interval intervalX, final Interval intervalY) {
         this.intervalX = intervalX;
         this.intervalY = intervalY;
@@ -38,6 +39,8 @@ public final class Rectangle implements Project {
     public void setTrimable(boolean trim) {
         this.trimable = trim;
     }
+
+    // TODO: add getter for trim
 
     public Vector2 center() {
         return Vector2.create(intervalX.center(), intervalY.center());

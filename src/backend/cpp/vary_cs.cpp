@@ -85,9 +85,12 @@ void iterateFireAwayCS2(
     else if (max >15000){usage=0.1;}
     else if (max >10000){usage=0.2;}
     else if (max >6000){usage = 0.3;};
-    const int MAX_INFLIGHT = compute_max_inflight(usage, 16384);  // tune based on memory
-    unsigned int cores = std::thread::hardware_concurrency();
+    const int MAX_INFLIGHT = std::max(1, compute_max_inflight(usage, 16384));  // tune based on memory
+    unsigned int cores = std::max(1u, std::thread::hardware_concurrency());
     std::mutex codesFoundMutex;
+    std::mutex errorMutex;
+    bool workerFailed = false;
+    std::string firstWorkerError;
 
     try{
 
@@ -127,14 +130,28 @@ void iterateFireAwayCS2(
                             }
                             inflight.fetch_add(1, std::memory_order_relaxed);
                             // type check
-                            boost::asio::post(pool, [=, &codesFound, &inflight, &codesFoundMutex] {
-                                // std::vector<int> intVec(code2.begin(), code2.end());
-                                auto seq = convert(code2);
-                                if (seq){
-                                    CodeType codeType = seq.get().codeType;
-                                    if (codeType == CodeType::CS) {
-                                        std::lock_guard<std::mutex> lock(codesFoundMutex);
-                                        codesFound.push_back(code2);
+                            boost::asio::post(pool, [=, &codesFound, &inflight, &codesFoundMutex, &errorMutex, &workerFailed, &firstWorkerError] {
+                                try {
+                                    // std::vector<int> intVec(code2.begin(), code2.end());
+                                    auto seq = convert(code2);
+                                    if (seq){
+                                        CodeType codeType = seq.get().codeType;
+                                        if (codeType == CodeType::CS) {
+                                            std::lock_guard<std::mutex> lock(codesFoundMutex);
+                                            codesFound.push_back(code2);
+                                        }
+                                    }
+                                } catch (const std::exception& ex) {
+                                    std::lock_guard<std::mutex> lock(errorMutex);
+                                    if (!workerFailed) {
+                                        workerFailed = true;
+                                        firstWorkerError = ex.what();
+                                    }
+                                } catch (...) {
+                                    std::lock_guard<std::mutex> lock(errorMutex);
+                                    if (!workerFailed) {
+                                        workerFailed = true;
+                                        firstWorkerError = "unknown VaryCS worker exception";
                                     }
                                 }
                                 inflight.fetch_sub(1, std::memory_order_relaxed);
@@ -195,9 +212,13 @@ void iterateFireAwayCS2(
             }
             // all recursion done, waiting for result of foundcode
             pool.join();
+            if (workerFailed) {
+                throw std::runtime_error(firstWorkerError);
+            }
 
      	}catch (const std::exception& ex){
 		std::cerr << "Exception caught: " << ex.what() << '\n';
+        throw;
 	}
 
 }

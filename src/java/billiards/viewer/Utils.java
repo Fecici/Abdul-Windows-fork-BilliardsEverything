@@ -48,7 +48,7 @@ import javaslang.control.Either;
 // add option to draw picture when searching
 
 public final class Utils {
-    // TODO find the best value for this
+    // TODO find the best value for this. Easy case, make dynamic and use half as default
     public static final int numThreads = (int) (Runtime.getRuntime().availableProcessors() * 0.5);
 
     public static Optional<ImmutableIntList> splitString(String textCodeSeq) {
@@ -174,6 +174,7 @@ public final class Utils {
     }
 
     // Copy each element of source into dest, overriding the current values
+    // QUESTION: does this depend on the sizes of lists being the same?
     public static void copyInto(final MutableIntList dest, final IntList source) {
         for (int i = 0; i < dest.size(); ++i) {
             final int elem = source.get(i);
@@ -234,6 +235,9 @@ public final class Utils {
             Iterable<ClassifiedCodeSequence> l1 = lists.get(0);
             Iterable<ClassifiedCodeSequence> l2 = lists.get(1);
 
+            /*
+            TODO: this can be made way better using HashSets, if hashcodes are implemented right
+            */
             for (ClassifiedCodeSequence c1 : l1) {
                 for (ClassifiedCodeSequence c2 : l2) {
                     if (c1.compareTo(c2) == 0) {
@@ -436,6 +440,7 @@ public final class Utils {
         }
     }
 
+    // QUESTION: why not just use Math.floorMod()?
     public static int modN(int value, final int n) {
         while (value >= n) {
             value -= n;

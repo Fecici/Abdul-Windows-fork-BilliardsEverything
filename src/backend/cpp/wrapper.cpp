@@ -109,10 +109,10 @@ void destroy_connection_pool(const sqlite::ConnectionPool* const pool) {
 // -1 failure
 // 0 on not a cover
 // 1 means a cover
-const char* cover_wrapper(const char* const poly_str,
+int32_t cover_wrapper(const char* const poly_str,
                       const char* const codes_str, const char* const unstables_str,
                       const int32_t digits, const int32_t subdivide, const int32_t empty,
-                      const int32_t mrr, sqlite::ConnectionPool* const pool) {
+                      const int32_t mrr, sqlite::ConnectionPool* const pool, CString* const result) {
 
     try {
 
@@ -120,23 +120,27 @@ const char* cover_wrapper(const char* const poly_str,
         const std::string codes{codes_str};
         const std::string unstables{unstables_str};
 
-        const auto covered = check_cover(poly, codes, unstables, boost::numeric_cast<uint32_t>(digits), boost::numeric_cast<uint32_t>(subdivide), boost::numeric_cast<size_t>(empty), mrr, *pool);
+        const auto covered = check_cover(poly, codes, unstables, 
+            boost::numeric_cast<uint32_t>(digits), 
+            boost::numeric_cast<uint32_t>(subdivide), 
+            boost::numeric_cast<size_t>(empty), mrr, *pool);
 
-        return covered;
+        result->string = to_cstr(covered);
+        return 1;
     } catch (const std::runtime_error& except) {
         std::cerr << "calculation of cover failed with error:\n"
                   << except.what() << std::endl;
-        return "";
+        return -1;
     }
 }
 
 // -1 failure
 // 0 on not a cover
 // 1 means a cover
-const char* small_cover_wrapper(const char* const poly_str,
+int32_t small_cover_wrapper(const char* const poly_str,
                       const char* const codes_str, const char* const unstables_str,
                       const int32_t digits, const int32_t subdivide, const int32_t empty,
-                      const int32_t mrr, sqlite::ConnectionPool* const pool, const bool printInfo) {
+                      const int32_t mrr, sqlite::ConnectionPool* const pool, const bool printInfo, CString* const result) {
 
     try {
 
@@ -146,18 +150,19 @@ const char* small_cover_wrapper(const char* const poly_str,
 
         const auto covered = check_small_cover(poly, codes, unstables, boost::numeric_cast<uint32_t>(digits), boost::numeric_cast<uint32_t>(subdivide), boost::numeric_cast<size_t>(empty), mrr, *pool, printInfo);
 
-        return covered;
+        result->string = to_cstr(covered);
+        return 1;
     } catch (const std::runtime_error& except) {
         std::cerr << "calculation of cover failed with error:\n"
                   << except.what() << std::endl;
-        return "";
+        return -1;
     }
 }
 
-const char* getNotFilledCoordinates(const char* const poly_str,
+int32_t get_not_filled_coordinates(const char* const poly_str,
     const char* const codes_str, const char* const unstables_str,
     const int32_t digits, const int32_t subdivide, const int32_t empty,
-    const int32_t mrr, sqlite::ConnectionPool* const pool, const bool is_last_cycle) {
+    const int32_t mrr, sqlite::ConnectionPool* const pool, const bool is_last_cycle, CString* const result) {
 
     try {
 
@@ -165,13 +170,18 @@ const char* getNotFilledCoordinates(const char* const poly_str,
         const std::string codes{codes_str};
         const std::string unstables{unstables_str};
 
-        return getEmpties(poly, codes, unstables, boost::numeric_cast<uint32_t>(digits), boost::numeric_cast<uint32_t>(subdivide), boost::numeric_cast<size_t>(empty), mrr, *pool, is_last_cycle);
+        const auto empties = getEmpties(poly, codes, unstables,
+            boost::numeric_cast<uint32_t>(digits), 
+            boost::numeric_cast<uint32_t>(subdivide), 
+            boost::numeric_cast<size_t>(empty), mrr, *pool, is_last_cycle);
 
+        result->string = to_cstr(empties);
+        return 1;
 
     } catch (const std::runtime_error& except) {
         std::cerr << "calculation of cover failed with error:\n"
                   << except.what() << std::endl;
-        return "";
+        return -1;
     }
 }
 
@@ -212,7 +222,10 @@ int32_t cover_wrapper_half_duplicate_stables(const char* const poly_str,
         std::set<std::pair<CodeSequence, std::string>> sequence_init_angles{};
         std::set<std::pair<CodeSequence, std::string>> sequence_points{};
 
-        const auto covered = check_cover_half_duplicate_stables(poly, codes, unstables, boost::numeric_cast<uint32_t>(digits), boost::numeric_cast<uint32_t>(subdivide), boost::numeric_cast<size_t>(empty), mrr, sequence_equations, *pool);
+        const auto covered = check_cover_half_duplicate_stables(poly, codes, unstables, 
+            boost::numeric_cast<uint32_t>(digits), 
+            boost::numeric_cast<uint32_t>(subdivide), 
+            boost::numeric_cast<size_t>(empty), mrr, sequence_equations, *pool);
         if(covered){
             return 1;
         } else {
@@ -800,6 +813,18 @@ void cleanup_cinfo(const CInfo* const cinfo) {
     delete[] cinfo->code_seq_lr;
 }
 
+void cleanup_cinfo_all(const CInfoAll* const cinfoAll) {
+    delete[] cinfoAll->initial_angles;
+    delete[] cinfoAll->points;
+    delete[] cinfoAll->equations;
+    delete[] cinfoAll->sinEquations;
+    delete[] cinfoAll->cosEquations;
+    delete[] cinfoAll->left_rights;
+    delete[] cinfoAll->code_seq_lr;
+    delete[] cinfoAll->vectorX;
+    delete[] cinfoAll->vectorY;
+}
+
 // 0 is failure,
 // any non-zero is success
 int32_t merge_covers(const char* const merge_dir_ptr, const char* const cover_dirs_ptr, sqlite::ConnectionPool* const pool) {
@@ -1219,7 +1244,9 @@ float64_t calculate_gradient(const char* const equation_cstr, float64_t x_value,
 }
 
 void cleanup_string(const CString* const cstring) {
-    delete[] cstring->string;
+    if (cstring != nullptr) {
+        delete[] cstring->string;
+    }
 }
 
 /* jul 31 2025 Marco Mai

@@ -16,43 +16,59 @@ import javafx.scene.paint.Color;
 
 public class HashTriple {
 
-    private final MutableMap<Rectangle, ClassifiedCodeSequence> stableMap;
-    private final MutableMap<Rectangle, Triple> tripleMap;
-    private final MutableMap<Rectangle, Color> colorMap;
-    private final MutableMap<Rectangle, HalfTriple> halfTripleMap;
+    private MutableMap<Rectangle, ClassifiedCodeSequence> stableMap = new UnifiedMap<>();
+    private MutableMap<Rectangle, Triple> tripleMap = new UnifiedMap<>();
+    private MutableMap<Rectangle, Color> colorMap = new UnifiedMap<>();
+    private MutableMap<Rectangle, HalfTriple> halfTripleMap = new UnifiedMap<>();
+    private Color defaultColor;
 
     public HashTriple() {
-        stableMap = new UnifiedMap<>();
-        tripleMap = new UnifiedMap<>();
-        halfTripleMap = new UnifiedMap<>();
-        colorMap = new UnifiedMap<>();
+        this.defaultColor = Color.BLACK;
     }
 
-    public void addStables(final Map<Rectangle, ClassifiedCodeSequence> otherMap, final Color color) {
-        this.stableMap.putAll(otherMap);
-        for (final Rectangle rect : otherMap.keySet()) {
-            this.colorMap.put(rect, color);
+    // INFO: (Abdul, Jul 2026) changed to use default cover.
+    // Purpose: reduce memory spikes by a lot, 
+    // caused by stale entries in the colour map. 
+    // Did not yet test with different colours; nobody 
+    // uses them anyways, but this needs to be done
+    // I am still learning the codebase, so I will come back
+    // to this once I know more.
+    public void addStables(Map<Rectangle, ClassifiedCodeSequence> otherMap, Color color) {
+        if (otherMap instanceof MutableMap) {
+            this.stableMap = (MutableMap<Rectangle, ClassifiedCodeSequence>) otherMap;
+        } else {
+            this.stableMap.clear();
+            this.stableMap.putAll(otherMap);
         }
+
+        this.defaultColor = color;
     }
 
     public void addTriples(final Map<Rectangle, Triple> otherMap, final Color color) {
-        this.tripleMap.putAll(otherMap);
-        for (final Rectangle rect : otherMap.keySet()) {
-            this.colorMap.put(rect, color);
+        if (otherMap instanceof MutableMap) {
+            this.tripleMap = (MutableMap<Rectangle, Triple>) otherMap;
+        } else {
+            this.tripleMap.clear();
+            this.tripleMap.putAll(otherMap);
         }
+        this.defaultColor = color;
     }
     public void addHalfTriples(final Map<Rectangle, HalfTriple> otherMap, final Color color){
-        this.halfTripleMap.putAll(otherMap);
-        for (final Rectangle rect : otherMap.keySet()) {
-            this.colorMap.put(rect, color);
+        if (otherMap instanceof MutableMap) {
+            this.halfTripleMap = (MutableMap<Rectangle, HalfTriple>) otherMap;
+        } else {
+            this.halfTripleMap.clear();
+            this.halfTripleMap.putAll(otherMap);
         }
+
+        this.defaultColor = color;
     }
 
     public void clear() {
-        stableMap.clear();
-        tripleMap.clear();
-        colorMap.clear();
-        halfTripleMap.clear();
+        this.stableMap.clear();
+        this.tripleMap.clear();
+        this.colorMap.clear();
+        this.halfTripleMap.clear();
 
     }
 
@@ -78,6 +94,7 @@ public class HashTriple {
         this.stableMap.remove(rect);
         this.tripleMap.remove(rect);
         this.halfTripleMap.remove(rect);
+        this.colorMap.remove(rect);
     }
 
     public ClassifiedCodeSequence getStable(final Rectangle rect) {
@@ -91,7 +108,8 @@ public class HashTriple {
     public HalfTriple getHalfTriple(final Rectangle rect) { return halfTripleMap.get(rect); }
 
     public Color getColor(final Rectangle rect) {
-        return colorMap.get(rect);
+        Color color = colorMap.get(rect);
+        return color != null ? color : this.defaultColor;
     }
 
     public void put(final Rectangle rect, final ClassifiedCodeSequence stable) {

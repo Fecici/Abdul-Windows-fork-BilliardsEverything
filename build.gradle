@@ -13,6 +13,15 @@ def isLinux = org.gradle.internal.os.OperatingSystem.current().isLinux()
 def isMac = currentOs.isMacOsX()
 def isWindows = currentOs.isWindows()
 def javafxVersion = '21.0.1'
+def defaultMsys2Root = (System.getenv('MSYS2_ROOT') ?: 'C:/msys64').replace('\\', '/')
+ext.msys2NativePrefix = (
+        System.getenv('BILLIARDS_MSYS2_PREFIX')
+        ?: (file("${defaultMsys2Root}/ucrt64/bin/g++.exe").exists()
+            ? "${defaultMsys2Root}/ucrt64"
+            : file("${defaultMsys2Root}/mingw64/bin/g++.exe").exists()
+                ? "${defaultMsys2Root}/mingw64"
+                : "${defaultMsys2Root}/ucrt64")
+).replace('\\', '/')
 
 mainClassName = 'billiards.viewer.Main'
 
@@ -95,27 +104,61 @@ sourceSets {
     }
 }
 
-applicationDefaultJvmArgs = ['-server', '-Djna.library.path=./build/libs/backend/shared/', '-Xss1000m']
+applicationDefaultJvmArgs = ['-server', 
+                            '-Djna.library.path=./build/libs/backend/shared/', 
+                            //'-Xss1000m',
+                            '-Xss2m',
+                            '-Xms2g', 
+                            '-Xmx10g', 
+                            '-XX:MaxDirectMemorySize=2g', 
+                            '-XX:NativeMemoryTracking=summary', 
+                            '-XX:+UnlockDiagnosticVMOptions',
+                            '-XshowSettings:vm']
 
 sourceCompatibility = 1.17
 targetCompatibility = 1.17
 
 model {
 
+    platforms {
+        x64 {
+            architecture "x86_64"
+        }
+    }
+
+    toolChains {
+        gcc(Gcc) {
+            if (currentOs.isWindows()) {
+                path "${msys2NativePrefix}/bin"
+            }
+        }
+    }
+
     components {
 
         backend(NativeLibrarySpec) {
 
+            targetPlatform "x64"
 
             binaries.all {
 
                 cppCompiler.define "NDEBUG"
-                cppCompiler.args '-O3', '-march=native', '-flto', '-ftrapv'
+                cppCompiler.args '-O3', '-march=native', '-ftrapv'
+                if (!currentOs.isWindows()) {
+                    cppCompiler.args '-flto'
+                }
+                if (currentOs.isWindows()) {
+                    cppCompiler.args "-I${msys2NativePrefix}/include",
+                                     "-I${msys2NativePrefix}/include/eigen3"
+                    linker.args "-L${msys2NativePrefix}/lib"
+                }
                 // Aug,8 2025 Marco,Mai
                 // for Aplle Arm platnorm there is an instruction to use java17 natively
                 if (currentOs.isMacOsX()){
                     cppCompiler.args '-I/opt/homebrew/include'
                     linker.args '-headerpad_max_install_names', '-L/opt/homebrew/lib','-L/opt/homebrew/opt/','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread', '-lboost_system'
+                } else if (currentOs.isWindows()) {
+                    linker.args '-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb12','-lboost_thread-mt', '-lws2_32'
                 } else {
                     linker.args '-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb12','-lboost_thread', '-lboost_system'
                 }
@@ -140,6 +183,8 @@ model {
 
         test(NativeExecutableSpec) {
 
+            targetPlatform "x64"
+
             sources.cpp {
                 lib library: 'backend', linkage: 'static'
             }
@@ -147,12 +192,22 @@ model {
             binaries.all {
 
                 cppCompiler.define "NDEBUG"
-                cppCompiler.args '-O3', '-march=native', '-flto', '-ftrapv'
+                cppCompiler.args '-O3', '-march=native', '-ftrapv'
+                if (!currentOs.isWindows()) {
+                    cppCompiler.args '-flto'
+                }
+                if (currentOs.isWindows()) {
+                    cppCompiler.args "-I${msys2NativePrefix}/include",
+                                     "-I${msys2NativePrefix}/include/eigen3"
+                    linker.args "-L${msys2NativePrefix}/lib"
+                }
                 // Aug,8 2025 Marco,Mai
                 // for Aplle Arm platnorm there is an instruction to use java17 natively
                 if (currentOs.isMacOsX()){
                     cppCompiler.args '-I/opt/homebrew/include'
                     linker.args '-headerpad_max_install_names','-L/opt/homebrew/lib','-L/opt/homebrew/opt/','-lboost_unit_test_framework','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread','-lboost_system'
+                } else if (currentOs.isWindows()) {
+                    linker.args '-lboost_unit_test_framework-mt','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread-mt', '-lws2_32'
                 } else {
                     linker.args '-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread','-lboost_system'
                 }
@@ -192,23 +247,24 @@ run.doFirst {
     //environment 'LD_PRELOAD', '/usr/local/Cellar/jemalloc/5.0.1/lib/libjemalloc.so.2'
     //commandLine "./test.fish"
             // For native libraries
-    environment 'JNA_LIBRARY_PATH', "$projectDir/build/libs/backend/shared"
+    def backendSharedDir = "$projectDir/build/libs/backend/shared"
+    environment 'JNA_LIBRARY_PATH', backendSharedDir
     
     if (isMac) {
-        environment 'DYLD_LIBRARY_PATH', "$projectDir/build/libs/backend/shared"
+        environment 'DYLD_LIBRARY_PATH', backendSharedDir
         jvmArgs = [
             '--module-path', configurations.runtimeClasspath.asPath,
             '--add-modules', 'javafx.controls,javafx.fxml'
         ]
     }
     else if (isLinux) {
-        environment 'LD_LIBRARY_PATH', "$projectDir/build/libs/backend/shared"
+        environment 'LD_LIBRARY_PATH', backendSharedDir
         jvmArgs = [
             '--module-path', '/usr/share/openjfx/lib',
             '--add-modules', 'javafx.controls,javafx.fxml'
         ]
     } else {
-        environment 'LD_LIBRARY_PATH', "$projectDir/build/libs/backend/shared"
+        environment 'PATH', "${backendSharedDir};${msys2NativePrefix}/bin;" + System.getenv('PATH')
         jvmArgs = [
             '--module-path', configurations.runtimeClasspath.asPath,
             '--add-modules', 'javafx.controls,javafx.fxml'

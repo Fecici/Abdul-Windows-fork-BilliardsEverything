@@ -7,6 +7,7 @@ import java.util.Arrays;
 public final class LinCom<E extends Enum<E>> {
 
     // We could use an EnumMap here, but an array avoids the overhead of boxing
+    // QUESTION: what is boxing?
     private final int[] coeffs;
 
     public LinCom(final int... coeffs) {

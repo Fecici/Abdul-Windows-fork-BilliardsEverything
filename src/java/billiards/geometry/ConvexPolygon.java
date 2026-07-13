@@ -14,7 +14,7 @@ import billiards.viewer.Utils;
 // ALGORITHMS
 // always, *always*, **always** look up preexisting algorithms in books or on the internet
 // even for very simple stuff, like checking if two intervals intersect
-public final class ConvexPolygon implements Project {
+public final class ConvexPolygon implements Projectable {
 
     public final ImmutableList<Vector2> vertices;
 
@@ -140,7 +140,7 @@ public final class ConvexPolygon implements Project {
 
     // Return if we have found a separating axis by projecting the figure
     // and this along the axes of this
-    public boolean separatingAxis(final Project figure) {
+    public boolean separatingAxis(final Projectable figure) {
         // Now we get the axes from the sides of the polygon,
         // and project the rectangle and polygon along those
         // axes

@@ -11,7 +11,7 @@ import java.util.Optional;
 // so careful all the time that the changes you make to
 // variables happen at the right time and in the right order. When things
 // are immutable, you just don't have to worry about it.
-
+// QUESTION: is this not just a normal list?
 public final class BackwardForward<T> {
     private final MutableList<T> list;
     // Index of the current thing in the list

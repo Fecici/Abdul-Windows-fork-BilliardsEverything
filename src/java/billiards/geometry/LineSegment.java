@@ -5,7 +5,7 @@ import org.eclipse.collections.api.list.ImmutableList;
 import java.util.Objects;
 
 // Directed line segment from start -> end
-public final class LineSegment implements Project {
+public final class LineSegment implements Projectable {
 
     public final Vector2 start;
     public final Vector2 end;
@@ -50,7 +50,7 @@ public final class LineSegment implements Project {
         return !this.separatingAxis(rect);
     }
 
-    public boolean separatingAxis(final Project figure) {
+    public boolean separatingAxis(final Projectable figure) {
         // Vector from start to end
         // The order and perpendicular vector are rather arbitrary
         // as long as they lie on the same line

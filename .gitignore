@@ -9,3 +9,5 @@ obj/
 *.zip
 *.tar
 *.exe
+
+.vscode/
