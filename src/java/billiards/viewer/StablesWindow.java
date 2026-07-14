@@ -553,6 +553,12 @@ public class StablesWindow {
         this.stage.toFront();
     }
 
+    public void close() {
+        // The normal close hook is mouse-exit based, so main-window shutdown must save the current text directly.
+        saveToFile();
+        this.stage.close();
+    }
+
     private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
         final Iterable<String> lines = Splitter.onPattern("\\R")
                 .trimResults()

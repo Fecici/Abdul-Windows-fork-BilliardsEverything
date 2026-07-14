@@ -1,0 +1,88 @@
+﻿Viewer	569-3894	addLeftRight, addSubtract, addSubtractReverse, addToOnScreenSequences, autoPolyVaryFunction, btnCalculateAction, decrease, drawAndAddToCover, drawCodes, drawVaryL, findHoles, getCodeSeqAndOEString, getMultipleExpandos, getStartStepEnd, increase, isleftRightLegal, iterateActionWithPolyIntersect, loadCover, loadCoverWithoutTrim, LoadFileAction, pan, parseFile, parseOBOFile, polyVaryFunction, queuedVaryTask, renderRect, renderRegion, renderRegions, setImageColor, setOBO, showEnterLineNumberError, showInvalidLineNumberError, showInvalidNumberError, start, subtractLeftRight, superPolyVaryFunction, synchronize, zoomAction
+start	3895-3900	renderRegions
+getExpandos	3901-3943	
+subtractLeftRight	3944-3967	
+addLeftRight	3968-3988	
+isleftRightLegal	3989-4003	
+getMultipleExpandos	4004-4110	
+iterateActionWithPolyIntersect	4111-4180	iterateThru, synchronize
+iterateAction	4181-4278	addToOnScreenSequences, iterateThru, renderRegions, synchronize
+iterateThru	4279-4315	addMultiple, createVector
+recurseDrawVaryL	4316-4547	addToOnScreenSequences, moveScreen, renderRegion, renderRegions
+drawVaryL	4548-4579	getStartStepEnd, recurseDrawVaryL
+LoadFileAction	4580-4584	
+LoadFileAction	4585-4677	drawCodes, parseFile
+drawCodes	4678-4684	
+drawCodes	4685-4691	
+drawCodes	4692-4950	addToOnScreenSequences, iterateAction, renderRegions, showProgressWindow, zoomAction
+showProgressWindow	4951-4957	
+zoomAction	4958-4968	zoom
+zoom	4969-4995	renderRegions
+btnCalculateAction	4996-5043	buttonCalulator, setupButtons
+buttonCalulator	5044-5062	calculateCurrentCodeNumbers, setupButtons
+showEnterLineNumberError	5063-5071	
+showEnterLineNumberErrorAutoVary	5072-5080	
+showStepErrorAutoVary	5081-5090	
+showInvalidLineNumberError	5091-5099	
+showInvalidLineRangeError	5100-5107	
+showInvalidNumberError	5108-5116	
+pan	5117-5144	click, findHoles, renderRegions
+click	5145-5443	getOffset, makeRightScrollPane, renderRegions
+makeRightScrollPane	5444-5519	addToOnScreenSequences, renderRegion, renderRegions
+findHole	5520-5524	
+findHole	5525-5546	
+findHoles	5547-5571	
+setImageColor	5572-5581	
+renderColor	5582-5595	setImageColor
+color	5596-5616	
+redoFromScratch	5617-5718	color, drawFills, getOffset, renderUnstable
+drawFills	5719-5737	
+addToOnScreenSequences	5738-5744	
+callRenderRegions	5745-5748	renderRegions
+renderRegions	5749-5809	redoFromScratch, renderGuideLines, renderPolygon, renderRectLoad, renderRegion
+setupButtons	5810-5853	calculateCurrentCodeNumbers, synchronize
+synchronize	5854-5884	
+calculateCurrentCodeNumbers	5885-5944	addToOnScreenSequences, renderPolygon, renderRegion
+drawHorizontalLine	5945-5960	
+drawVerticalLine	5961-5974	
+drawObliqueLine	5975-6009	
+renderGuideLines	6010-6113	drawHorizontalLine, drawObliqueLine, drawVerticalLine
+renderPolygon	6114-6181	drawHorizontalLine, drawObliqueLine, drawVerticalLine, renderRect
+renderRect	6182-6291	
+renderRectLoad	6292-6366	
+renderUnstable	6367-6568	getOffset
+renderRegion	6569-6637	getOffset, renderUnstable
+parseOBOFile	6638-6678	
+parseFile	6679-6688	
+parseFile	6689-6815	
+varyLFunction	6816-6870	
+superPolyVaryFunction	6871-6940	autoPolyVaryFunction, polyVaryFunction
+autoPolyVaryFunction	6941-6988	drawAutoPolyVary, getStartStepEnd
+polyVaryFunction	6989-6995	
+polyVaryFunction	6996-7048	autoRecurse, drawPolyVary
+drawPolyVary	7049-7219	addToOnScreenSequences, findHoles, renderRegion, renderRegions
+drawAutoPolyVary	7220-7229	
+drawAutoPolyVary	7230-7536	addToIterToLimitCover, addToOnScreenSequences, autoRecurse, renderRegion, renderRegions, setOBO
+autoRecurse	7537-7566	findHole
+drawRegion	7567-7619	addToOnScreenSequences, renderPolygon, renderRegion
+handleIterationIntersect	7620-7683	drawRegion
+getCodeSeqAndOEString	7684-7718	
+addSubtract	7719-7759	getCodeSeqAndOEString, handleIterationIntersect, synchronize
+addSubtractReverse	7760-7794	getCodeSeqAndOEString, handleIterationIntersect, synchronize
+increase	7795-7827	getCodeSeqAndOEString, handleIterationIntersect, synchronize
+decrease	7828-7853	getCodeSeqAndOEString, handleIterationIntersect, synchronize
+setOBO	7854-7894	renderRegion, zoom
+createVector	7895-7917	
+addMultiple	7918-7936	
+drawSearch	7937-7946	addToOnScreenSequences, renderRegions
+getOffset	7947-7958	
+loadCover	7959-7962	
+loadCover	7963-7984	renderRegions
+loadCoverWithoutTrim	7985-8011	renderRegions
+queuedVaryTask	8012-8151	addToOnScreenSequences, renderRegions, start
+drawAndAddToCover	8152-8180	addToOnScreenSequences
+addToIterToLimitCover	8181-8202	
+getStartStepEnd	8203-8206	
+getStartStepEnd	8207-8254	showEnterLineNumberErrorAutoVary, showInvalidLineRangeError, showInvalidNumberError, showStepErrorAutoVary
+moveScreen	8255-8272	
+moveScreen	8273-8278	zoom

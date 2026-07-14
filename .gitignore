@@ -1,15 +1,41 @@
-# Ignore build outputs
+# Build outputs and Gradle-local caches
 dist/
 build/
 bin/
 obj/
+.gradle/
 
-# Ignore specific large extensions
+# IDE and machine-local metadata
+.vscode/
+.idea/
+*.iml
+.agents/
+.codex/
+.DS_Store
+Thumbs.db
+
+# Packaged release artifacts produced locally
 *.dmg
 *.zip
 *.tar
 *.exe
 
-.vscode/
+# Runtime/generated viewer artifacts. Some of these are already tracked in the
+# historical tree; this prevents newly-created local state from being added.
 cover/
+tmp/
 middleVary3.txt
+iterationPoly.txt
+iterToLimit.txt
+testcoord.txt
+stablecoverpats.txt
+triplecoverpats.txt
+full_project_context.txt
+garbage.txt
+
+# Crash/profiling dumps
+*.log
+hs_err_pid*.log
+replay_pid*.log
+*.hprof
+*.jfr

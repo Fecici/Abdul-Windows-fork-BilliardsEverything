@@ -52,6 +52,7 @@ void sqlite_error_logging();
 void database_create(const char* const db_path);
 void database_clear(const char* const db_path);
 const char* backend_last_error();
+void backend_set_worker_threads(int32_t worker_count);
 
 sqlite::ConnectionPool* create_connection_pool(const char* const db_path, const int32_t pool_size);
 void destroy_connection_pool(const sqlite::ConnectionPool* const pool);

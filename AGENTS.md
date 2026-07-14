@@ -1,43 +1,17 @@
-# Agent Instructions For This Repo
+# Abdul Windows Agent Notes
 
-This repo is the Windows/Abdul working baseline. Before changing code, read:
+This repo is the active Abdul Windows source. Future agents working here must treat
+`docs/codex-project-study/bug-register.csv` as the live issue tracker and must keep
+release-facing changes documented in code and in `docs/release/`.
 
-1. `docs/codex-project-study/bug-register.csv`
-2. `docs/codex-project-study/11-linux-improvement-crosswalk-and-plan.md`
-3. `docs/codex-project-study/12-linux-consolidation-execution-plan.md`
+Working rules:
 
-Do not rely on chat history for project state. If context was compacted or a new
-agent starts, those three files are the durable handoff.
-
-## Current Non-Negotiables
-
-- Do not port the Linux database-location change unless explicitly requested.
-- Do not lower or overwrite the user's intentional JVM memory settings.
-- Do not revert user or previous-agent changes just because the tree is dirty.
-- Prefer the Gradle path for Windows validation:
-
-```powershell
-.\gradlew.bat --no-daemon compileJava backendSharedLibrary
-```
-
-## Commenting Philosophy
-
-Every non-obvious implementation change must include nearby comments explaining:
-
-- what program path uses it;
-- why the change exists;
-- how it interacts with Java/C++ ownership, threading, cancellation, memory, or math;
-- where the implementation intentionally differs from the Linux port.
-
-Do not add filler comments that restate a line of code. Add comments where a random
-maintainer would otherwise have to read the docs or reverse-engineer intent.
-
-## Change Process
-
-Work in small batches. After each batch:
-
-1. compile with Gradle;
-2. update `docs/codex-project-study/bug-register.csv`;
-3. update the applied/deferred state in the consolidation plan;
-4. record any warnings or tests that still require manual UI validation.
-
+- Preserve Abdul Windows behavior unless the user explicitly asks to port a NiShan Linux or Suryansh Mac change.
+- Do not port the Linux database relocation without a separate migration plan.
+- Keep user runtime memory defaults in `build.gradle`: `-Xms2g`, `-Xmx10g`, and `MaxDirectMemorySize=2g`.
+- Add short comments for non-obvious code changes, especially Java/native ownership, threading, cancellation, memory, and math behavior.
+- After source edits, run at least `.\gradlew.bat --no-daemon compileJava backendSharedLibrary` on Windows.
+- For native changes, also run `.\gradlew.bat --no-daemon testBackend` when feasible.
+- For Java-only changes, run `.\gradlew.bat --no-daemon test` when feasible.
+- Update `docs/codex-project-study/bug-register.csv` for every bug, optimization, build fix, and release feature.
+- Keep generated runtime files out of new commits unless the user explicitly wants to commit refreshed artifacts.

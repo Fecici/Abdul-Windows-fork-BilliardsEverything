@@ -24,6 +24,7 @@ Note: If you want to print the following stuffs, search for the labels to locate
 #include "sqlite.hpp"
 #include "trig_identities.hpp"
 #include "trim.hpp"
+#include "utils.hpp"
 #include "verify.hpp"
 #include "wrapper.hpp"
 #include "vary_cs.hpp"
@@ -80,6 +81,24 @@ const char* backend_last_error() {
 
 void sqlite_error_logging() {
     sqlite::error_logging();
+}
+
+void backend_set_worker_threads(const int32_t worker_count) {
+    clear_backend_error();
+    try {
+        if (worker_count <= 0) {
+            throw std::invalid_argument("worker count must be positive");
+        }
+
+        // The Java launcher clamps the user argument against available CPUs.
+        // The backend still validates the ABI boundary and then stores the
+        // shared worker limit used by native Boost/TBB loops.
+        billiards_set_worker_count(boost::numeric_cast<unsigned int>(worker_count));
+    } catch (const std::exception& except) {
+        remember_backend_error("backend_set_worker_threads", except);
+    } catch (...) {
+        remember_unknown_backend_error("backend_set_worker_threads");
+    }
 }
 
 void database_create(const char* const db_path) {

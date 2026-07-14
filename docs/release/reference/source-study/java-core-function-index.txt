@@ -1,0 +1,268 @@
+﻿ClassifiedCodeSequence method       26 src/java/billiards/codeseq/ClassifiedCodeSequence.java private ClassifiedCodeSequence(final CodeSequence codeSequence) {
+create           method       35 src/java/billiards/codeseq/ClassifiedCodeSequence.java public static Either<InvalidCodeSequence, ClassifiedCodeSequence> create(
+calculateOddEvenPattern method       62 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static String calculateOddEvenPattern(final IntList codeNumbers) {
+calculateCodeType method       76 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static CodeType calculateCodeType(final IntList codeNumbers) {
+calculateCodeSum method       96 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static long calculateCodeSum(final IntList codeNumbers) {
+isStableCodeType method      106 src/java/billiards/codeseq/ClassifiedCodeSequence.java public static boolean isStableCodeType(final CodeType codeType) {
+isOdd            method      131 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static boolean isOdd(final IntList codeNumbers) {
+isClosed         method      156 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static boolean isClosed(final IntList codeNumbers) {
+isStable         method      204 src/java/billiards/codeseq/ClassifiedCodeSequence.java private static boolean isStable(final IntList codeNumbers) {
+length           method      269 src/java/billiards/codeseq/ClassifiedCodeSequence.java public int length() {
+toString         method      274 src/java/billiards/codeseq/ClassifiedCodeSequence.java public String toString() {
+equals           method      279 src/java/billiards/codeseq/ClassifiedCodeSequence.java public boolean equals(final Object obj) {
+hashCode         method      288 src/java/billiards/codeseq/ClassifiedCodeSequence.java public int hashCode() {
+compareTo        method      293 src/java/billiards/codeseq/ClassifiedCodeSequence.java public int compareTo(final ClassifiedCodeSequence other) {
+CodeSequence     method       42 src/java/billiards/codeseq/CodeSequence.java private CodeSequence(final IntList dirtyCodeNumbers) {
+create           method       46 src/java/billiards/codeseq/CodeSequence.java public static Either<InvalidCodeSequence, CodeSequence> create(final IntList dirtyCodeNumbers) {
+subList          method       59 src/java/billiards/codeseq/CodeSequence.java public static IntList subList(final IntList list, final int start, final int end) {
+isRepeated       method       71 src/java/billiards/codeseq/CodeSequence.java private static boolean isRepeated(final IntList codeNumbers, final int subLength) {
+validate         method      112 src/java/billiards/codeseq/CodeSequence.java private static Optional<InvalidCodeSequence> validate(final IntList dirtyCodeNumbers) {
+eliminateRepeaters method      136 src/java/billiards/codeseq/CodeSequence.java private static IntList eliminateRepeaters(final IntList codeNumbers) {
+evenOddSequence  method      157 src/java/billiards/codeseq/CodeSequence.java public static String evenOddSequence(final IntList codeNumbers) {
+evenOddSequence  method      170 src/java/billiards/codeseq/CodeSequence.java public static String evenOddSequence(final List<Integer> codeNumbers) {
+nextAngle        method      184 src/java/billiards/codeseq/CodeSequence.java private static XYZ nextAngle(final XYZ prev, final XYZ curr, final int number) {
+isLegal          method      192 src/java/billiards/codeseq/CodeSequence.java private static boolean isLegal(final IntList codeNumbers) {
+standardOrder    method      219 src/java/billiards/codeseq/CodeSequence.java private static ImmutableIntList standardOrder(final IntList codeNumbers) {
+compareIntList   method      255 src/java/billiards/codeseq/CodeSequence.java public static int compareIntList(final IntList list1, final IntList list2) {
+rotateLeft       method      288 src/java/billiards/codeseq/CodeSequence.java public static void rotateLeft(final MutableIntList list) {
+toString         method      301 src/java/billiards/codeseq/CodeSequence.java public String toString() {
+hashCode         method      306 src/java/billiards/codeseq/CodeSequence.java public int hashCode() {
+equals           method      311 src/java/billiards/codeseq/CodeSequence.java public boolean equals(final Object obj) {
+compareTo        method      317 src/java/billiards/codeseq/CodeSequence.java public int compareTo(final CodeSequence other) {
+errorMessage     method       10 src/java/billiards/codeseq/InvalidCodeSequence.java public static String errorMessage(
+Storage          method       37 src/java/billiards/codeseq/Storage.java private Storage(final ClassifiedCodeSequence classCodeSeq, final ImmutableList<Equation> equations) {
+Storage          method       42 src/java/billiards/codeseq/Storage.java private Storage(final ClassifiedCodeSequence classCodeSeq, final ImmutableList<Equation> equations,final String points) {
+Stable           method       54 src/java/billiards/codeseq/Storage.java public Stable(final ClassifiedCodeSequence classCodeSeq,
+Stable           method       61 src/java/billiards/codeseq/Storage.java public Stable(final ClassifiedCodeSequence classCodeSeq,
+intersects       method       71 src/java/billiards/codeseq/Storage.java public boolean intersects(final Rectangle rect) {
+intersects       method       76 src/java/billiards/codeseq/Storage.java public boolean intersects(final ConvexPolygon rect) {
+getMinX          method       81 src/java/billiards/codeseq/Storage.java public double getMinX() {
+getMaxX          method       86 src/java/billiards/codeseq/Storage.java public double getMaxX() {
+getMinY          method       91 src/java/billiards/codeseq/Storage.java public double getMinY() {
+getMaxY          method       96 src/java/billiards/codeseq/Storage.java public double getMaxY() {
+Unstable         method      106 src/java/billiards/codeseq/Storage.java public Unstable(final ClassifiedCodeSequence classCodeSeq, final ImmutableList<Equation> equations,
+Unstable         method      112 src/java/billiards/codeseq/Storage.java public Unstable(final ClassifiedCodeSequence classCodeSeq, final ImmutableList<Equation> equations,
+intersects       method      121 src/java/billiards/codeseq/Storage.java public boolean intersects(final Rectangle rect) {
+intersects       method      126 src/java/billiards/codeseq/Storage.java public boolean intersects(final ConvexPolygon rect) {
+getMinX          method      131 src/java/billiards/codeseq/Storage.java public double getMinX() {
+getMaxX          method      136 src/java/billiards/codeseq/Storage.java public double getMaxX() {
+getMinY          method      141 src/java/billiards/codeseq/Storage.java public double getMinY() {
+getMaxY          method      146 src/java/billiards/codeseq/Storage.java public double getMaxY() {
+intersects       method      151 src/java/billiards/codeseq/Storage.java public abstract boolean intersects(final Rectangle rect);
+intersects       method      152 src/java/billiards/codeseq/Storage.java public abstract boolean intersects(final ConvexPolygon rect);
+getMinX          method      153 src/java/billiards/codeseq/Storage.java public abstract double getMinX();
+getMaxX          method      154 src/java/billiards/codeseq/Storage.java public abstract double getMaxX();
+getMinY          method      155 src/java/billiards/codeseq/Storage.java public abstract double getMinY();
+getMaxY          method      156 src/java/billiards/codeseq/Storage.java public abstract double getMaxY();
+isPositive       method      158 src/java/billiards/codeseq/Storage.java public boolean isPositive(final double rx, final double ry) {
+isPositiveProver method      170 src/java/billiards/codeseq/Storage.java public boolean isPositiveProver(
+codeType         method      184 src/java/billiards/codeseq/Storage.java public CodeType codeType() {
+codeLength       method      188 src/java/billiards/codeseq/Storage.java public long codeLength() {
+codeSum          method      192 src/java/billiards/codeseq/Storage.java public long codeSum() {
+oddEvenPattern   method      196 src/java/billiards/codeseq/Storage.java public String oddEvenPattern() {
+compareTo        method      201 src/java/billiards/codeseq/Storage.java public int compareTo(final Storage other) {
+toString         method      206 src/java/billiards/codeseq/Storage.java public String toString() {
+equals           method      211 src/java/billiards/codeseq/Storage.java public boolean equals(final Object obj) {
+hashCode         method      217 src/java/billiards/codeseq/Storage.java public int hashCode() {
+getDatabasePath  method       25 src/java/billiards/database/Admin.java public static String getDatabasePath(final String dbName) {
+getConnectionPool method       42 src/java/billiards/database/Admin.java public static ConnectionPool getConnectionPool(final String dbName, final int poolSize) {
+initDatabaseDirectory method       47 src/java/billiards/database/Admin.java public static void initDatabaseDirectory() {
+listDatabases    method       55 src/java/billiards/database/Admin.java public static List<String> listDatabases() {
+getUrl           method       82 src/java/billiards/database/Admin.java public static String getUrl(final String dbName) {
+newDatabase      method       86 src/java/billiards/database/Admin.java public static void newDatabase(final String dbName) {
+newJavaDB        method       93 src/java/billiards/database/Admin.java public static void newJavaDB(final String dbName) {
+deleteDatabase   method      119 src/java/billiards/database/Admin.java public static void deleteDatabase(final String dbName) {
+clearDatabase    method      133 src/java/billiards/database/Admin.java public static void clearDatabase(final String dbName) {
+findConstraintEta method       38 src/java/billiards/database/Database.java public static LinCom<XYEta> findConstraintEta(final IntList codeNumbers, final XYZ first, final XYZ second) {
+findConstraint   method       95 src/java/billiards/database/Database.java public static LinCom<XYPi> findConstraint(final IntList codeNumbers, final XYZ first, final XYZ second) {
+parseInitialAngles method      149 src/java/billiards/database/Database.java public static Tuple2<XYZ, XYZ> parseInitialAngles(final String string) {
+parsePoints      method      168 src/java/billiards/database/Database.java public static ImmutableList<Vector2> parsePoints(final String string) {
+parseEquations   method      187 src/java/billiards/database/Database.java public static ImmutableList<Equation> parseEquations(final String string) {
+parseLeftRights  method      220 src/java/billiards/database/Database.java public static ImmutableList<LeftRight> parseLeftRights(final String string) {
+convertToStorage method      258 src/java/billiards/database/Database.java private static Storage convertToStorage(final ClassifiedCodeSequence codeSeq, final String initialAnglesStr, final String pointsStr, final String equationsStr) {
+loadStorage      method      313 src/java/billiards/database/Database.java public static Optional<Storage> loadStorage(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+loadStorageShowLR method      328 src/java/billiards/database/Database.java public static Optional<Tuple2<Storage, ImmutableList<LeftRight>>> loadStorageShowLR(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+loadStorageUseLR method      352 src/java/billiards/database/Database.java public static Optional<Storage> loadStorageUseLR(final String lr,final ClassifiedCodeSequence baseCodeSeq, final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+exists           method      370 src/java/billiards/database/Database.java public static boolean exists(final ClassifiedCodeSequence codeSeq, final String dbName) {
+saveToDatabase   method      397 src/java/billiards/database/Database.java public static void saveToDatabase(final ClassifiedCodeSequence codeSeq, final String dbName) {
+deleteBaseFromDatabase method      417 src/java/billiards/database/Database.java public static void deleteBaseFromDatabase(final ClassifiedCodeSequence base, final String db){};
+saveTripleToDatabase method      419 src/java/billiards/database/Database.java public static void saveTripleToDatabase(final String Triple, final String db) {
+codeAndOEMatch   method      444 src/java/billiards/database/Database.java private static boolean codeAndOEMatch(final String codeSeq, final String OEPattern) {
+saveIterationPatternToDatabase method      473 src/java/billiards/database/Database.java public static void saveIterationPatternToDatabase(final String codeSeq, final String OEPattern, final String iterPattern, final String dbName) {
+lookUpIterPatByCodeSeq method      506 src/java/billiards/database/Database.java public static ArrayList<String> lookUpIterPatByCodeSeq(final String codeSeq, final String dbName) {
+lookUpIterPatByOEPat method      523 src/java/billiards/database/Database.java public static ArrayList<String> lookUpIterPatByOEPat(final String oePattern, final String dbName) {
+getPatternsFromDB method      540 src/java/billiards/database/Database.java private static ArrayList<String> getPatternsFromDB(PreparedStatement pstmt) throws SQLException {
+Info             method       13 src/java/billiards/database/Info.java public Info(final CInfo cinfo) {
+InfoAll          method       18 src/java/billiards/database/InfoAll.java public InfoAll(final CInfoAll cinfoAll) {
+LeftRight        method       12 src/java/billiards/database/LeftRight.java public LeftRight(final int leftNumber, final int leftBranch,
+toString         method       28 src/java/billiards/database/LeftRight.java public String toString() {
+equals           method       33 src/java/billiards/database/LeftRight.java public boolean equals(final Object obj) {
+hashCode         method       42 src/java/billiards/database/LeftRight.java public int hashCode() {
+Picture          method       10 src/java/billiards/database/Picture.java public Picture(final CPicture cpicture) {
+PictureStable    method        7 src/java/billiards/database/PictureStable.java public PictureStable(final String points, final String equations) {
+PictureUnstable  method        8 src/java/billiards/database/PictureUnstable.java public PictureUnstable(final String initialAngles, final String points, final String equations) {
+ConvexPolygon    method       21 src/java/billiards/geometry/ConvexPolygon.java private ConvexPolygon(final ImmutableList<Vector2> vertices) {
+create           method       29 src/java/billiards/geometry/ConvexPolygon.java public static ConvexPolygon create(final ImmutableList<Vector2> points) {
+giftWrapCheck    method       42 src/java/billiards/geometry/ConvexPolygon.java private static boolean giftWrapCheck(final ImmutableList<Vector2> points) {
+location         method       90 src/java/billiards/geometry/ConvexPolygon.java public Location location(final double x, final double y) {
+sign             method      119 src/java/billiards/geometry/ConvexPolygon.java private static int sign(final Vector2 v0, final Vector2 v1, final double x, final double y) {
+separatingAxis   method      143 src/java/billiards/geometry/ConvexPolygon.java public boolean separatingAxis(final Project figure) {
+intersects       method      169 src/java/billiards/geometry/ConvexPolygon.java public boolean intersects(final ConvexPolygon poly) {
+intersects       method      175 src/java/billiards/geometry/ConvexPolygon.java public boolean intersects(final Rectangle rect) {
+projectX         method      198 src/java/billiards/geometry/ConvexPolygon.java public Interval projectX() {
+projectY         method      214 src/java/billiards/geometry/ConvexPolygon.java public Interval projectY() {
+project          method      230 src/java/billiards/geometry/ConvexPolygon.java public Interval project(final Vector2 axis) {
+hashCode         method      247 src/java/billiards/geometry/ConvexPolygon.java public int hashCode() {
+equals           method      252 src/java/billiards/geometry/ConvexPolygon.java public boolean equals(final Object obj) {
+toString         method      258 src/java/billiards/geometry/ConvexPolygon.java public String toString() {
+Interval         method       11 src/java/billiards/geometry/Interval.java private Interval(final double min, final double max) {
+create           method       16 src/java/billiards/geometry/Interval.java public static Interval create(final double a, final double b) {
+center           method       23 src/java/billiards/geometry/Interval.java public double center() {
+length           method       27 src/java/billiards/geometry/Interval.java public double length() {
+contains         method       31 src/java/billiards/geometry/Interval.java public boolean contains(final double x) {
+intersects       method       36 src/java/billiards/geometry/Interval.java public static boolean intersects(final Interval a, final Interval b) {
+hashCode         method       41 src/java/billiards/geometry/Interval.java public int hashCode() {
+equals           method       46 src/java/billiards/geometry/Interval.java public boolean equals(final Object obj) {
+toString         method       52 src/java/billiards/geometry/Interval.java public String toString() {
+LineSegment      method       13 src/java/billiards/geometry/LineSegment.java private LineSegment(final Vector2 start, final Vector2 end) {
+create           method       18 src/java/billiards/geometry/LineSegment.java public static LineSegment create(final ImmutableList<Vector2> points) {
+intersects       method       30 src/java/billiards/geometry/LineSegment.java public boolean intersects(final ConvexPolygon poly) {
+intersects       method       35 src/java/billiards/geometry/LineSegment.java public boolean intersects(final Rectangle rect) {
+separatingAxis   method       53 src/java/billiards/geometry/LineSegment.java public boolean separatingAxis(final Project figure) {
+project          method       69 src/java/billiards/geometry/LineSegment.java public Interval project(final Vector2 axis) {
+projectX         method       76 src/java/billiards/geometry/LineSegment.java public Interval projectX() {
+projectY         method       80 src/java/billiards/geometry/LineSegment.java public Interval projectY() {
+hashCode         method       85 src/java/billiards/geometry/LineSegment.java public int hashCode() {
+equals           method       90 src/java/billiards/geometry/LineSegment.java public boolean equals(final Object obj) {
+toString         method       96 src/java/billiards/geometry/LineSegment.java public String toString() {
+project          method        3 src/java/billiards/geometry/Project.java public interface Project { Interval project(final Vector2 axis); }
+Rectangle        method       14 src/java/billiards/geometry/Rectangle.java private Rectangle(final Interval intervalX, final Interval intervalY) {
+create           method       21 src/java/billiards/geometry/Rectangle.java public static Rectangle create(
+setTrimable      method       38 src/java/billiards/geometry/Rectangle.java public void setTrimable(boolean trim) {
+center           method       42 src/java/billiards/geometry/Rectangle.java public Vector2 center() {
+contains         method       46 src/java/billiards/geometry/Rectangle.java public boolean contains(final double x, final double y) {
+intersects       method       51 src/java/billiards/geometry/Rectangle.java public static boolean intersects(final Rectangle a, final Rectangle b) {
+project          method       59 src/java/billiards/geometry/Rectangle.java public Interval project(final Vector2 axis) {
+projectX         method       88 src/java/billiards/geometry/Rectangle.java public Interval projectX() {
+projectY         method       92 src/java/billiards/geometry/Rectangle.java public Interval projectY() {
+toConvexPolygon  method       96 src/java/billiards/geometry/Rectangle.java public ConvexPolygon toConvexPolygon() {
+subdivide        method      105 src/java/billiards/geometry/Rectangle.java public MutableList<Rectangle> subdivide() {
+hashCode         method      126 src/java/billiards/geometry/Rectangle.java public int hashCode() {
+equals           method      132 src/java/billiards/geometry/Rectangle.java public boolean equals(final Object obj) {
+toString         method      138 src/java/billiards/geometry/Rectangle.java public String toString() {
+TriangleBilliard method       23 src/java/billiards/geometry/TriangleBilliard.java private TriangleBilliard(final Vector2 vertexA, final Vector2 vertexB, final Vector2 vertexC,
+create           method       32 src/java/billiards/geometry/TriangleBilliard.java public static TriangleBilliard create(final double xAngle, final double yAngle, final double pos) {
+getNext          method       52 src/java/billiards/geometry/TriangleBilliard.java public TriangleBilliard getNext(final boolean left) {
+getSpecialAngle  method       75 src/java/billiards/geometry/TriangleBilliard.java public double getSpecialAngle() {
+toString         method       80 src/java/billiards/geometry/TriangleBilliard.java public String toString() {
+TriangleBilliard4 method       35 src/java/billiards/geometry/TriangleBilliard4.java private TriangleBilliard4(final Vector2 vertexA, final Vector2 vertexB, final Vector2 vertexC,
+TriangleBilliard4 method       53 src/java/billiards/geometry/TriangleBilliard4.java private TriangleBilliard4(final Vector2 vertexA, final Vector2 vertexB, final Vector2 vertexC,
+create           method       67 src/java/billiards/geometry/TriangleBilliard4.java public static TriangleBilliard4 create(final double xAngle, final double yAngle) {
+getNext          method       87 src/java/billiards/geometry/TriangleBilliard4.java public Optional<TriangleBilliard4> getNext(final boolean left) {
+getSpecialAngle  method      142 src/java/billiards/geometry/TriangleBilliard4.java public double getSpecialAngle() {
+between          method      146 src/java/billiards/geometry/TriangleBilliard4.java public boolean between(final double perfectAngle) {
+interval         method      151 src/java/billiards/geometry/TriangleBilliard4.java public double interval() {
+reconfigure      method      155 src/java/billiards/geometry/TriangleBilliard4.java private static MutableList<Vector2> reconfigure(
+atan3            method      194 src/java/billiards/geometry/TriangleBilliard4.java private static double atan3(double y, double x, boolean left) {
+mod3             method      209 src/java/billiards/geometry/TriangleBilliard4.java private static int mod3(int value) {
+toString         method      220 src/java/billiards/geometry/TriangleBilliard4.java public String toString() {
+Vector2          method       12 src/java/billiards/geometry/Vector2.java private Vector2(final double x, final double y) {
+sub              method       18 src/java/billiards/geometry/Vector2.java public Vector2 sub(final Vector2 v) {
+add              method       25 src/java/billiards/geometry/Vector2.java public Vector2 add(final Vector2 v) {
+scale            method       32 src/java/billiards/geometry/Vector2.java public Vector2 scale(final double scale) {
+norm             method       38 src/java/billiards/geometry/Vector2.java public double norm() {
+perp             method       42 src/java/billiards/geometry/Vector2.java public Vector2 perp(final Vector2 v) {
+create           method       46 src/java/billiards/geometry/Vector2.java public static Vector2 create(final double x, final double y) {
+dot              method       50 src/java/billiards/geometry/Vector2.java public static double dot(final Vector2 v, final Vector2 w) {
+cross            method       55 src/java/billiards/geometry/Vector2.java public static double cross(final Vector2 v, final Vector2 w) {
+reflect          method       67 src/java/billiards/geometry/Vector2.java public static Vector2 reflect(
+hashCode         method       81 src/java/billiards/geometry/Vector2.java public int hashCode() {
+equals           method       86 src/java/billiards/geometry/Vector2.java public boolean equals(final Object obj) {
+toString         method       92 src/java/billiards/geometry/Vector2.java public String toString() {
+AutoVary         method       27 src/java/billiards/vary/AutoVary.java public AutoVary(final int min, final int max, final int numShots, boolean[] type, final int depth,
+recurseFireAway  method       39 src/java/billiards/vary/AutoVary.java private boolean recurseFireAway(final int depth, final CoverSquare square,
+fireaway         method       68 src/java/billiards/vary/AutoVary.java public MutableList<ClassifiedCodeSequence> fireaway() {
+convert          method       15 src/java/billiards/vary/Convert.java public static Optional<ClassifiedCodeSequence> convert(final IntList codeList) {
+iterateFireAway  method       26 src/java/billiards/vary/Vary3.java private static void iterateFireAway(
+fireAway         method      128 src/java/billiards/vary/Vary3.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, final int movesMax,
+fireAway         method      144 src/java/billiards/vary/Vary3.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, final int movesMax,
+iterateFireAway  method       32 src/java/billiards/vary/Vary4.java private static void iterateFireAway(
+makeStarts       method      127 src/java/billiards/vary/Vary4.java private static MutableList<Tuple3<TriangleBilliard4, MutableIntList, SideSum>> makeStarts(
+fireAway         method      222 src/java/billiards/vary/Vary4.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, 
+lazySort         method      261 src/java/billiards/vary/Vary4.java static Array<Tuple3<TriangleBilliard4, MutableIntList, SideSum>> lazySort(
+doneIteration    method      271 src/java/billiards/vary/Vary4.java public static int doneIteration(MutableIntList code, IntArrayList sideSumArray, BooleanArrayList leftArray, BooleanArrayList rightArray, ArrayList<TriangleBilliard4> billiards, int iterationDepth, SideSum sideSum) {
+removeLast       method      290 src/java/billiards/vary/Vary4.java public static void removeLast(MutableIntList code, IntArrayList sideSumArray, BooleanArrayList leftArray, BooleanArrayList rightArray, ArrayList<TriangleBilliard4> billiards) {
+fireAway         method      303 src/java/billiards/vary/Vary4.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, final int movesMax,
+iterateFireAway  method       25 src/java/billiards/vary/VaryCS.java private static void iterateFireAway(
+doneIteration    method      130 src/java/billiards/vary/VaryCS.java public static int doneIteration(MutableIntList code, IntArrayList sideSumArray, DoubleArrayList specMinArray, DoubleArrayList specMaxArray, BooleanArrayList leftArray, BooleanArrayList rightArray, ArrayList<TriangleBilliard> billiards, int iterationDepth, SideSum sideSum) {
+removeLast       method      149 src/java/billiards/vary/VaryCS.java public static void removeLast(MutableIntList code, IntArrayList sideSumArray, DoubleArrayList specMinArray, DoubleArrayList specMaxArray, BooleanArrayList leftArray, BooleanArrayList rightArray, ArrayList<TriangleBilliard> billiards) {
+fireAway         method      159 src/java/billiards/vary/VaryCS.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, final int movesMax,
+fireAway         method      175 src/java/billiards/vary/VaryCS.java public static MutableList<ClassifiedCodeSequence> fireAway(final int movesMin, final int movesMax,
+getFieldOrder    method       23 src/java/billiards/wrapper/CInfo.java public List<String> getFieldOrder() {
+getFieldOrder    method       27 src/java/billiards/wrapper/CInfoAll.java public List<String> getFieldOrder() {
+ConnectionPool   method       16 src/java/billiards/wrapper/ConnectionPool.java public ConnectionPool(final String dbPath, final int poolSize) {
+destroy          method       20 src/java/billiards/wrapper/ConnectionPool.java public void destroy() {
+getFieldOrder    method       21 src/java/billiards/wrapper/CPicture.java public List<String> getFieldOrder() {
+getFieldOrder    method       19 src/java/billiards/wrapper/CString.java public List<String> getFieldOrder() {
+sqlite_error_logging method       39 src/java/billiards/wrapper/Wrapper.java private static native void sqlite_error_logging();
+database_create  method       40 src/java/billiards/wrapper/Wrapper.java private static native void database_create(final String dbPath);
+database_clear   method       41 src/java/billiards/wrapper/Wrapper.java private static native void database_clear(final String dbPath);
+errorLogging     method       43 src/java/billiards/wrapper/Wrapper.java public static void errorLogging() {
+createDatabase   method       47 src/java/billiards/wrapper/Wrapper.java public static void createDatabase(final String dbPath) {
+clearDatabase    method       51 src/java/billiards/wrapper/Wrapper.java public static void clearDatabase(final String dbPath) {
+create_connection_pool method       55 src/java/billiards/wrapper/Wrapper.java private static native Pointer create_connection_pool(final String dbPath, final int poolSize);
+destroy_connection_pool method       56 src/java/billiards/wrapper/Wrapper.java private static native void destroy_connection_pool(final Pointer dbPtr);
+createConnectionPool method       59 src/java/billiards/wrapper/Wrapper.java public static Pointer createConnectionPool(final String dbPath, final int poolSize) {
+destroyConnectionPool method       63 src/java/billiards/wrapper/Wrapper.java public static void destroyConnectionPool(final Pointer dbPtr) {
+backend_cancel   method       67 src/java/billiards/wrapper/Wrapper.java public static native void backend_cancel();
+cover_wrapper    method       69 src/java/billiards/wrapper/Wrapper.java private static native String cover_wrapper(String polygon, String codes, String unstables,
+small_cover_wrapper method       73 src/java/billiards/wrapper/Wrapper.java private static native String small_cover_wrapper(String polygon, String codes, String unstables,
+cover_wrapper_duplicate_stables method       77 src/java/billiards/wrapper/Wrapper.java private static native int cover_wrapper_duplicate_stables(String polygon, String codes, String unstables,
+cover_wrapper_half_duplicate_stables method       81 src/java/billiards/wrapper/Wrapper.java private static native int cover_wrapper_half_duplicate_stables(String polygon, String codes, String unstables,
+cover_wrapper_all method       85 src/java/billiards/wrapper/Wrapper.java private static native int cover_wrapper_all(String mrr_dir, Pointer pool, int depth);
+coverWrapper     method       87 src/java/billiards/wrapper/Wrapper.java public static String coverWrapper(final String polygon, final String codes, final String unstables,
+smallCoverWrapper method       94 src/java/billiards/wrapper/Wrapper.java public static String smallCoverWrapper(final String polygon, final String codes, final String unstables,
+getNotFilledCoordinates method      101 src/java/billiards/wrapper/Wrapper.java public static native String getNotFilledCoordinates(String polygon, String codes, String unstables,
+coverWrapperDuplicateStables method      105 src/java/billiards/wrapper/Wrapper.java public static int coverWrapperDuplicateStables(final String polygon, final String codes, final String unstables,
+coverWrapperHalfDuplicateStables method      125 src/java/billiards/wrapper/Wrapper.java public static boolean coverWrapperHalfDuplicateStables(final String polygon, final String codes, final String unstables,
+coverWrapperAll  method      142 src/java/billiards/wrapper/Wrapper.java public static boolean coverWrapperAll(final String mrrDir, final ConnectionPool pool, final int depth) {
+load_info_all    method      156 src/java/billiards/wrapper/Wrapper.java private static native int load_info_all(int[] codeNumbers, int codeNumbersLength,
+load_all_equations method      158 src/java/billiards/wrapper/Wrapper.java private static native int load_all_equations(int[] codeNumbers, int codeNumbersLength,
+loadAllEquation  method      160 src/java/billiards/wrapper/Wrapper.java public static Optional<InfoAll> loadAllEquation(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool ){
+loadInfoAll      method      195 src/java/billiards/wrapper/Wrapper.java public static Optional<InfoAll> loadInfoAll(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool ) {
+delete_from_database method      232 src/java/billiards/wrapper/Wrapper.java private static native int delete_from_database(int[] codeNumbers, int codeNumbersLength, Pointer poolPtr);
+deleteFromDatabase method      233 src/java/billiards/wrapper/Wrapper.java public static boolean deleteFromDatabase(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+save_to_database method      253 src/java/billiards/wrapper/Wrapper.java private static native int save_to_database(int[] codeNumbers, int codeNumbersLength, Pointer poolPtr);
+saveToDatabase   method      254 src/java/billiards/wrapper/Wrapper.java public static boolean saveToDatabase(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+saveToDatabase   method      276 src/java/billiards/wrapper/Wrapper.java public static boolean saveToDatabase(final int[] codeNumbersArray, final ConnectionPool pool) {
+load_picture     method      295 src/java/billiards/wrapper/Wrapper.java private static native int load_picture(int[] codeNumbers, int codeNumbersLength,
+cleanup_cpicture method      297 src/java/billiards/wrapper/Wrapper.java private static native void cleanup_cpicture(CPicture cpicture);
+loadPicture      method      299 src/java/billiards/wrapper/Wrapper.java public static Optional<Picture> loadPicture(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+load_picture_lr  method      328 src/java/billiards/wrapper/Wrapper.java private static native int load_picture_lr(int[] baseCodeNumbers, int baseCodeNumbersLen,
+load_picture_lr_expando method      331 src/java/billiards/wrapper/Wrapper.java private static native int load_picture_lr_expando(int[] codeNumbers, int codeNumbersLength,
+loadPictureLR    method      334 src/java/billiards/wrapper/Wrapper.java public static Optional<Picture> loadPictureLR(final ClassifiedCodeSequence baseCodeSeq, final ClassifiedCodeSequence codeSeq, final ConnectionPool pool,final String lr) {
+load_info        method      380 src/java/billiards/wrapper/Wrapper.java private static native int load_info(int[] codeNumbers, int codeNumbersLength,
+cleanup_cinfo    method      383 src/java/billiards/wrapper/Wrapper.java private static native void cleanup_cinfo(CInfo cinfo);
+loadInfo         method      385 src/java/billiards/wrapper/Wrapper.java public static Optional<Info> loadInfo(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+merge_covers     method      415 src/java/billiards/wrapper/Wrapper.java private static native int merge_covers(String mergeDir, String coverDirs, Pointer poolPtr);
+mergeCovers      method      417 src/java/billiards/wrapper/Wrapper.java public static void mergeCovers(final String mergeDir, final List<String> coverDirs, final ConnectionPool pool) {
+code_search_length method      432 src/java/billiards/wrapper/Wrapper.java private static native int code_search_length(int code_type_int, int length_int, CString cstring, Pointer poolPtr);
+code_search_even_odd method      433 src/java/billiards/wrapper/Wrapper.java private static native int code_search_even_odd(int code_type_int, String evenOdd, CString cstring, Pointer poolPtr);
+cleanup_string   method      435 src/java/billiards/wrapper/Wrapper.java private static native void cleanup_string(CString cstring);
+search           method      437 src/java/billiards/wrapper/Wrapper.java public static String search(final CodeType type, final int length, final ConnectionPool pool) {
+search           method      458 src/java/billiards/wrapper/Wrapper.java public static String search(final CodeType type, final String evenOdd, final ConnectionPool pool) {
+trim_cover       method      479 src/java/billiards/wrapper/Wrapper.java private static native int trim_cover(String polygonStr, String inDir, String outDir);
+trimCover        method      481 src/java/billiards/wrapper/Wrapper.java public static void trimCover(final String polygonStr, final String inDir, final String outDir) {
+bounding_polygon method      494 src/java/billiards/wrapper/Wrapper.java private static native int bounding_polygon(int[] codeNumbers, int codeNumbersLength,
+boundingPolygon  method      497 src/java/billiards/wrapper/Wrapper.java public static String boundingPolygon(final ClassifiedCodeSequence codeSeq, final ConnectionPool pool) {
+load_slope_info  method      519 src/java/billiards/wrapper/Wrapper.java private static native int load_slope_info(int[] codeNumbers, int codeNumbersLength, CInfoAll cinfoAll, Pointer poolPtr);
+loadSlopeInfo    method      520 src/java/billiards/wrapper/Wrapper.java public static Optional<InfoAll> loadSlopeInfo(ClassifiedCodeSequence codeSequence, ConnectionPool pool) {
+calculate_gradient method      548 src/java/billiards/wrapper/Wrapper.java private static native int calculate_gradient(String equation_str, double x, double y, boolean from_database, CString result,CString r);
+calculateGradient method      549 src/java/billiards/wrapper/Wrapper.java public static String calculateGradient(String euqation_str, String x_str, String y_str, boolean from_database) {
+calculateGradient2 method      565 src/java/billiards/wrapper/Wrapper.java public static String calculateGradient2(String euqation_str, String x_str, String y_str, boolean from_database) {
+vary_cs_cpp      method      581 src/java/billiards/wrapper/Wrapper.java private static native int vary_cs_cpp(int int_movesMin, int int_movesMax, double db_xAngle, double db_yAngle,
+varyCSCpp        method      584 src/java/billiards/wrapper/Wrapper.java public static Optional<MutableList<ClassifiedCodeSequence>> varyCSCpp(int movesMin, int movesMax, double xAngle,
+vary_3_cpp       method      618 src/java/billiards/wrapper/Wrapper.java private static native int vary_3_cpp(int int_movesMin, int int_movesMax, double db_initPosition, double db_xAngle,
+vary3Cpp         method      621 src/java/billiards/wrapper/Wrapper.java public static Optional<MutableList<ClassifiedCodeSequence>> vary3Cpp(int movesMin, int movesMax,
+vary_4_cpp       method      653 src/java/billiards/wrapper/Wrapper.java private static native int vary_4_cpp(int int_movesMin, int int_movesMax, double db_xAngle, double db_yAngle,
+vary4Cpp         method      656 src/java/billiards/wrapper/Wrapper.java public static Optional<MutableList<ClassifiedCodeSequence>> vary4Cpp(int movesMin, int movesMax, double xAngle,

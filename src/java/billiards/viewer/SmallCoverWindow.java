@@ -436,6 +436,12 @@ public final class SmallCoverWindow {
         this.stage.toFront();
     }
 
+    void close() {
+        // Programmatic Stage.close() bypasses the close-request save hook, so save first when the main window exits.
+        saveToFile();
+        this.stage.close();
+    }
+
     void addPolygons(String newPolygons) {
         this.topText.setText(newPolygons.trim() + "\n" + topText.getText());
     }

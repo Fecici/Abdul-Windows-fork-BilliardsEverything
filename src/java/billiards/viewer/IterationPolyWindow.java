@@ -41,7 +41,7 @@ public final class IterationPolyWindow {
 
         stage.setTitle("Iteration Polygon");
         stage.setOnCloseRequest(event -> {
-            Utils.writeToFile(fileName, text.getText());
+            saveToFile();
             stage.close();
         });
 
@@ -72,6 +72,12 @@ public final class IterationPolyWindow {
         this.stage.show();
     }
 
+    public void close() {
+        // Keep the polygon entered for iteration-intersection checks when the main window closes this child window.
+        saveToFile();
+        this.stage.close();
+    }
+
     public Optional<ConvexPolygon> getPolygon() {
         fullContent = text.getText();
         Optional<ConvexPolygon> result;
@@ -85,5 +91,10 @@ public final class IterationPolyWindow {
         Utils.writeToFile(fileName, fullContent);
 
         return result;
+    }
+
+    private void saveToFile() {
+        fullContent = text.getText();
+        Utils.writeToFile(fileName, fullContent);
     }
 }

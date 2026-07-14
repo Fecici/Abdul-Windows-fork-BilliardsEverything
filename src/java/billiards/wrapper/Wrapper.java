@@ -43,9 +43,18 @@ public final class Wrapper {
     private static native void database_create(final String dbPath);
     private static native void database_clear(final String dbPath);
     private static native Pointer backend_last_error();
+    private static native void backend_set_worker_threads(final int workerCount);
 
     public static void errorLogging() {
         sqlite_error_logging();
+    }
+
+    public static void configureNativeThreads(final int workerCount) {
+        // Java owns the release-facing thread-count argument. Push the resolved
+        // count into the backend once after JNA loads the DLL so C++ Boost/TBB
+        // worker pools follow the same limit as Java executors.
+        backend_set_worker_threads(workerCount);
+        throwIfBackendError("configure native worker threads");
     }
 
     private static void beginNativeVary(final String operationName) {

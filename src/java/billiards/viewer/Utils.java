@@ -53,14 +53,50 @@ public final class Utils {
     // Keep the default conservative because each Java worker can enter native
     // GMP/MPFR code that allocates outside the Java heap. The property/env
     // override lets a debug or release launcher tune this without editing code.
-    public static final int numThreads = configuredThreadCount();
+    public static int numThreads = configuredThreadCount();
 
     // Render coalescing moves a full redraw request onto the viewer executor and
     // cancels any older redraw that has not committed to the JavaFX scene yet.
     // It needs at least two workers because the coalescing job submits row jobs
     // to the same executor; with one worker the parent job could wait forever
     // for row work that cannot start.
-    public static final boolean renderCoalescing = configuredRenderCoalescing();
+    public static boolean renderCoalescing = configuredRenderCoalescing();
+
+    public static void configureThreadCountFromArgs(final String[] args) {
+        final Optional<String> threadArgument = threadArgument(args);
+        if (threadArgument.isEmpty()) {
+            return;
+        }
+
+        // Command-line arguments are the release-facing way to tune volunteer
+        // machines. Store the resolved count back into the JVM property so
+        // diagnostic output and any late-loading code see the same value.
+        numThreads = parseThreadCount("--threads", threadArgument.get(), defaultThreadCount());
+        System.setProperty("billiards.threads", Integer.toString(numThreads));
+        renderCoalescing = configuredRenderCoalescing();
+    }
+
+    private static Optional<String> threadArgument(final String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            final String arg = args[i];
+            if (arg.startsWith("--threads=")) {
+                return Optional.of(arg.substring("--threads=".length()));
+            }
+            if (arg.startsWith("--billiards-threads=")) {
+                return Optional.of(arg.substring("--billiards-threads=".length()));
+            }
+            if ("--threads".equals(arg) || "--billiards-threads".equals(arg)) {
+                if (i + 1 < args.length) {
+                    return Optional.of(args[i + 1]);
+                }
+                System.err.println("Ignoring " + arg + " because it has no value; using "
+                        + numThreads + " threads");
+                return Optional.empty();
+            }
+        }
+
+        return Optional.empty();
+    }
 
     private static int configuredThreadCount() {
         final int fallback = defaultThreadCount();
@@ -85,7 +121,7 @@ public final class Utils {
         try {
             final int parsed = Integer.parseInt(rawValue.trim());
             if (parsed > 0) {
-                return parsed;
+                return clampThreadCount(source, parsed);
             }
         } catch (final NumberFormatException e) {
             // Fall through to the warning below.
@@ -93,6 +129,18 @@ public final class Utils {
 
         System.err.println("Ignoring invalid " + source + "=" + rawValue + "; using " + fallback + " threads");
         return fallback;
+    }
+
+    private static int clampThreadCount(final String source, final int requested) {
+        final int available = Math.max(1, Runtime.getRuntime().availableProcessors());
+        final int maxForUserWork = Math.max(1, available - 1);
+        if (requested > maxForUserWork) {
+            System.err.println("Clamping " + source + "=" + requested + " to "
+                    + maxForUserWork + " threads so the OS and JavaFX event thread have CPU headroom.");
+            return maxForUserWork;
+        }
+
+        return requested;
     }
 
     private static boolean configuredRenderCoalescing() {

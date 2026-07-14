@@ -352,13 +352,36 @@ public final class CoverWindow {
         String currentText = triplesText.getText().toString();
         triplesText.setText(triple + "\n" + currentText);
     }
-    
-    // Allows other classes to update the list of stables 
+
+    public boolean containsTripleInfo(final String triple) {
+        return containsLine(triplesText.getText(), triple);
+    }
+
+    // Allows other classes to update the list of stables
     public void appendStablesInfo(String stable) {
         String currentText = bottomText.getText().toString();
         bottomText.setText(stable + "\n" + currentText);
     }
-    
+
+    public boolean containsStableInfo(final String stable) {
+        return containsLine(bottomText.getText(), stable);
+    }
+
+    private static boolean containsLine(final String text, final String target) {
+        final String normalizedTarget = target.trim();
+        if (normalizedTarget.isEmpty()) {
+            return false;
+        }
+
+        for (final String line : text.split("\\R")) {
+            if (line.trim().equals(normalizedTarget)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void saveToFile() {
 
         polygonString = topText.getText().trim();
@@ -901,6 +924,13 @@ public final class CoverWindow {
     void show() {
         this.stage.show();
         this.stage.toFront();
+    }
+
+    void close() {
+        // Programmatic Stage.close() does not run the close-request handler, so save explicitly when the main window
+        // is closing this child stage on behalf of the user.
+        saveToFile();
+        this.stage.close();
     }
 
     /*

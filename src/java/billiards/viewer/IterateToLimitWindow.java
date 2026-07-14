@@ -630,6 +630,14 @@ public class IterateToLimitWindow {
         this.stage.toFront();
     }
 
+    public void close() {
+        // Match the user's manual close behavior: stop pending iteration work and persist every text area.
+        this.results = null;
+        this.finish.set(true);
+        saveContentsToFile();
+        this.stage.close();
+    }
+
     private Alert getInfoAlertDialogue(String header, String content) {
         Text alertText = new Text(content);
         alertText.setWrappingWidth(350);

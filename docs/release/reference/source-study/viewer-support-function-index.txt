@@ -1,0 +1,404 @@
+﻿AutoPolyVaryLoad method       84 src/java/billiards/viewer/AutoPolyVaryLoad.java public AutoPolyVaryLoad(final String windowTitle, final String buttonText, final String fileName, final String boundsFileName) {
+getLoad          method      238 src/java/billiards/viewer/AutoPolyVaryLoad.java public Optional<Tuple7<ConvexPolygon, Integer, Integer, Integer, Integer, Integer, Integer>> getLoad() {
+getOverride      method      242 src/java/billiards/viewer/AutoPolyVaryLoad.java public Boolean getOverride() {
+allPositiveIsSelected method      246 src/java/billiards/viewer/AutoPolyVaryLoad.java public boolean allPositiveIsSelected() {
+plusMinusIsSelected method      250 src/java/billiards/viewer/AutoPolyVaryLoad.java public boolean plusMinusIsSelected() {
+getModesHBox     method      254 src/java/billiards/viewer/AutoPolyVaryLoad.java private HBox getModesHBox() {
+getMode          method      267 src/java/billiards/viewer/AutoPolyVaryLoad.java public int getMode() {
+getNumGroupToPrint method      274 src/java/billiards/viewer/AutoPolyVaryLoad.java public Integer getNumGroupToPrint() {
+getAutoSmallCover method      312 src/java/billiards/viewer/AutoPolyVaryLoad.java public boolean getAutoSmallCover() {
+BackwardForward  method       20 src/java/billiards/viewer/BackwardForward.java private BackwardForward(final T initialElem) {
+create           method       27 src/java/billiards/viewer/BackwardForward.java public static <T> BackwardForward<T> create(final T initialElem) {
+backward         method       31 src/java/billiards/viewer/BackwardForward.java public Optional<T> backward() {
+forward          method       44 src/java/billiards/viewer/BackwardForward.java public Optional<T> forward() {
+add              method       57 src/java/billiards/viewer/BackwardForward.java public void add(final T elem) {
+BoyanMenu        method      120 src/java/billiards/viewer/BoyanMenu.java public BoyanMenu(final Button cycleVaryButton, final Button middleVaryLButton, final Button polyAutoBtn, final Button varyLBtn,
+varyAction       method      482 src/java/billiards/viewer/BoyanMenu.java private void varyAction(String title, String outFile, boolean printMid) {
+click            method      549 src/java/billiards/viewer/BoyanMenu.java public void click(final double xDeg, final double yDeg) {
+varyTriangles    method      567 src/java/billiards/viewer/BoyanMenu.java private MutableSortedSet<ClassifiedCodeSequence> varyTriangles(
+varyTriangles    method      580 src/java/billiards/viewer/BoyanMenu.java public MutableSortedSet<ClassifiedCodeSequence> varyTriangles(
+varyTrianglesL   method      613 src/java/billiards/viewer/BoyanMenu.java public MutableSortedSet<ClassifiedCodeSequence> varyTrianglesL(
+varyTrianglesL   method      619 src/java/billiards/viewer/BoyanMenu.java public MutableSortedSet<ClassifiedCodeSequence> varyTrianglesL(
+autoVary         method      643 src/java/billiards/viewer/BoyanMenu.java public MutableSortedSet<ClassifiedCodeSequence> autoVary(
+autoVary         method      673 src/java/billiards/viewer/BoyanMenu.java public MutableSortedSet<ClassifiedCodeSequence> autoVary(
+findCodes        method      724 src/java/billiards/viewer/BoyanMenu.java private MutableSortedSet<ClassifiedCodeSequence> findCodes(
+findCodes2       method      751 src/java/billiards/viewer/BoyanMenu.java public static MutableSet<ClassifiedCodeSequence> findCodes2(
+findCodes3       method      838 src/java/billiards/viewer/BoyanMenu.java public static MutableSet<ClassifiedCodeSequence> findCodes3(
+findCodes4       method      921 src/java/billiards/viewer/BoyanMenu.java private static MutableSet<ClassifiedCodeSequence> findCodes4(
+printCodes       method      996 src/java/billiards/viewer/BoyanMenu.java public static void printCodes(final MutableSortedSet<ClassifiedCodeSequence> allCodes, final String file,
+addFirstMidLast  method     1151 src/java/billiards/viewer/BoyanMenu.java private static void addFirstMidLast(
+printCodes       method     1169 src/java/billiards/viewer/BoyanMenu.java public static void printCodes(final MutableSortedSet<ClassifiedCodeSequence> allCodes, final String file,
+typeString       method     1174 src/java/billiards/viewer/BoyanMenu.java public String typeString() {
+getRadianCoord   method     1209 src/java/billiards/viewer/BoyanMenu.java public ArrayList<Double> getRadianCoord() {
+ScrollableTableCell method       63 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public ScrollableTableCell() {
+updateItem       method       89 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public void updateItem(T item, boolean empty) {
+CodeAndPattern   method      127 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public CodeAndPattern(String column1, String column2) {
+calcType         method      149 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public String calcType() {
+getCodeSequence  method      163 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public String getCodeSequence() { return codeSequence; }
+getIterationPattern method      164 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public String getIterationPattern() { return iterationPattern; }
+getType          method      165 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public String getType() { return type; }
+CodeAndPatternLookupWindow method      168 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public CodeAndPatternLookupWindow(IterateToLimitWindow iterateToLimitWindow) {
+getVBox          method      236 src/java/billiards/viewer/CodeAndPatternLookupWindow.java private VBox getVBox(IterateToLimitWindow iterateToLimitWindow) {
+lookUpIterPat    method      258 src/java/billiards/viewer/CodeAndPatternLookupWindow.java private void lookUpIterPat(int limit, int offset) {
+getVerticalScrollbar method      293 src/java/billiards/viewer/CodeAndPatternLookupWindow.java private ScrollBar getVerticalScrollbar(TableView<?> tableView) {
+show             method      305 src/java/billiards/viewer/CodeAndPatternLookupWindow.java public void show() {
+ColorPicker      method       69 src/java/billiards/viewer/ColorPicker.java public ColorPicker(final int x, final int y) {
+next             method      101 src/java/billiards/viewer/ColorPicker.java public static Color next(final Color inColor) {
+pickColor        method      113 src/java/billiards/viewer/ColorPicker.java public Optional<Color> pickColor() {
+CoverInfoWindow  method       17 src/java/billiards/viewer/CoverInfoWindow.java public CoverInfoWindow(final String windowTitle){
+close            method       44 src/java/billiards/viewer/CoverInfoWindow.java public void close() {
+show             method       47 src/java/billiards/viewer/CoverInfoWindow.java public void show() {
+CoverWindow      method       84 src/java/billiards/viewer/CoverWindow.java public CoverWindow(final String windowTitle, final ConnectionPool pool,
+setTriplesInfo   method      289 src/java/billiards/viewer/CoverWindow.java public void setTriplesInfo(ArrayList<String> triples){
+appendTriplesInfo method      299 src/java/billiards/viewer/CoverWindow.java public void appendTriplesInfo(String triple) {
+appendStablesInfo method      305 src/java/billiards/viewer/CoverWindow.java public void appendStablesInfo(String stable) {
+saveToFile       method      310 src/java/billiards/viewer/CoverWindow.java public void saveToFile() {
+cleanTriples     method      332 src/java/billiards/viewer/CoverWindow.java static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriples method      427 src/java/billiards/viewer/CoverWindow.java private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriplesCorner method      535 src/java/billiards/viewer/CoverWindow.java private static Tuple2<String, String> cleanHalfTriplesCorner(final String string, final ConnectionPool pool) {
+cleanStables     method      610 src/java/billiards/viewer/CoverWindow.java public static String cleanStables(final String string, final ConnectionPool pool) {
+redoInfo         method      775 src/java/billiards/viewer/CoverWindow.java private static void redoInfo() {
+show             method      809 src/java/billiards/viewer/CoverWindow.java void show() {
+CoverWindow2     method       77 src/java/billiards/viewer/CoverWindow2.java public CoverWindow2(final String windowTitle, final ConnectionPool pool,
+saveToFile       method      299 src/java/billiards/viewer/CoverWindow2.java private void saveToFile() {
+cleanTriples     method      319 src/java/billiards/viewer/CoverWindow2.java private static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriples method      385 src/java/billiards/viewer/CoverWindow2.java private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriplesCorner method      493 src/java/billiards/viewer/CoverWindow2.java private static Tuple2<String, String> cleanHalfTriplesCorner(final String string, final ConnectionPool pool) {
+cleanStables     method      565 src/java/billiards/viewer/CoverWindow2.java private static String cleanStables(final String string, final ConnectionPool pool) {
+redoInfo         method      664 src/java/billiards/viewer/CoverWindow2.java private static void redoInfo() {
+show             method      698 src/java/billiards/viewer/CoverWindow2.java void show() {
+CoverWindow3     method       72 src/java/billiards/viewer/CoverWindow3.java public CoverWindow3(final String windowTitle, final ConnectionPool pool,
+saveToFile       method      293 src/java/billiards/viewer/CoverWindow3.java private void saveToFile() {
+cleanTriples     method      313 src/java/billiards/viewer/CoverWindow3.java private static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriples method      379 src/java/billiards/viewer/CoverWindow3.java private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriplesCorner method      487 src/java/billiards/viewer/CoverWindow3.java private static Tuple2<String, String> cleanHalfTriplesCorner(final String string, final ConnectionPool pool) {
+cleanStables     method      559 src/java/billiards/viewer/CoverWindow3.java private static String cleanStables(final String string, final ConnectionPool pool) {
+redoInfo         method      658 src/java/billiards/viewer/CoverWindow3.java private static void redoInfo() {
+show             method      692 src/java/billiards/viewer/CoverWindow3.java void show() {
+CoverWindow4     method       72 src/java/billiards/viewer/CoverWindow4.java public CoverWindow4(final String windowTitle, final ConnectionPool pool,
+saveToFile       method      292 src/java/billiards/viewer/CoverWindow4.java private void saveToFile() {
+cleanTriples     method      312 src/java/billiards/viewer/CoverWindow4.java private static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriples method      378 src/java/billiards/viewer/CoverWindow4.java private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
+cleanHalfTriplesCorner method      486 src/java/billiards/viewer/CoverWindow4.java private static Tuple2<String, String> cleanHalfTriplesCorner(final String string, final ConnectionPool pool) {
+cleanStables     method      558 src/java/billiards/viewer/CoverWindow4.java private static String cleanStables(final String string, final ConnectionPool pool) {
+redoInfo         method      657 src/java/billiards/viewer/CoverWindow4.java private static void redoInfo() {
+show             method      691 src/java/billiards/viewer/CoverWindow4.java void show() {
+Cycle            method        8 src/java/billiards/viewer/Cycle.java public Cycle(final int mod) {
+get              method       17 src/java/billiards/viewer/Cycle.java public int get() {
+CycleVaryTask    method       73 src/java/billiards/viewer/CycleVaryTask.java public CycleVaryTask(
+call             method      101 src/java/billiards/viewer/CycleVaryTask.java protected ObservableList<Storage> call() {
+checkStatus      method      201 src/java/billiards/viewer/CycleVaryTask.java private Optional<ExecutionException> checkStatus(final Future<Either<String, Storage>> future) {
+autoCodesFiltered method      228 src/java/billiards/viewer/CycleVaryTask.java private MutableSortedSet<ClassifiedCodeSequence> autoCodesFiltered(final Vector2 coords, final ExecutorService executor) {
+toCoords         method      247 src/java/billiards/viewer/CycleVaryTask.java private Array<Vector2> toCoords(final MutableList<Double> points) {
+pixelColor       method      258 src/java/billiards/viewer/CycleVaryTask.java private int pixelColor(final Vector2 point) {
+loadStorage      method      282 src/java/billiards/viewer/CycleVaryTask.java private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
+getPartials      method      309 src/java/billiards/viewer/CycleVaryTask.java public final ObservableList<Storage> getPartials() {
+getPartialProperty method      312 src/java/billiards/viewer/CycleVaryTask.java public final ReadOnlyObjectProperty<ObservableList<Storage>> getPartialProperty() {
+loadStorageFromDB method      316 src/java/billiards/viewer/CycleVaryTask.java private boolean loadStorageFromDB(ClassifiedCodeSequence classCodeSeq, MutableSortedSet<ClassifiedCodeSequence> usedCodes,
+loadPrintedCodesStorage method      340 src/java/billiards/viewer/CycleVaryTask.java private void loadPrintedCodesStorage(MutableSortedSet<ClassifiedCodeSequence> usedCodes, MutableList<Future<Either<String, Storage>>> futures, AtomicInteger progress, int todo, ArrayList<ClassifiedCodeSequence> printedCodes) {
+autoVary         method      353 src/java/billiards/viewer/CycleVaryTask.java public MutableSortedSet<ClassifiedCodeSequence> autoVary(
+CycleVaryWindow  method      124 src/java/billiards/viewer/CycleVaryWindow.java public CycleVaryWindow(final String windowTitle, final String buttonText, final String fileName, final String boundsFileName, final String stepFileName, final String coordsFileName, final Viewer viewer) {
+getCoordinatesHBox method      381 src/java/billiards/viewer/CycleVaryWindow.java private HBox getCoordinatesHBox() {
+show             method      411 src/java/billiards/viewer/CycleVaryWindow.java public void show() {
+getMagnificationIsSelected method      415 src/java/billiards/viewer/CycleVaryWindow.java public boolean getMagnificationIsSelected() {
+getMagnification method      419 src/java/billiards/viewer/CycleVaryWindow.java public Double getMagnification() {
+getUseReps       method      443 src/java/billiards/viewer/CycleVaryWindow.java public boolean getUseReps() {
+allPositiveIsSelected method      447 src/java/billiards/viewer/CycleVaryWindow.java public boolean allPositiveIsSelected() {
+plusMinusIsSelected method      451 src/java/billiards/viewer/CycleVaryWindow.java public boolean plusMinusIsSelected() {
+getModesHBox     method      455 src/java/billiards/viewer/CycleVaryWindow.java private HBox getModesHBox() {
+getMode          method      471 src/java/billiards/viewer/CycleVaryWindow.java public int getMode() {
+getNumGroupToPrint method      478 src/java/billiards/viewer/CycleVaryWindow.java public Integer getNumGroupToPrint() {
+getLineNavigateHBox method      516 src/java/billiards/viewer/CycleVaryWindow.java private HBox getLineNavigateHBox() {
+extractNumberFromTextField method      606 src/java/billiards/viewer/CycleVaryWindow.java private int extractNumberFromTextField(TextField textField) {
+getLineNumber    method      629 src/java/billiards/viewer/CycleVaryWindow.java private int getLineNumber() {
+showMoveScreenAlert method      641 src/java/billiards/viewer/CycleVaryWindow.java private void showMoveScreenAlert(String content) {
+moveScreenToLine method      663 src/java/billiards/viewer/CycleVaryWindow.java private void moveScreenToLine(int index) {
+setLineNumber    method      689 src/java/billiards/viewer/CycleVaryWindow.java public void setLineNumber(int lineNumber) {
+getCoordinatesListLength method      694 src/java/billiards/viewer/CycleVaryWindow.java private int getCoordinatesListLength() {
+getStartStepEnd  method      698 src/java/billiards/viewer/CycleVaryWindow.java public Tuple3<Integer, Integer, Integer> getStartStepEnd(int defaultEnd) {
+showEnterLineNumberErrorAutoVary method      746 src/java/billiards/viewer/CycleVaryWindow.java private static void showEnterLineNumberErrorAutoVary() {
+showStepErrorAutoVary method      755 src/java/billiards/viewer/CycleVaryWindow.java private static void showStepErrorAutoVary() {
+showInvalidLineNumberError method      765 src/java/billiards/viewer/CycleVaryWindow.java private static void showInvalidLineNumberError(final int max) {
+showInvalidLineRangeError method      774 src/java/billiards/viewer/CycleVaryWindow.java private static void showInvalidLineRangeError(final int max) {
+showInvalidNumberError method      782 src/java/billiards/viewer/CycleVaryWindow.java private static void showInvalidNumberError(final String invalidNumber) {
+CycleVaryFunction method      791 src/java/billiards/viewer/CycleVaryWindow.java private void CycleVaryFunction(ConvexPolygon polygon) {
+shutdown         method      883 src/java/billiards/viewer/CycleVaryWindow.java public void shutdown(final ProgressMultiTask cyclesProgress, final ProgressMultiTask repsProgress, final ExecutorService executor) {
+autoCycleVaryFunction method      890 src/java/billiards/viewer/CycleVaryWindow.java public void autoCycleVaryFunction(final Tuple7<ConvexPolygon, Integer, Integer, Integer, Integer, Integer, Integer> polyVals,
+drawCycleVary    method      931 src/java/billiards/viewer/CycleVaryWindow.java private void drawCycleVary(final int[] max, final int maxSubdivisions, final boolean autoCover, final boolean overrideSS,
+DBGui            method       53 src/java/billiards/viewer/DBGui.java public DBGui() {
+getDbName        method      103 src/java/billiards/viewer/DBGui.java public Optional<String> getDbName() {
+getProgram       method      128 src/java/billiards/viewer/DBGui.java public boolean getProgram() {
+newDatabase      method      135 src/java/billiards/viewer/DBGui.java private void newDatabase() {
+deleteDatabase   method      174 src/java/billiards/viewer/DBGui.java private void deleteDatabase() {
+clearDatabase    method      205 src/java/billiards/viewer/DBGui.java private void clearDatabase() {
+selectDatabase   method      233 src/java/billiards/viewer/DBGui.java private void selectDatabase() {
+DontDrawPictureTask method       21 src/java/billiards/viewer/DontDrawPictureTask.java public DontDrawPictureTask(final Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
+call             method       36 src/java/billiards/viewer/DontDrawPictureTask.java protected Void call() {
+getPartials      method       43 src/java/billiards/viewer/DrawPictureTask.java public final ObservableList<Storage> getPartials() {
+getPartialProperty method       47 src/java/billiards/viewer/DrawPictureTask.java public final ReadOnlyObjectProperty<ObservableList<Storage>> getPartialProperty() {
+DrawPictureTask  method       51 src/java/billiards/viewer/DrawPictureTask.java public DrawPictureTask(
+call             method       75 src/java/billiards/viewer/DrawPictureTask.java protected Array<Storage> call() {
+DrawPictureTaskShowLR method       29 src/java/billiards/viewer/DrawPictureTaskShowLR.java public DrawPictureTaskShowLR(final Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
+call             method       48 src/java/billiards/viewer/DrawPictureTaskShowLR.java protected Array<Storage> call() {
+getPartials      method       46 src/java/billiards/viewer/DrawPictureTaskTriples.java public final ObservableList<Storage> getPartials() {
+getPartialProperty method       50 src/java/billiards/viewer/DrawPictureTaskTriples.java public final ReadOnlyObjectProperty<ObservableList<Storage>> getPartialProperty() {
+DrawPictureTaskTriples method       54 src/java/billiards/viewer/DrawPictureTaskTriples.java public DrawPictureTaskTriples(
+call             method       84 src/java/billiards/viewer/DrawPictureTaskTriples.java protected Array<Storage[]> call() {
+DrawPictureTaskUseLR method       30 src/java/billiards/viewer/DrawPictureTaskUseLR.java public DrawPictureTaskUseLR(
+call             method       58 src/java/billiards/viewer/DrawPictureTaskUseLR.java protected Array<Storage> call() {
+DrawPictureTaskUseLRTest method       33 src/java/billiards/viewer/DrawPictureTaskUseLRTest.java public DrawPictureTaskUseLRTest(Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
+call             method      117 src/java/billiards/viewer/DrawPictureTaskUseLRTest.java protected Array<Storage> call() {
+GradientWindow   method       49 src/java/billiards/viewer/GradientWindow.java public GradientWindow(final String windowTitle) {
+close            method       85 src/java/billiards/viewer/GradientWindow.java public void close() {
+show             method       89 src/java/billiards/viewer/GradientWindow.java public void show() {
+showResult       method       93 src/java/billiards/viewer/GradientWindow.java private void showResult() {
+infoString       method      169 src/java/billiards/viewer/GradientWindow.java private static String infoString(final ClassifiedCodeSequence codeSeq, final Info info) {
+toString         method      235 src/java/billiards/viewer/GradientWindow.java private static String toString(final XYEta symbol) {
+formatConstraint method      250 src/java/billiards/viewer/GradientWindow.java private static String formatConstraint(final LinCom<XYEta> constraint) {
+HashTriple       method       24 src/java/billiards/viewer/HashTriple.java public HashTriple() {
+addStables       method       31 src/java/billiards/viewer/HashTriple.java public void addStables(final Map<Rectangle, ClassifiedCodeSequence> otherMap, final Color color) {
+addTriples       method       38 src/java/billiards/viewer/HashTriple.java public void addTriples(final Map<Rectangle, Triple> otherMap, final Color color) {
+addHalfTriples   method       44 src/java/billiards/viewer/HashTriple.java public void addHalfTriples(final Map<Rectangle, HalfTriple> otherMap, final Color color){
+clear            method       51 src/java/billiards/viewer/HashTriple.java public void clear() {
+stableEntrySet   method       59 src/java/billiards/viewer/HashTriple.java public MutableList<Rectangle> stableEntrySet() {
+tripleEntrySet   method       65 src/java/billiards/viewer/HashTriple.java public MutableList<Rectangle> tripleEntrySet() {
+HalfTripleEntrySet method       71 src/java/billiards/viewer/HashTriple.java public MutableList<Rectangle> HalfTripleEntrySet() {
+remove           method       77 src/java/billiards/viewer/HashTriple.java public void remove(Rectangle rect) {
+getStable        method       83 src/java/billiards/viewer/HashTriple.java public ClassifiedCodeSequence getStable(final Rectangle rect) {
+getTriple        method       87 src/java/billiards/viewer/HashTriple.java public Triple getTriple(final Rectangle rect) {
+getHalfTriple    method       91 src/java/billiards/viewer/HashTriple.java public HalfTriple getHalfTriple(final Rectangle rect) { return halfTripleMap.get(rect); }
+getColor         method       93 src/java/billiards/viewer/HashTriple.java public Color getColor(final Rectangle rect) {
+put              method       97 src/java/billiards/viewer/HashTriple.java public void put(final Rectangle rect, final ClassifiedCodeSequence stable) {
+put              method      101 src/java/billiards/viewer/HashTriple.java public void put(final Rectangle rect, final Triple triple) {
+put              method      105 src/java/billiards/viewer/HashTriple.java public void put(final Rectangle rect, final HalfTriple halfTriple) {
+put              method      109 src/java/billiards/viewer/HashTriple.java public void put(final Rectangle rect, final Color color) {
+InfoWindow       method       51 src/java/billiards/viewer/InfoWindow.java public InfoWindow(final String windowTitle, final ConnectionPool pool) {
+close            method       78 src/java/billiards/viewer/InfoWindow.java public void close() {
+show             method       82 src/java/billiards/viewer/InfoWindow.java public void show() {
+showInfo         method       86 src/java/billiards/viewer/InfoWindow.java private void showInfo(final ConnectionPool pool) {
+infoString       method      182 src/java/billiards/viewer/InfoWindow.java private static String infoString(final ClassifiedCodeSequence codeSeq, final Info info,final String sin,final String cos) {
+toString         method      264 src/java/billiards/viewer/InfoWindow.java private static String toString(final XYEta symbol) {
+formatConstraint method      279 src/java/billiards/viewer/InfoWindow.java private static String formatConstraint(final LinCom<XYEta> constraint) {
+InfoWindow2      method       56 src/java/billiards/viewer/InfoWindow2.java public InfoWindow2(final String windowTitle, final ConnectionPool pool) {
+close            method       87 src/java/billiards/viewer/InfoWindow2.java public void close() {
+show             method       91 src/java/billiards/viewer/InfoWindow2.java public void show() {
+showInfo         method       95 src/java/billiards/viewer/InfoWindow2.java private void showInfo(final ConnectionPool pool) {
+count            method      175 src/java/billiards/viewer/InfoWindow2.java public static int count(String str, String target) {
+infoString       method      178 src/java/billiards/viewer/InfoWindow2.java private static String infoString(final ClassifiedCodeSequence codeSeq, final Info info,final String sin,final String cos,final String x,final String y) {
+toString         method      331 src/java/billiards/viewer/InfoWindow2.java private static String toString(final XYEta symbol) {
+formatConstraint method      346 src/java/billiards/viewer/InfoWindow2.java private static String formatConstraint(final LinCom<XYEta> constraint) {
+IterateToLimitWindow method       84 src/java/billiards/viewer/IterateToLimitWindow.java public IterateToLimitWindow(ConnectionPool pool) {
+getTextAreaHBox  method      226 src/java/billiards/viewer/IterateToLimitWindow.java private HBox getTextAreaHBox(String labelText) {
+getRoot          method      236 src/java/billiards/viewer/IterateToLimitWindow.java private ScrollPane getRoot() {
+iterateTask      method      271 src/java/billiards/viewer/IterateToLimitWindow.java > iterateTask(
+iterate          method      384 src/java/billiards/viewer/IterateToLimitWindow.java private ArrayList<ArrayList<Storage>> iterate(
+calcCodeNumbers  method      447 src/java/billiards/viewer/IterateToLimitWindow.java private static IntArrayList calcCodeNumbers(
+run              method      475 src/java/billiards/viewer/IterateToLimitWindow.java private boolean run() {
+getPatterns      method      582 src/java/billiards/viewer/IterateToLimitWindow.java private String[][] getPatterns() {
+execute          method      595 src/java/billiards/viewer/IterateToLimitWindow.java public SimpleBooleanProperty execute() {
+getDraw          method      601 src/java/billiards/viewer/IterateToLimitWindow.java public boolean getDraw() {
+getAddToCover    method      605 src/java/billiards/viewer/IterateToLimitWindow.java public boolean getAddToCover() {
+getResults       method      609 src/java/billiards/viewer/IterateToLimitWindow.java public ArrayList<Tuple3<ArrayList<Storage>, ArrayList<ArrayList<Storage>>, ArrayList<ArrayList<Storage>>>> getResults() {
+nullifyFinish    method      613 src/java/billiards/viewer/IterateToLimitWindow.java public void nullifyFinish() {
+nullifyResult    method      617 src/java/billiards/viewer/IterateToLimitWindow.java public void nullifyResult() {
+getStage         method      621 src/java/billiards/viewer/IterateToLimitWindow.java public Stage getStage() {
+isShowing        method      625 src/java/billiards/viewer/IterateToLimitWindow.java public boolean isShowing() {
+toFront          method      629 src/java/billiards/viewer/IterateToLimitWindow.java public void toFront() {
+getInfoAlertDialogue method      633 src/java/billiards/viewer/IterateToLimitWindow.java private Alert getInfoAlertDialogue(String header, String content) {
+saveContentsToFile method      646 src/java/billiards/viewer/IterateToLimitWindow.java private void saveContentsToFile() {
+addToContent     method      657 src/java/billiards/viewer/IterateToLimitWindow.java public void addToContent(String code, String pattern) {
+addToContent     method      671 src/java/billiards/viewer/IterateToLimitWindow.java public void addToContent(String code, String pattern, boolean allPositive) {
+addIterPatToGarbage method      705 src/java/billiards/viewer/IterateToLimitWindow.java private void addIterPatToGarbage(String iterationPattern, ArrayList<ClassifiedCodeSequence> codeSequences) {
+getIterationPattern method      749 src/java/billiards/viewer/IterateToLimitWindow.java public static String getIterationPattern(String codeString, boolean allPositive) {
+findIterationPattern method      836 src/java/billiards/viewer/IterateToLimitWindow.java private void findIterationPattern() {
+roundToLargestPlace method      881 src/java/billiards/viewer/IterateToLimitWindow.java private static int roundToLargestPlace(int number) {
+IterationPolyWindow method       35 src/java/billiards/viewer/IterationPolyWindow.java public IterationPolyWindow() {
+show             method       71 src/java/billiards/viewer/IterationPolyWindow.java public void show() {
+getPolygon       method       75 src/java/billiards/viewer/IterationPolyWindow.java public Optional<ConvexPolygon> getPolygon() {
+LookAtMeWindow   method       16 src/java/billiards/viewer/LookAtMeWindow.java public LookAtMeWindow(final String windowTitle){
+close            method       31 src/java/billiards/viewer/LookAtMeWindow.java public void close() {
+show             method       34 src/java/billiards/viewer/LookAtMeWindow.java public void show() {
+init             method       29 src/java/billiards/viewer/Main.java public void init() {
+start            method       34 src/java/billiards/viewer/Main.java public void start(final Stage mainWindow) {
+stop             method       62 src/java/billiards/viewer/Main.java public void stop() {
+Parallelogram    method       41 src/java/billiards/viewer/Parallelogram.java public Parallelogram() {
+getParallelogram method       98 src/java/billiards/viewer/Parallelogram.java public Optional<ConvexPolygon> getParallelogram() {
+PatternCalculator method       23 src/java/billiards/viewer/PatternCalculator.java public PatternCalculator() {
+getSubstringAfterPattern method       58 src/java/billiards/viewer/PatternCalculator.java private static String getSubstringAfterPattern(String string, String pattern) {
+calcCodePattern  method       67 src/java/billiards/viewer/PatternCalculator.java private static void calcCodePattern(TextArea textArea) {
+calcSequencePattern method      115 src/java/billiards/viewer/PatternCalculator.java private static String calcSequencePattern(String string1, String string2) {
+showAlert        method      155 src/java/billiards/viewer/PatternCalculator.java private static void showAlert(String content) {
+PatternLookupWindow method       42 src/java/billiards/viewer/PatternLookupWindow.java public PatternLookupWindow(String codeSequence) {
+getOEPattern     method       97 src/java/billiards/viewer/PatternLookupWindow.java private String getOEPattern(String codeSequence) {
+retrievePatternByCodeSequence method      113 src/java/billiards/viewer/PatternLookupWindow.java private ArrayList<String> retrievePatternByCodeSequence() {
+retrievePatternsByOEPattern method      117 src/java/billiards/viewer/PatternLookupWindow.java private ArrayList<String> retrievePatternsByOEPattern() {
+codeNumbersToString method      121 src/java/billiards/viewer/PatternLookupWindow.java public static String codeNumbersToString(MutableIntList[] currentCodeNumbers) {
+PixelRadianMap   method       17 src/java/billiards/viewer/PixelRadianMap.java public PixelRadianMap(final int side) {
+PixelRadianMap   method       25 src/java/billiards/viewer/PixelRadianMap.java public PixelRadianMap(final PixelRadianMap p) {
+radianX          method       32 src/java/billiards/viewer/PixelRadianMap.java public double radianX(final double pixelX) {
+radianY          method       36 src/java/billiards/viewer/PixelRadianMap.java public double radianY(final double pixelY) {
+pixelX           method       40 src/java/billiards/viewer/PixelRadianMap.java public double pixelX(final double radianX) {
+pixelY           method       44 src/java/billiards/viewer/PixelRadianMap.java public double pixelY(final double radianY) {
+getScale         method       48 src/java/billiards/viewer/PixelRadianMap.java public double getScale() {
+setScale         method       52 src/java/billiards/viewer/PixelRadianMap.java public void setScale(final double newScale) {
+scaleBy          method       56 src/java/billiards/viewer/PixelRadianMap.java public void scaleBy(final double scaleFactor) {
+setTranslateX    method       60 src/java/billiards/viewer/PixelRadianMap.java public void setTranslateX(final double translateX) {
+setTranslateY    method       64 src/java/billiards/viewer/PixelRadianMap.java public void setTranslateY(final double translateY) {
+translateXBy     method       68 src/java/billiards/viewer/PixelRadianMap.java public void translateXBy(final double value) {
+translateYBy     method       72 src/java/billiards/viewer/PixelRadianMap.java public void translateYBy(final double value) {
+pixelSize        method       76 src/java/billiards/viewer/PixelRadianMap.java public double pixelSize() {
+getViewRectangle method       81 src/java/billiards/viewer/PixelRadianMap.java public Rectangle getViewRectangle() {
+setViewRectangle method       93 src/java/billiards/viewer/PixelRadianMap.java public void setViewRectangle(final Rectangle rect) {
+reset            method      112 src/java/billiards/viewer/PixelRadianMap.java public void reset() {
+PolyLoad         method       43 src/java/billiards/viewer/PolyLoad.java public PolyLoad(final String windowTitle, final String buttonText, final String fileName,
+getPolyLoad      method       94 src/java/billiards/viewer/PolyLoad.java public Optional<ConvexPolygon> getPolyLoad() {
+PolyTrimmer      method       60 src/java/billiards/viewer/PolyTrimmer.java public PolyTrimmer(final Rectangle fullScreen, final ConnectionPool pool, final LinkedHashMap<Storage, Color> onScreenSequences, final boolean saveColors) {
+parseConvexPolygon method      138 src/java/billiards/viewer/PolyTrimmer.java private static ConvexPolygon parseConvexPolygon(final String content, final Rectangle fullScreen) {
+trim             method      152 src/java/billiards/viewer/PolyTrimmer.java private static void trim(final ConvexPolygon poly, final ConnectionPool pool, final Stage stage) {
+trim             method      191 src/java/billiards/viewer/PolyTrimmer.java private static void trim(final ConvexPolygon poly, final LinkedHashMap<Storage, Color> onScreenSequences, final boolean saveColors) {
+trim             method      220 src/java/billiards/viewer/PolyTrimmer.java private static void trim(final String polyStr, final Stage stage) {
+PolyVaryLoad     method       83 src/java/billiards/viewer/PolyVaryLoad.java public PolyVaryLoad(final String windowTitle, final String buttonText, final String polyFileName,
+updateBounds     method      218 src/java/billiards/viewer/PolyVaryLoad.java public void updateBounds() {
+getPolyVaryLoad  method      235 src/java/billiards/viewer/PolyVaryLoad.java public Optional<Tuple7<ConvexPolygon, Integer, Integer, Integer, Integer, Integer, Integer>> getPolyVaryLoad() {
+getAutoSmallCover method      240 src/java/billiards/viewer/PolyVaryLoad.java public boolean getAutoSmallCover() {
+PolyVaryTask     method       74 src/java/billiards/viewer/PolyVaryTask.java public PolyVaryTask(
+call             method       99 src/java/billiards/viewer/PolyVaryTask.java protected ObservableList<Storage> call() {
+checkStatus      method      225 src/java/billiards/viewer/PolyVaryTask.java private Either<String, Storage> checkStatus(final Future<Either<String, Storage>> future) {
+autoCodesFiltered method      250 src/java/billiards/viewer/PolyVaryTask.java private MutableSortedSet<ClassifiedCodeSequence> autoCodesFiltered(final Vector2 coords, final ExecutorService executor) {
+toCoords         method      269 src/java/billiards/viewer/PolyVaryTask.java private Array<Vector2> toCoords(final MutableList<Double> points) {
+pixelColor       method      280 src/java/billiards/viewer/PolyVaryTask.java private int pixelColor(final Vector2 point) {
+loadStorage      method      304 src/java/billiards/viewer/PolyVaryTask.java private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
+getPartials      method      331 src/java/billiards/viewer/PolyVaryTask.java public final ObservableList<Storage> getPartials() {
+getPartialProperty method      334 src/java/billiards/viewer/PolyVaryTask.java public final ReadOnlyObjectProperty<ObservableList<Storage>> getPartialProperty() {
+loadStorageFromDB method      338 src/java/billiards/viewer/PolyVaryTask.java private boolean loadStorageFromDB(ClassifiedCodeSequence classCodeSeq, MutableSortedSet<ClassifiedCodeSequence> usedCodes,
+loadPrintedCodesStorage method      362 src/java/billiards/viewer/PolyVaryTask.java private void loadPrintedCodesStorage(MutableSortedSet<ClassifiedCodeSequence> usedCodes, MutableList<Future<Either<String, Storage>>> futures, AtomicInteger progress, int todo, ArrayList<ClassifiedCodeSequence> printedCodes) {
+getPriority      method        7 src/java/billiards/viewer/PriorityCallable.java public int getPriority();
+PriorityExecutor method       13 src/java/billiards/viewer/PriorityExecutor.java public PriorityExecutor(final int poolSize) {
+newTaskFor       method       20 src/java/billiards/viewer/PriorityExecutor.java protected <T> RunnableFuture<T> newTaskFor(final Callable<T> callable) {
+newTaskFor       method       30 src/java/billiards/viewer/PriorityExecutor.java protected <T> RunnableFuture<T> newTaskFor(final Runnable runnable,
+ComparableFutureTask method       42 src/java/billiards/viewer/PriorityExecutor.java public ComparableFutureTask(final int priority, final Callable<T> call) {
+ComparableFutureTask method       47 src/java/billiards/viewer/PriorityExecutor.java public ComparableFutureTask(final int priority, final Runnable run, final T ret) {
+compareTo        method       52 src/java/billiards/viewer/PriorityExecutor.java public int compareTo(final ComparableFutureTask<T> o) {
+getPriority      method        5 src/java/billiards/viewer/PriorityRunnable.java public int getPriority();
+Progress         method       25 src/java/billiards/viewer/Progress.java public Progress(final Task<?> task) {
+close            method       49 src/java/billiards/viewer/Progress.java public void close() {
+show             method       53 src/java/billiards/viewer/Progress.java public void show() {
+incrementWindowCount method       57 src/java/billiards/viewer/Progress.java public void incrementWindowCount(AtomicInteger count) {
+ProgressMultiTask method       37 src/java/billiards/viewer/ProgressMultiTask.java public ProgressMultiTask(String formatString, boolean allowCancel, long offset, long total) {
+syncProgress     method       80 src/java/billiards/viewer/ProgressMultiTask.java private void syncProgress() {
+changeTask       method       85 src/java/billiards/viewer/ProgressMultiTask.java public void changeTask(final Task<?> task) {
+increment        method       90 src/java/billiards/viewer/ProgressMultiTask.java public void increment(final long step) {
+resetProgress    method       96 src/java/billiards/viewer/ProgressMultiTask.java public void resetProgress() {
+close            method      101 src/java/billiards/viewer/ProgressMultiTask.java public void close() {
+show             method      105 src/java/billiards/viewer/ProgressMultiTask.java public void show() {
+isCancelled      method      110 src/java/billiards/viewer/ProgressMultiTask.java public boolean isCancelled() {
+ProgressWithStatus method       34 src/java/billiards/viewer/ProgressWithStatus.java public ProgressWithStatus(final Task<?> task, String formatString, long offset) {
+syncProgress     method       76 src/java/billiards/viewer/ProgressWithStatus.java private void syncProgress() {
+close            method       88 src/java/billiards/viewer/ProgressWithStatus.java public void close() {
+show             method       92 src/java/billiards/viewer/ProgressWithStatus.java public void show() {
+QueryStage       method       55 src/java/billiards/viewer/QueryStage.java public QueryStage(final String stageTitle, final ConnectionPool pool, final Viewer viewer) {
+query            method       95 src/java/billiards/viewer/QueryStage.java private void query(final ConnectionPool pool, final Viewer viewer) {
+show             method      301 src/java/billiards/viewer/QueryStage.java public void show() {
+verifyEvenOdd    method      305 src/java/billiards/viewer/QueryStage.java private static boolean verifyEvenOdd(final String evenOdd) {
+SaveV3Window     method       52 src/java/billiards/viewer/SaveV3Window.java public SaveV3Window(final String windowTitle) {
+show             method      121 src/java/billiards/viewer/SaveV3Window.java public void show() {
+close            method      125 src/java/billiards/viewer/SaveV3Window.java public void close() {
+browse           method      129 src/java/billiards/viewer/SaveV3Window.java private void browse() {
+saveM            method      149 src/java/billiards/viewer/SaveV3Window.java private void saveM() {
+saveL            method      196 src/java/billiards/viewer/SaveV3Window.java private void saveL() {
+clear            method      241 src/java/billiards/viewer/SaveV3Window.java private void clear() {
+SideSum          method       11 src/java/billiards/viewer/SideSum.java private SideSum(final int[] coeffs, final double x, final double y, final double z) {
+create           method       19 src/java/billiards/viewer/SideSum.java public static SideSum create(final double x, final double y) {
+add              method       24 src/java/billiards/viewer/SideSum.java public void add(final int num) {
+sub              method       28 src/java/billiards/viewer/SideSum.java public void sub(final int num) {
+sum              method       32 src/java/billiards/viewer/SideSum.java public double sum() {
+copy             method       36 src/java/billiards/viewer/SideSum.java public SideSum copy() {
+toString         method       46 src/java/billiards/viewer/SideSum.java public String toString() {
+SmallCoverWindow method       71 src/java/billiards/viewer/SmallCoverWindow.java public SmallCoverWindow(final String windowTitle, final ConnectionPool pool, final Runnable loadCover, final CoverWindow coverWindow, final ArrayList<ConvexPolygon> smallCoverAreas) {
+saveToFile       method      263 src/java/billiards/viewer/SmallCoverWindow.java public void saveToFile() {
+appendStablesInfo method      284 src/java/billiards/viewer/SmallCoverWindow.java public void appendStablesInfo(String stable) {
+cleanTriples     method      289 src/java/billiards/viewer/SmallCoverWindow.java static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+cleanStables     method      385 src/java/billiards/viewer/SmallCoverWindow.java static String cleanStables(final String string, final ConnectionPool pool) {
+show             method      422 src/java/billiards/viewer/SmallCoverWindow.java void show() {
+addPolygons      method      427 src/java/billiards/viewer/SmallCoverWindow.java void addPolygons(String newPolygons) {
+StablesWindow    method       64 src/java/billiards/viewer/StablesWindow.java public StablesWindow(CoverWindow coverWindow){
+setConnectionPool method      135 src/java/billiards/viewer/StablesWindow.java public void setConnectionPool(final ConnectionPool pool){
+calculateAction  method      140 src/java/billiards/viewer/StablesWindow.java private void calculateAction(){
+calculateTriplesAction method      160 src/java/billiards/viewer/StablesWindow.java private void calculateTriplesAction(){
+calculateHalfTriplesAction method      235 src/java/billiards/viewer/StablesWindow.java private void calculateHalfTriplesAction(){
+showFactorTriple method      281 src/java/billiards/viewer/StablesWindow.java private void showFactorTriple(String triple){
+cleanTriples     method      300 src/java/billiards/viewer/StablesWindow.java private Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {
+showFactorHalfTriple method      373 src/java/billiards/viewer/StablesWindow.java private void showFactorHalfTriple(String item){
+trimArrayList    method      410 src/java/billiards/viewer/StablesWindow.java public ArrayList<String> trimArrayList(ArrayList<String> stringList){
+getCombinations  method      419 src/java/billiards/viewer/StablesWindow.java private ArrayList<String> getCombinations(ArrayList<String> topStables, ArrayList<String> unStables, ArrayList<String> bottomStables){
+getStables       method      435 src/java/billiards/viewer/StablesWindow.java private String getStables(String triple){
+checkTriples     method      440 src/java/billiards/viewer/StablesWindow.java private static int checkTriples(final String string, final ConnectionPool pool) {
+getTriplesAction method      502 src/java/billiards/viewer/StablesWindow.java private void getTriplesAction(){
+saveToFile       method      526 src/java/billiards/viewer/StablesWindow.java private void saveToFile() {
+show             method      540 src/java/billiards/viewer/StablesWindow.java public void show() {
+cleanHalfTriples method      545 src/java/billiards/viewer/StablesWindow.java private static Tuple2<String, String> cleanHalfTriples(final String string, final ConnectionPool pool) {
+SuperPolyVaryLoad method       98 src/java/billiards/viewer/SuperPolyVaryLoad.java public SuperPolyVaryLoad(final String windowTitle, final String buttonText, final String fileName, final String boundsFileName, final String stepFileName) {
+getLoad          method      286 src/java/billiards/viewer/SuperPolyVaryLoad.java public Optional<Tuple7<ConvexPolygon, Integer, Integer, Integer, Integer, Integer, Integer>> getLoad() {
+getMagnificationIsSelected method      291 src/java/billiards/viewer/SuperPolyVaryLoad.java public boolean getMagnificationIsSelected() {
+getMagnification method      295 src/java/billiards/viewer/SuperPolyVaryLoad.java public Double getMagnification() {
+getAutoSmallCover method      319 src/java/billiards/viewer/SuperPolyVaryLoad.java public boolean getAutoSmallCover() {
+TetraBar         method       57 src/java/billiards/viewer/TetraBar.java public TetraBar(Stage parentStage) {
+getVaryParams    method      172 src/java/billiards/viewer/TetraBar.java public Tuple6<List<Tuple2<Double, Double>>, List<Tuple2<Double, Double>>, Integer, Integer, Boolean, Boolean> getVaryParams() {
+checkForUpdates  method       10 src/java/billiards/viewer/Updater.java public static void checkForUpdates(String currentVersion) throws Exception {
+splitString      method       54 src/java/billiards/viewer/Utils.java public static Optional<ImmutableIntList> splitString(String textCodeSeq) {
+safeShutdownExecutor method       77 src/java/billiards/viewer/Utils.java public static boolean safeShutdownExecutor(ExecutorService executor) {
+convert          method       97 src/java/billiards/viewer/Utils.java public static Optional<ClassifiedCodeSequence> convert(final IntList codeList) {
+writeToFile      method      134 src/java/billiards/viewer/Utils.java public static void writeToFile(final String path, final String contents) {
+printToFile      method      146 src/java/billiards/viewer/Utils.java public static <T> void printToFile(final String path, final Iterable<T> iterable) {
+readFromFile     method      159 src/java/billiards/viewer/Utils.java public static String readFromFile(final String string) {
+copyInto         method      177 src/java/billiards/viewer/Utils.java public static void copyInto(final MutableIntList dest, final IntList source) {
+isCoords         method      184 src/java/billiards/viewer/Utils.java public static boolean isCoords(final String line) {
+isDouble         method      205 src/java/billiards/viewer/Utils.java public static boolean isDouble(final String string) {
+ifGet            method      215 src/java/billiards/viewer/Utils.java public static String ifGet(final String[] l, final int i) {
+getIntersectionCodes method      230 src/java/billiards/viewer/Utils.java public static ArrayList<ClassifiedCodeSequence> getIntersectionCodes(final ArrayList<Collection<ClassifiedCodeSequence>> lists) {
+compare          method      252 src/java/billiards/viewer/Utils.java public static ArrayList<String> compare(final ArrayList<ArrayList<String>> seq) {
+standard         method      270 src/java/billiards/viewer/Utils.java public static Optional<String> standard(final IntList code, final int count) {
+standard         method      280 src/java/billiards/viewer/Utils.java public static String standard(final ClassifiedCodeSequence code, final int count) {
+getCoverCodeString method      305 src/java/billiards/viewer/Utils.java public static String getCoverCodeString(Storage storage) {
+getCoverCodeString method      325 src/java/billiards/viewer/Utils.java public static String getCoverCodeString(ClassifiedCodeSequence classifiedCodeSequence) {
+hex              method      339 src/java/billiards/viewer/Utils.java public static String hex(final Color color) {
+colorButton      method      349 src/java/billiards/viewer/Utils.java public static void colorButton(final Button button, final Color color, final Color clicked) {
+toolTip          method      355 src/java/billiards/viewer/Utils.java public static Tooltip toolTip(final String text) {
+trimCodeLine     method      363 src/java/billiards/viewer/Utils.java public static String trimCodeLine(String line) {
+tripleTrimmer    method      384 src/java/billiards/viewer/Utils.java public static String tripleTrimmer(String line) {
+timeConvert      method      393 src/java/billiards/viewer/Utils.java public static String timeConvert(long millis) {
+runAndWait       method      411 src/java/billiards/viewer/Utils.java public static void runAndWait(final Runnable action) {
+modN             method      439 src/java/billiards/viewer/Utils.java public static int modN(int value, final int n) {
+setupCustomTooltipBehavior method      452 src/java/billiards/viewer/Utils.java public static void setupCustomTooltipBehavior(final int openDelayInMillis, final int visibleDurationInMillis,
+verifyInfo       method      499 src/java/billiards/viewer/Utils.java public static boolean verifyInfo(InfoAll infoAll, Storage storage) {
+convertDecimalToFraction method      558 src/java/billiards/viewer/Utils.java static private String convertDecimalToFraction(double x){
+calculate_formula method      576 src/java/billiards/viewer/Utils.java public static void calculate_formula(String sin, String cos, double radius,Vector2 center){
+calculate_formula_mrr method      671 src/java/billiards/viewer/Utils.java public static void calculate_formula_mrr(String equation, double radius,Vector2 center){
+verifyVector     method      768 src/java/billiards/viewer/Utils.java public static boolean verifyVector(InfoAll infoAll, Storage storage) {
+VaryLTask        method       72 src/java/billiards/viewer/VaryLTask.java public VaryLTask(
+call             method      110 src/java/billiards/viewer/VaryLTask.java protected ObservableList<Storage> call() {
+addProcessedCode method      286 src/java/billiards/viewer/VaryLTask.java public static void addProcessedCode(
+checkStatus      method      301 src/java/billiards/viewer/VaryLTask.java private void checkStatus(final Future<Either<String, Storage>> future, Optional<ExecutionException> except) {
+autoCodesFiltered method      323 src/java/billiards/viewer/VaryLTask.java private MutableSortedSet<ClassifiedCodeSequence> autoCodesFiltered(final Vector2 coords, final ExecutorService executor) {
+loadStorage      method      345 src/java/billiards/viewer/VaryLTask.java private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
+getPartials      method      372 src/java/billiards/viewer/VaryLTask.java public final ObservableList<Storage> getPartials() {
+getPartialProperty method      375 src/java/billiards/viewer/VaryLTask.java public final ReadOnlyObjectProperty<ObservableList<Storage>> getPartialProperty() {
+addToIterToLimitCover method      385 src/java/billiards/viewer/VaryLTask.java private void addToIterToLimitCover(String classCodeSeq) {
+printMidFirstLast method      423 src/java/billiards/viewer/VaryLTask.java private ArrayList<ClassifiedCodeSequence> printMidFirstLast(
+loadStorage      method      477 src/java/billiards/viewer/VaryLTask.java private void loadStorage(
+printAndLoadStorage method      514 src/java/billiards/viewer/VaryLTask.java private void printAndLoadStorage(
+VaryWindowL      method       93 src/java/billiards/viewer/VaryWindowL.java public VaryWindowL(final String windowTitle, final String buttonText, final String fileName,
+getBottomVBox    method      275 src/java/billiards/viewer/VaryWindowL.java private VBox getBottomVBox() {
+getPoints        method      351 src/java/billiards/viewer/VaryWindowL.java getPoints(final String x, final String y, final boolean onePoint) {
+getOverride      method      362 src/java/billiards/viewer/VaryWindowL.java public boolean getOverride() {
+getFirstLastSelected method      366 src/java/billiards/viewer/VaryWindowL.java public boolean getFirstLastSelected() {
+getAddToAllPositiveSelected method      370 src/java/billiards/viewer/VaryWindowL.java public boolean getAddToAllPositiveSelected() {
+getAddToPlusMinusSelected method      374 src/java/billiards/viewer/VaryWindowL.java public boolean getAddToPlusMinusSelected() {
+extractNumberFromTextField method      388 src/java/billiards/viewer/VaryWindowL.java private int extractNumberFromTextField(TextField textField) {
+getLineNumber    method      411 src/java/billiards/viewer/VaryWindowL.java private int getLineNumber() {
+showMoveScreenAlert method      423 src/java/billiards/viewer/VaryWindowL.java private void showMoveScreenAlert(String content) {
+moveScreenToLine method      445 src/java/billiards/viewer/VaryWindowL.java private void moveScreenToLine(int index) {
+setLineNumber    method      471 src/java/billiards/viewer/VaryWindowL.java public void setLineNumber(int lineNumber) {
+getCoordinatesListLength method      476 src/java/billiards/viewer/VaryWindowL.java private int getCoordinatesListLength() {
+getDraw          method      480 src/java/billiards/viewer/VaryWindowL.java public boolean getDraw() {
+getAddToSmallCover method      484 src/java/billiards/viewer/VaryWindowL.java public boolean getAddToSmallCover() {

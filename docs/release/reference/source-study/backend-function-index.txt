@@ -1,0 +1,1069 @@
+﻿split            function      4 src/backend/cpp/basic.cpp std::vector<std::string> split(const std::string& str, const std::string& delims) {
+open_file_read   function     15 src/backend/cpp/basic.cpp std::ifstream open_file_read(const std::string& path) {
+open_file_write  function     29 src/backend/cpp/basic.cpp std::ofstream open_file_write(const std::string& path) {
+read_file        function     40 src/backend/cpp/basic.cpp std::string read_file(const std::string& path) {
+calculate_angles function      6 src/backend/cpp/bounding_inequalities.cpp static std::vector<LinComArrZ<XYEtaPhi>> calculate_angles(const std::vector<std::pair<CodeNumber, XYZ>>& code_nums_angles) {
+calculate_even_equations function     42 src/backend/cpp/bounding_inequalities.cpp static std::array<LinComArrZ<XYEtaPhi>, 4> calculate_even_equations(const CodeNumber code_number, const XYZ code_angle, const LinComArrZ<XYEtaPhi>& theta) {
+calculate_odd_equations function     75 src/backend/cpp/bounding_inequalities.cpp static std::array<LinComArrZ<XYEtaPhi>, 4> calculate_odd_equations(const CodeNumber code_number, const XYZ code_angle, const LinComArrZ<XYEtaPhi>& theta) {
+remove_phi       function    108 src/backend/cpp/bounding_inequalities.cpp static LinComArrZ<XYEta> remove_phi(const LinComArrZ<XYEtaPhi>& equation) {
+eliminate_phi    function    126 src/backend/cpp/bounding_inequalities.cpp static std::set<LinComArrZ<XYEta>> eliminate_phi(const std::set<LinComArrZ<XYEtaPhi>>& positive_phi, const std::set<LinComArrZ<XYEtaPhi>>& negative_phi) {
+__anon030b97780102 function    158 src/backend/cpp/bounding_inequalities.cpp boost::asio::post(pool, [begin, end, t, &pos_vec, &negative_phi, &thread_zero_phi] {
+first_inequalities function    185 src/backend/cpp/bounding_inequalities.cpp static std::set<LinComArrZ<XYEta>> first_inequalities(const std::vector<std::pair<CodeNumber, XYZ>>& code_nums_angles) {
+__anon030b97780202 function    218 src/backend/cpp/bounding_inequalities.cpp boost::asio::post(pool, [begin, end, t, &code_nums_angles, &theta_angles, &thread_positive_phi, &thread_negative_phi] {
+calculate_bounding_inequalities function    262 src/backend/cpp/bounding_inequalities.cpp std::set<LinComArrZ<XYEta>> calculate_bounding_inequalities(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles) {
+__anon030b97780302 function    265 src/backend/cpp/bounding_inequalities.cpp auto code_nums_angles = [&]() {
+intersection     function      4 src/backend/cpp/bounding_region.cpp static PointQ intersection(const LinComArrZ<XYEta>& line1, const LinComArrZ<XYEta>& line2) {
+line_sign_at_point function     52 src/backend/cpp/bounding_region.cpp static Sign line_sign_at_point(const LinComArrZ<XYEta>& equation, const PointQ& point) {
+initial_line_segment function     91 src/backend/cpp/bounding_region.cpp static boost::optional<RationalLineSegment> initial_line_segment(const LinComArrZ<XYEta>& constraint) {
+refine_line_segment function    375 src/backend/cpp/bounding_region.cpp static boost::optional<RationalLineSegment> refine_line_segment(const LinComArrZ<XYEta>& line, const RationalLineSegment& line_segment, const LinComArrZ<XYEta>& constraint) {
+calculate_bounding_line_segment function    481 src/backend/cpp/bounding_region.cpp boost::optional<RationalLineSegment> calculate_bounding_line_segment(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const LinComArrZ<XYEta>& constraint) {
+refine_polygon   function    501 src/backend/cpp/bounding_region.cpp static boost::optional<RationalPolygon> refine_polygon(const RationalPolygon& polygon, const LinComArrZ<XYEta>& line) {
+__anond0e4376f0102 function    503 src/backend/cpp/bounding_region.cpp const auto signs = [&]() {
+calculate_bounding_polygon function    612 src/backend/cpp/bounding_region.cpp boost::optional<RationalPolygon> calculate_bounding_polygon(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles) {
+create           function      7 src/backend/cpp/classified_code_sequence.cpp boost::variant<InvalidCodeSequence,ClassifiedCodeSequence> ClassifiedCodeSequence::create(std::vector<int>& dirtyCodeNumbers) {
+calculateOddEvenPattern function     36 src/backend/cpp/classified_code_sequence.cpp std::string ClassifiedCodeSequence::calculateOddEvenPattern(const std::vector<int>& codeNumbers) {
+calculateCodeType function     44 src/backend/cpp/classified_code_sequence.cpp CodeType ClassifiedCodeSequence::calculateCodeType(std::vector<int>& codeNumbers) {
+calculateCodeSum function     57 src/backend/cpp/classified_code_sequence.cpp long ClassifiedCodeSequence::calculateCodeSum(const std::vector<int>& codeNumbers) {
+isStableCodeType function     63 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::isStableCodeType(CodeType codeType) {
+isOdd            function     84 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::isOdd(const std::vector<int>& codeNumbers) {
+isClosed         function    109 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::isClosed(std::vector<int>& codeNumbers) {
+isStable         function    154 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::isStable(const std::vector<int>& codeNumbers) {
+length           function    204 src/backend/cpp/classified_code_sequence.cpp int ClassifiedCodeSequence::length() const { return codeSequence->code_numbers.size(); }
+toString         function    206 src/backend/cpp/classified_code_sequence.cpp std::string ClassifiedCodeSequence::toString() const {return codeSequence->toString(); }
+operator ==      function    208 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::operator==(ClassifiedCodeSequence& other) const {
+equals           function    212 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::equals(ClassifiedCodeSequence other) {
+operator <       function    219 src/backend/cpp/classified_code_sequence.cpp bool ClassifiedCodeSequence::operator<(const ClassifiedCodeSequence& other) const {
+compareTo        function    223 src/backend/cpp/classified_code_sequence.cpp int ClassifiedCodeSequence::compareTo(const ClassifiedCodeSequence other) {
+is_repeated      function      4 src/backend/cpp/code_sequence.cpp static bool is_repeated(const std::vector<CodeNumber>& code_numbers, const size_t sub_length) {
+next_angle       function     16 src/backend/cpp/code_sequence.cpp static XYZ next_angle(const XYZ prev, const XYZ curr, const CodeNumber number) {
+is_legal         function     27 src/backend/cpp/code_sequence.cpp static bool is_legal(const std::vector<CodeNumber>& code_numbers, const size_t end) {
+smallest_index   function     59 src/backend/cpp/code_sequence.cpp static size_t smallest_index(const std::vector<CodeNumber>& code_numbers) {
+minimal_rotation function     87 src/backend/cpp/code_sequence.cpp static void minimal_rotation(std::vector<CodeNumber>& code_numbers) {
+validate         function    120 src/backend/cpp/code_sequence.cpp static void validate(const std::vector<CodeNumber>& code_numbers) {
+__anon5a5f46a90102 function    130 src/backend/cpp/code_sequence.cpp const auto pos = [](const auto num) { return num > 0; };
+CodeSequence     function    146 src/backend/cpp/code_sequence.cpp CodeSequence::CodeSequence(const std::vector<CodeNumber>& code_numbers_) {
+begin            function    157 src/backend/cpp/code_sequence.cpp CodeSequence::const_iterator CodeSequence::begin() const {
+end              function    161 src/backend/cpp/code_sequence.cpp CodeSequence::const_iterator CodeSequence::end() const {
+is_palindrome    function    165 src/backend/cpp/code_sequence.cpp bool is_palindrome(const std::vector<CodeNumber>& code_numbers, size_t i) {
+closed_index     function    190 src/backend/cpp/code_sequence.cpp boost::optional<size_t> CodeSequence::closed_index() const {
+constraint       function    230 src/backend/cpp/code_sequence.cpp LinComArrZ<XYEta> CodeSequence::constraint(XYZ first, XYZ second) const {
+create           function    277 src/backend/cpp/code_sequence.cpp boost::variant<InvalidCodeSequence, CodeSequence> CodeSequence::create(const std::vector<int32_t>&dirtyCodeNumbers){
+isLegal          function    351 src/backend/cpp/code_sequence.cpp bool CodeSequence::isLegal(const std::vector<int32_t>& codeNumbers) {
+rotateLeft       function    374 src/backend/cpp/code_sequence.cpp void CodeSequence::rotateLeft(std::vector<int32_t>& list){
+subList          function    393 src/backend/cpp/code_sequence.cpp std::vector<int32_t> CodeSequence::subList(std::vector<int32_t>& list, int32_t start, int32_t end) {
+angles           function    408 src/backend/cpp/code_sequence.cpp std::vector<XYZ> CodeSequence::angles(XYZ first, XYZ second) const {
+length           function    434 src/backend/cpp/code_sequence.cpp size_t CodeSequence::length() const {
+sum              function    438 src/backend/cpp/code_sequence.cpp CodeNumber CodeSequence::sum() const {
+is_odd           function    450 src/backend/cpp/code_sequence.cpp bool CodeSequence::is_odd() const{
+is_closed        function    454 src/backend/cpp/code_sequence.cpp bool CodeSequence::is_closed() const{
+is_stable        function    458 src/backend/cpp/code_sequence.cpp bool CodeSequence::is_stable() const{
+type             function    463 src/backend/cpp/code_sequence.cpp CodeType CodeSequence::type() const {
+number           function    486 src/backend/cpp/code_sequence.cpp CodeNumber CodeSequence::number(size_t i) const {
+numbers          function    490 src/backend/cpp/code_sequence.cpp const std::vector<CodeNumber>& CodeSequence::numbers() const {
+toString         function    494 src/backend/cpp/code_sequence.cpp std::string CodeSequence::toString() const {
+equals           function    503 src/backend/cpp/code_sequence.cpp bool CodeSequence::equals(CodeSequence& other) const {
+compare          function    507 src/backend/cpp/code_sequence.cpp int compare(const CodeSequence& lhs, const CodeSequence& rhs) {
+operator ==      function    536 src/backend/cpp/code_sequence.cpp bool operator==(const CodeSequence& lhs, const CodeSequence& rhs) {
+operator <       function    540 src/backend/cpp/code_sequence.cpp bool operator<(const CodeSequence& lhs, const CodeSequence& rhs) {
+operator <<      function    544 src/backend/cpp/code_sequence.cpp std::ostream& operator<<(std::ostream& os, const CodeSequence& code_seq) {
+remove_factor    function      8 src/backend/cpp/common.cpp static void remove_factor(CodeInfo& info, const Equation<Sin>& factor, const bool pos) {
+remove_factor_duplicate_stables function     78 src/backend/cpp/common.cpp static bool remove_factor_duplicate_stables(CodeInfo& info, const Equation<Sin>& factor, const bool pos, const bool show) {
+remove_factor_half_duplicate_stables function    154 src/backend/cpp/common.cpp static bool remove_factor_half_duplicate_stables(CodeInfo& info, const Equation<Sin>& factor, const bool pos) {
+remove_factor    function    230 src/backend/cpp/common.cpp static void remove_factor(CodeInfo& info, const Equation<Cos>& factor, const bool pos) {
+remove_factor    function    297 src/backend/cpp/common.cpp void remove_factor(CodeInfo& stable_neg_info, const CodePair& unstable, CodeInfo& stable_pos_info) {
+remove_factor_half_duplicate_stables function    356 src/backend/cpp/common.cpp static bool remove_factor_half_duplicate_stables(CodeInfo& info, const Equation<Cos>& factor, const bool pos) {
+remove_factor_duplicate_stables function    419 src/backend/cpp/common.cpp static bool remove_factor_duplicate_stables(CodeInfo& info, const Equation<Cos>& factor, const bool pos, const bool show) {
+remove_factor_duplicate_stables function    495 src/backend/cpp/common.cpp std::pair<bool, bool> remove_factor_duplicate_stables(CodeInfo& stable_neg_info, const CodePair& unstable, CodeInfo& stable_pos_info, const bool show) {
+remove_factor_duplicate_stables_2 function    558 src/backend/cpp/common.cpp bool remove_factor_duplicate_stables_2(CodeInfo& stable_neg_info, const CodePair& unstable) {
+digits_to_bits   function    613 src/backend/cpp/common.cpp uint32_t digits_to_bits(const uint32_t digits) {
+all_positive     function    622 src/backend/cpp/common.cpp bool all_positive(const std::vector<std::pair<EqVec<Trig>, Coeff64>>& eqs, const PointQ& center, const Rational& radius, Evaluator& eval) {
+is_positive      function    637 src/backend/cpp/common.cpp bool is_positive(const StableInfo& info, const ClosedRectangleQ& square, const PointQ& center, const Rational& radius, Evaluator& eval) {
+operator ()      function    651 src/backend/cpp/common.cpp boost::optional<PointQ> operator()(const geometry::Empty) const {
+operator ()      function    655 src/backend/cpp/common.cpp boost::optional<PointQ> operator()(const PointQ& point) const {
+operator ()      function    659 src/backend/cpp/common.cpp boost::optional<PointQ> operator()(const ClosedSegmentQ& seg) const {
+operator ()      function    666 src/backend/cpp/common.cpp boost::optional<ClosedSegmentQ> operator()(const geometry::Empty) const {
+operator ()      function    670 src/backend/cpp/common.cpp boost::optional<ClosedSegmentQ> operator()(const PointQ& point) const {
+operator ()      function    674 src/backend/cpp/common.cpp boost::optional<ClosedSegmentQ> operator()(const ClosedSegmentQ& seg) const {
+collinear_element function    680 src/backend/cpp/common.cpp bool collinear_element(const geometry::Point<N>& point, const geometry::Point<N>& start, const geometry::Point<N>& end) {
+intersects       function    694 src/backend/cpp/common.cpp bool intersects(const geometry::Point<N>& l0_start, const geometry::Point<N>& l0_end, const geometry::Point<N>& l1_start, const geometry::Point<N>& l1_end) {
+is_positive      function    732 src/backend/cpp/common.cpp bool is_positive(const TripleInfo& info, const ClosedRectangleQ& square, const PointQ& center, const Rational& radius, Evaluator& eval) {
+get_cost         function    770 src/backend/cpp/common.cpp Integer get_cost(const StableInfo& info) {
+cover_square     function    785 src/backend/cpp/common.cpp static cover::Cover cover_square(const ClosedConvexPolygonQ& polygon, const SinglePair& single_pair, const StableInfo& info, const ClosedRectangleQ& square, const uint32_t prec, const uint32_t extra_depth) {
+__anon2cb14bdf0102 function    815 src/backend/cpp/common.cpp const auto l0 = [&] {
+__anon2cb14bdf0202 function    819 src/backend/cpp/common.cpp const auto l1 = [&] {
+__anon2cb14bdf0302 function    823 src/backend/cpp/common.cpp const auto l2 = [&] {
+__anon2cb14bdf0402 function    827 src/backend/cpp/common.cpp const auto l3 = [&] {
+cover_square     function    840 src/backend/cpp/common.cpp static cover::Cover cover_square(const ClosedConvexPolygonQ& polygon, const TriplePair& triple, const TripleInfo& triple_info,
+__anon2cb14bdf0502 function    880 src/backend/cpp/common.cpp const auto l0 = [&] {
+__anon2cb14bdf0602 function    884 src/backend/cpp/common.cpp const auto l1 = [&] {
+__anon2cb14bdf0702 function    888 src/backend/cpp/common.cpp const auto l2 = [&] {
+__anon2cb14bdf0802 function    892 src/backend/cpp/common.cpp const auto l3 = [&] {
+operator ()      function    906 src/backend/cpp/common.cpp cover::Cover CoverAll::operator()(const cover::Empty) const {
+operator ()      function    915 src/backend/cpp/common.cpp cover::Cover CoverAll::operator()(const cover::Single& single) const {
+operator ()      function    922 src/backend/cpp/common.cpp cover::Cover CoverAll::operator()(const cover::Triple& triple) const {
+operator ()      function    933 src/backend/cpp/common.cpp cover::Cover CoverAll::operator()(const cover::Divide& divide) const {
+__anon2cb14bdf0902 function    944 src/backend/cpp/common.cpp const auto l0 = [&] {
+__anon2cb14bdf0a02 function    949 src/backend/cpp/common.cpp const auto l1 = [&] {
+__anon2cb14bdf0b02 function    954 src/backend/cpp/common.cpp const auto l2 = [&] {
+__anon2cb14bdf0c02 function    959 src/backend/cpp/common.cpp const auto l3 = [&] {
+cover_to_info    function    969 src/backend/cpp/common.cpp CoverInfo cover_to_info(const ClosedConvexPolygonQ& polygon, const ClosedRectangleQ& square, const cover::Cover& cover) {
+center_degrees   function    979 src/backend/cpp/common.cpp std::string center_degrees(const ClosedRectangleQ& rect) {
+xyz_to_xyeta     function      3 src/backend/cpp/conversion.cpp LinComArrZ<XYEta> xyz_to_xyeta(const XYZ symbol) {
+xyz_to_xypi      function     17 src/backend/cpp/conversion.cpp LinComArrZ<XYPi> xyz_to_xypi(const XYZ symbol) {
+xyz_to_xyetaphi  function     31 src/backend/cpp/conversion.cpp LinComArrZ<XYEtaPhi> xyz_to_xyetaphi(const XYZ symbol) {
+load_square      function      4 src/backend/cpp/cover/load.cpp ClosedRectangleQ cover::load_square(const std::string& dir) {
+load_polygon     function     32 src/backend/cpp/cover/load.cpp ClosedConvexPolygonQ cover::load_polygon(const std::string& dir) {
+load_singles     function     60 src/backend/cpp/cover/load.cpp std::vector<SinglePair> cover::load_singles(const std::string& dir) {
+load_triples     function    107 src/backend/cpp/cover/load.cpp std::vector<TriplePair> cover::load_triples(const std::string& dir) {
+Iterator         function    171 src/backend/cpp/cover/load.cpp explicit Iterator(const It start, const It end_)
+next             function    174 src/backend/cpp/cover/load.cpp const typename std::iterator_traits<It>::value_type& next() {
+parse_cover_recursive function    183 src/backend/cpp/cover/load.cpp static cover::Cover parse_cover_recursive(Iterator<std::vector<std::string>::const_iterator>& iter,
+load_cover       function    221 src/backend/cpp/cover/load.cpp cover::Cover cover::load_cover(const std::string& dir, const std::vector<SinglePair>& singles, const std::vector<TriplePair>& triples) {
+load_digits      function    234 src/backend/cpp/cover/load.cpp uint32_t cover::load_digits(const std::string& dir) {
+save_polygon     function      3 src/backend/cpp/cover/save.cpp void cover::save_polygon(const std::string& dir, const ClosedConvexPolygonQ& polygon) {
+save_square      function     11 src/backend/cpp/cover/save.cpp void cover::save_square(const std::string& dir, const ClosedRectangleQ& square) {
+save_digits      function     18 src/backend/cpp/cover/save.cpp void cover::save_digits(const std::string& dir, const uint32_t digits) {
+save_singles     function     25 src/backend/cpp/cover/save.cpp void cover::save_singles(const std::string& dir, const std::map<SinglePair, size_t>& singles) {
+save_triples     function     35 src/backend/cpp/cover/save.cpp void cover::save_triples(const std::string& dir, const std::map<TriplePair, size_t>& triples) {
+CoverSaver       function     53 src/backend/cpp/cover/save.cpp explicit CoverSaver(std::ostream& os_,
+operator ()      function     60 src/backend/cpp/cover/save.cpp void operator()(const cover::Empty) {
+operator ()      function     64 src/backend/cpp/cover/save.cpp void operator()(const cover::Single& single) {
+operator ()      function     68 src/backend/cpp/cover/save.cpp void operator()(const cover::Triple& triple) {
+operator ()      function     73 src/backend/cpp/cover/save.cpp void operator()(const cover::Divide& divide) {
+save_cover       function     83 src/backend/cpp/cover/save.cpp void cover::save_cover(const std::string& dir, const cover::Cover& cover,
+create           function      7 src/backend/cpp/database/admin.cpp void database::create(const std::string& db_path) {
+clear            function     63 src/backend/cpp/database/admin.cpp void database::clear(const std::string& db_path) {
+deserialize      function      4 src/backend/cpp/database/deserialize.cpp InitialAngles database::deserialize(const std::string& str) {
+deserialize      function     24 src/backend/cpp/database/deserialize.cpp PointQ database::deserialize(const std::string& point_str) {
+deserialize      function     35 src/backend/cpp/database/deserialize.cpp std::vector<PointQ> database::deserialize(const std::string& polygon_str) {
+parse_equation   function     52 src/backend/cpp/database/deserialize.cpp LinComMapZ<T<LinComArrZ<XY>>> parse_equation(const std::string& coeffs_str) {
+deserialize      function     80 src/backend/cpp/database/deserialize.cpp Equation<Sin> database::deserialize(const std::string& coeffs_str) {
+deserialize      function     85 src/backend/cpp/database/deserialize.cpp Equation<Cos> database::deserialize(const std::string& coeffs_str) {
+parse_equations  function     90 src/backend/cpp/database/deserialize.cpp std::set<Equation<T>> parse_equations(const std::string& equations_str) {
+deserialize      function    105 src/backend/cpp/database/deserialize.cpp std::set<Equation<Sin>> database::deserialize(const std::string& equations_str) {
+deserialize      function    110 src/backend/cpp/database/deserialize.cpp std::set<Equation<Cos>> database::deserialize(const std::string& equations_str) {
+serialize        function      3 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const CodeType& code_type) {
+serialize        function     25 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const CodeSequence& code_sequence) {
+serialize        function     29 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const InitialAngles& initial_angles) {
+serialize        function     33 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const PointQ& point) {
+serialize        function     37 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const std::vector<PointQ>& points) {
+serialize        function     53 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const LinComMapZ<Trig<LinComArrZ<XY>>>& equation) {
+serialize        function     76 src/backend/cpp/database/serialize.cpp void database::serialize(std::ostream& os, const std::set<LinComMapZ<Trig<LinComArrZ<XY>>>>& eqs) {
+convert_points   function      5 src/backend/cpp/database/viewer.cpp std::string convert_points(const T& points) {
+convert_equations function     29 src/backend/cpp/database/viewer.cpp std::string convert_equations(const T& equations) {
+convert_left_rights function     49 src/backend/cpp/database/viewer.cpp std::string convert_left_rights(const T& left_rights) {
+in               function     67 src/backend/cpp/database/viewer.cpp bool database::in(const CodeSequence& code_seq, const CodeType& code_type, sqlite::Database& db) {
+save_impl        function     79 src/backend/cpp/database/viewer.cpp void save_impl(const CodeSequence& code_seq, const CodeType& code_type, const T& info, sqlite::Database& db) {
+delete_from_db   function    101 src/backend/cpp/database/viewer.cpp void database::delete_from_db(const CodeSequence& code_seq, const CodeType& code_type, sqlite::Database& db) {
+save             function    109 src/backend/cpp/database/viewer.cpp void database::save(const CodeSequence& code_seq, const CodeType& code_type, const Stable& info, sqlite::Database& db) {
+save             function    113 src/backend/cpp/database/viewer.cpp void database::save(const CodeSequence& code_seq, const CodeType& code_type, const Unstable& info, sqlite::Database& db) {
+save_impl        function    119 src/backend/cpp/database/viewer.cpp void save_impl(const CodeSequence& base_code_seq, const CodeSequence& code_seq, const CodeType& code_type, const T& info, sqlite::Database& db) {
+save             function    137 src/backend/cpp/database/viewer.cpp void database::save(const CodeSequence& base_code_seq, const CodeSequence& code_seq, const CodeType& code_type, const Stable& info, sqlite::Database& db) {
+save             function    141 src/backend/cpp/database/viewer.cpp void database::save(const CodeSequence& base_code_seq, const CodeSequence& code_seq, const CodeType& code_type, const Unstable& info, sqlite::Database& db) {
+load_picture     function    145 src/backend/cpp/database/viewer.cpp Picture database::load_picture(const CodeSequence& code_seq, const CodeType& code_type, sqlite::Database& db) {
+load_info        function    157 src/backend/cpp/database/viewer.cpp Info database::load_info(const CodeSequence& code_seq, const CodeType& code_type, sqlite::Database& db) {
+parse_left_rights function    171 src/backend/cpp/database/viewer.cpp static std::vector<LeftRight> parse_left_rights(const std::string& str) {
+load_left_rights function    196 src/backend/cpp/database/viewer.cpp std::vector<LeftRight> database::load_left_rights(const CodeSequence& code_seq, const CodeType& code_type, sqlite::Database& db) {
+parse_mrr_equations function     14 src/backend/cpp/database.cpp static std::pair<std::set<Equation<Sin>>, std::set<Equation<Cos>>> parse_mrr_equations(const std::string& equations_str) {
+parse_mrr_polygon function     46 src/backend/cpp/database.cpp static std::vector<PointQ> parse_mrr_polygon(const std::string& points_str) {
+bounding_line_segment function    102 src/backend/cpp/database.cpp std::vector<PointQ> bounding_line_segment(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+bounding_polygon function    113 src/backend/cpp/database.cpp std::vector<PointQ> bounding_polygon(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+__anon6370c50b0102 function    119 src/backend/cpp/database.cpp const auto get_vertices = [](const auto& rat_pair) {
+load_stable_mrr_from_database function    128 src/backend/cpp/database.cpp static std::pair<InitialAngles, CodeInfo> load_stable_mrr_from_database(const CodeSequence& code_sequence, sqlite::Database& db) {
+load_unstable_mrr_from_database function    147 src/backend/cpp/database.cpp static std::pair<InitialAngles, CodeInfo> load_unstable_mrr_from_database(const CodeSequence& code_sequence, sqlite::Database& db) {
+load_all_from_database function    167 src/backend/cpp/database.cpp static std::pair<InitialAngles, CodeInfo> load_all_from_database(const CodeSequence& code_sequence, sqlite::Database& db) {
+calculate_stable_all_info function    192 src/backend/cpp/database.cpp CodeInfo calculate_stable_all_info(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+__anon6370c50b0202 function    203 src/backend/cpp/database.cpp const auto get_vertices = [](const auto& rat_pair) {
+calculate_unstable_all_info function    251 src/backend/cpp/database.cpp CodeInfo calculate_unstable_all_info(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+calculate_all_info function    299 src/backend/cpp/database.cpp CodeInfo calculate_all_info(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+calculate_all_vector function    377 src/backend/cpp/database.cpp CodeInfo calculate_all_vector(const CodeSequence& code_sequence, const InitialAngles& initial_angles) {
+save_to_database function    398 src/backend/cpp/database.cpp static void save_to_database(const CodeSequence& code_sequence, const CodeInfo& info, sqlite::Database& db) {
+ensure_stable_all_in_database function    411 src/backend/cpp/database.cpp static void ensure_stable_all_in_database(const CodeSequence& code_sequence, sqlite::Database& db) {
+ensure_unstable_all_in_database function    434 src/backend/cpp/database.cpp static void ensure_unstable_all_in_database(const CodeSequence& code_sequence, sqlite::Database& db) {
+get_stable_info  function    453 src/backend/cpp/database.cpp std::pair<InitialAngles, CodeInfo> get_stable_info(const CodeSequence& code_sequence, const bool mrr, sqlite::Database& db) {
+get_unstable_info function    464 src/backend/cpp/database.cpp static std::pair<InitialAngles, CodeInfo> get_unstable_info(const CodeSequence& code_sequence, const bool mrr, sqlite::Database& db) {
+get_single_info  function    475 src/backend/cpp/database.cpp static std::pair<SinglePair, StableInfo> get_single_info(const CodeSequence& code_seq, const bool mrr, sqlite::Database& db) {
+get_single_infos function    484 src/backend/cpp/database.cpp std::vector<std::pair<SinglePair, StableInfo>> get_single_infos(const std::set<CodeSequence>& code_seqs, const bool mrr, sqlite::Database& db) {
+__anon6370c50b0302 function    498 src/backend/cpp/database.cpp const auto comp = [&](const auto& p0, const auto& p1) {
+get_triple_info  function    515 src/backend/cpp/database.cpp static std::pair<TriplePair, TripleInfo> get_triple_info(const Triple& triple, const bool mrr, sqlite::Database& db) {
+get_triple_info_duplicate_stables function    537 src/backend/cpp/database.cpp static std::pair<bool, bool> get_triple_info_duplicate_stables(const Triple& triple, const bool mrr, sqlite::Database& db, const bool show) {
+get_triple_info_half_duplicate_stables function    550 src/backend/cpp/database.cpp static bool get_triple_info_half_duplicate_stables(const HalfTriple& triple, const bool mrr, sqlite::Database& db) {
+get_triple_infos function    566 src/backend/cpp/database.cpp std::vector<std::pair<TriplePair, TripleInfo>> get_triple_infos(const std::set<Triple>& triples, const bool mrr, sqlite::Database& db) {
+get_triple_infos_duplicate_stables function    579 src/backend/cpp/database.cpp std::pair<bool, bool> get_triple_infos_duplicate_stables(const std::set<Triple>& triples, const bool mrr, sqlite::Database& db, const bool show) {
+get_triple_infos_half_duplicate_stables function    588 src/backend/cpp/database.cpp bool get_triple_infos_half_duplicate_stables(const std::set<HalfTriple>& half_triples, const bool mrr, sqlite::Database& db) {
+get_single_infos_map function    597 src/backend/cpp/database.cpp std::map<SinglePair, StableInfo> get_single_infos_map(const std::vector<CodePair>& code_seqs, const bool mrr, sqlite::Database& db) {
+get_triple_infos_map function    613 src/backend/cpp/database.cpp std::map<TriplePair, TripleInfo> get_triple_infos_map(const std::vector<TriplePair>& triples, const bool mrr, sqlite::Database& db) {
+diff             function      4 src/backend/cpp/diff.cpp Coeff64 diff<XY::X>(const LinComArrZ<XYEta>& equation) {
+diff             function      9 src/backend/cpp/diff.cpp Coeff64 diff<XY::Y>(const LinComArrZ<XYEta>& equation) {
+diff             function     15 src/backend/cpp/diff.cpp LinComMapQ<Cos<LinComArrQ<XEta>>> diff(const LinComMapQ<Sin<LinComArrQ<XEta>>>& equation) {
+diff             function     33 src/backend/cpp/diff.cpp LinComMapQ<Sin<LinComArrQ<XEta>>> diff(const LinComMapQ<Cos<LinComArrQ<XEta>>>& equation) {
+diff             function     51 src/backend/cpp/diff.cpp LinComMapQ<Cos<LinComArrQ<YEta>>> diff(const LinComMapQ<Sin<LinComArrQ<YEta>>>& equation) {
+diff             function     69 src/backend/cpp/diff.cpp LinComMapQ<Sin<LinComArrQ<YEta>>> diff(const LinComMapQ<Cos<LinComArrQ<YEta>>>& equation) {
+max_coeffs       function     21 src/backend/cpp/division.cpp std::pair<Coeff64, Coeff64> max_coeffs(const LinComMapZ<Trig<LinComArrZ<XY>>>& lin_com) {
+to_poly          function     43 src/backend/cpp/division.cpp static std::pair<PolynomialZ<ST>, MonomialZ<ST>> to_poly(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+to_poly          function     69 src/backend/cpp/division.cpp static std::pair<PolynomialZ<ST>, MonomialZ<ST>> to_poly(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+first_term_divides function     96 src/backend/cpp/division.cpp boost::optional<std::pair<MonomialZ<ST>, Coeff64>> first_term_divides(const PolynomialZ<ST>& poly) {
+first_term_divides function    108 src/backend/cpp/division.cpp boost::optional<std::pair<MonomialZ<ST>, Coeff64>> first_term_divides(const PolynomialZ<ST>& poly) {
+divide_x2m1_full function    120 src/backend/cpp/division.cpp boost::optional<PolynomialZ<ST>> divide_x2m1_full(PolynomialZ<ST> remainder) {
+divide_x2m1_partial function    156 src/backend/cpp/division.cpp boost::optional<PolynomialZ<ST>> divide_x2m1_partial(PolynomialZ<ST> remainder) {
+divide_x2m1_full function    197 src/backend/cpp/division.cpp boost::optional<PolynomialZ<ST>> divide_x2m1_full(PolynomialZ<ST> remainder) {
+divide_x2m1_partial function    222 src/backend/cpp/division.cpp boost::optional<PolynomialZ<ST>> divide_x2m1_partial(PolynomialZ<ST> remainder) {
+to_sin           function    252 src/backend/cpp/division.cpp static LinComMapZ<Sin<LinComArrZ<XY>>> to_sin(const PolynomialZ<ST>& numer, const MonomialZ<ST>& denom) {
+to_cos           function    304 src/backend/cpp/division.cpp static LinComMapZ<Cos<LinComArrZ<XY>>> to_cos(const PolynomialZ<ST>& numer, const MonomialZ<ST>& denom) {
+divide_out_lines_general_lr function    396 src/backend/cpp/division.cpp void divide_out_lines_general_lr(const LinComMapZ<T>& lin_com, CurvesLR& curves, const LeftRight& left_right, bool one_over_i) {
+divide_out_lines_lr function    475 src/backend/cpp/division.cpp void divide_out_lines_lr(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com, CurvesLR& curves, const LeftRight& left_right) {
+divide_out_lines_lr function    495 src/backend/cpp/division.cpp void divide_out_lines_lr(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com, CurvesLR& curves, const LeftRight& left_right) {
+divide_sinx      function    523 src/backend/cpp/division.cpp void divide_sinx() {
+divide_siny      function    542 src/backend/cpp/division.cpp void divide_siny() {
+divide_sinz      function    557 src/backend/cpp/division.cpp void divide_sinz() {
+divide_angle     function    573 src/backend/cpp/division.cpp void divide_angle(const XYZ angle) {
+Division         function    586 src/backend/cpp/division.cpp explicit Division(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com)
+Division         function    592 src/backend/cpp/division.cpp explicit Division(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com)
+divide           function    598 src/backend/cpp/division.cpp void divide(Inserter& insert, const XYZ first, const XYZ second) {
+divide           function    619 src/backend/cpp/division.cpp void divide(Curves& curves, const XYZ first, const XYZ second) {
+divide_out_lines function    641 src/backend/cpp/division.cpp void divide_out_lines(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com, Curves& curves, const XYZ first, const XYZ second) {
+divide_out_lines function    652 src/backend/cpp/division.cpp void divide_out_lines(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com, Curves& curves, const XYZ first, const XYZ second) {
+divide_out_lines function    661 src/backend/cpp/division.cpp void divide_out_lines(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com, const XYZ first, const XYZ second, Inserter& insert) {
+divide_out_lines function    672 src/backend/cpp/division.cpp void divide_out_lines(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com, const XYZ first, const XYZ second, Inserter& insert) {
+term_reducible_by function    683 src/backend/cpp/division.cpp static boost::optional<std::pair<MonomialZ<ST>, Coeff64>> term_reducible_by(const PolynomialZ<ST>& poly, const std::pair<MonomialZ<ST>, Coeff64>& leading_term) {
+poly_divide      function    697 src/backend/cpp/division.cpp static boost::optional<PolynomialZ<ST>> poly_divide(PolynomialZ<ST> remainder, const PolynomialZ<ST>& divisor) {
+divide_generic   function    740 src/backend/cpp/division.cpp divide_generic(const LinComMapZ<T<LinComArrZ<XY>>>& dividend, const LinComMapZ<S<LinComArrZ<XY>>>& divisor) {
+divide_once      function    772 src/backend/cpp/division.cpp divide_once(const LinComMapZ<Sin<LinComArrZ<XY>>>& eq, const LinComMapZ<Sin<LinComArrZ<XY>>>& factor) {
+divide_once      function    784 src/backend/cpp/division.cpp divide_once(const LinComMapZ<Sin<LinComArrZ<XY>>>& eq, const LinComMapZ<Cos<LinComArrZ<XY>>>& factor) {
+divide_once      function    796 src/backend/cpp/division.cpp divide_once(const LinComMapZ<Cos<LinComArrZ<XY>>>& eq, const LinComMapZ<Sin<LinComArrZ<XY>>>& factor) {
+divide_once      function    811 src/backend/cpp/division.cpp divide_once(const LinComMapZ<Cos<LinComArrZ<XY>>>& eq, const LinComMapZ<Cos<LinComArrZ<XY>>>& factor) {
+LeftRightVariant function     20 src/backend/cpp/equations.cpp explicit LeftRightVariant(const CurvesLR& curves_)
+operator ()      function     24 src/backend/cpp/equations.cpp LeftRight operator()(const EquationGradient<XY, LinComArrZ<XYEta>>& eq_grad) const {
+operator ()      function     30 src/backend/cpp/equations.cpp LeftRight operator()(const EquationGradient<XY, LinComMapZ<Sin<LinComArrZ<XY>>>>& eq_grad) const {
+operator ()      function     35 src/backend/cpp/equations.cpp LeftRight operator()(const EquationGradient<XY, LinComMapZ<Cos<LinComArrZ<XY>>>>& eq_grad) const {
+stable_left_right function     40 src/backend/cpp/equations.cpp static std::vector<LeftRight> stable_left_right(const IntervalPolygon& polygon, const CurvesLR& curves) {
+unstable_left_right function     56 src/backend/cpp/equations.cpp static std::pair<LeftRight, LeftRight> unstable_left_right(const IntervalLineSegment& line_seg, const CurvesLR& curves) {
+stable_equations_to_string function     69 src/backend/cpp/equations.cpp static auto stable_equations_to_string(const IntervalPolygon& polygon, const std::array<LinComArrZ<XYEta>, 3>& inverse_perm_eta, const std::array<LinComArrZ<XYPi>, 3>& inverse_perm_pi) {
+unstable_equations_to_string function     80 src/backend/cpp/equations.cpp static std::pair<std::string, std::string> unstable_equations_to_string(const IntervalLineSegment& line_seg, const std::array<LinComArrZ<XYEta>, 3>& inverse_perm_eta, const std::array<LinComArrZ<XYPi>, 3>& inverse_perm_pi) {
+point_to_vector  function     88 src/backend/cpp/equations.cpp static Vector2<Interval> point_to_vector(const PointQ& point) {
+convert_to_interval function     96 src/backend/cpp/equations.cpp static IntervalLineSegment convert_to_interval(const RationalLineSegment& rat_line_seg) {
+convert_to_interval function    107 src/backend/cpp/equations.cpp static IntervalPolygon convert_to_interval(const RationalPolygon& rat_polygon) {
+calculate_final_polygon function    122 src/backend/cpp/equations.cpp static boost::optional<IntervalPolygon> calculate_final_polygon(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const CurvesLR& curves) {
+calculate_final_line_segment function    171 src/backend/cpp/equations.cpp static boost::optional<IntervalLineSegment> calculate_final_line_segment(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const LinComArrZ<XYEta>& constraint, const CurvesLR& curves) {
+convex_counterexample_checker function    237 src/backend/cpp/equations.cpp static void convex_counterexample_checker(const IntervalPolygon& polygon) {
+points_and_stuff_stable function    269 src/backend/cpp/equations.cpp static boost::optional<Stable> points_and_stuff_stable(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const CurvesLR& curves) {
+points_and_stuff_unstable function    299 src/backend/cpp/equations.cpp static boost::optional<Unstable> points_and_stuff_unstable(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const LinComArrZ<XYEta>& constraint, const CurvesLR& curves) {
+calculate_stable function    340 src/backend/cpp/equations.cpp boost::optional<Stable> calculate_stable(const CodeSequence& code_sequence, const CodeType code_type) {
+calculate_unstable function    386 src/backend/cpp/equations.cpp boost::optional<Unstable> calculate_unstable(const CodeSequence& code_sequence, const CodeType code_type) {
+calculate_stable function    427 src/backend/cpp/equations.cpp boost::optional<Stable> calculate_stable(const CodeSequence& code_sequence, const CodeType code_type, const std::vector<LeftRight>& left_rights) {
+calculate_unstable function    474 src/backend/cpp/equations.cpp boost::optional<Unstable> calculate_unstable(const CodeSequence& code_sequence, const CodeType code_type, const std::vector<LeftRight>& left_rights) {
+~FreeCache       function      5 src/backend/cpp/evaluator.cpp ~FreeCache() {
+eval_trig_helper function     25 src/backend/cpp/evaluator.cpp void eval_trig_helper<Sin>(mpfr_t term, const Coeff64 coeff, const mpq_t frac,
+eval_trig_helper function     75 src/backend/cpp/evaluator.cpp void eval_trig_helper<Cos>(mpfr_t term, const Coeff64 coeff, const mpq_t frac,
+eval_trig        function    119 src/backend/cpp/evaluator.cpp void eval_trig<Sin>(mpfr_t term, const Coeff64 coeff, const mpq_t frac, const unsigned long quad,
+eval_trig        function    146 src/backend/cpp/evaluator.cpp void eval_trig<Cos>(mpfr_t term, const Coeff64 coeff, const mpq_t frac, const unsigned long quad,
+Evaluator        function    172 src/backend/cpp/evaluator.cpp Evaluator::Evaluator(const uint32_t prec) {
+~Evaluator       function    195 src/backend/cpp/evaluator.cpp Evaluator::~Evaluator() {
+is_positive      function    211 src/backend/cpp/evaluator.cpp bool Evaluator::is_positive(const Equation<Trig>& eq, const Coeff64 bx, const Coeff64 by,
+is_positive      function    345 src/backend/cpp/evaluator.cpp bool Evaluator::is_positive(const EqVec<Trig>& eq, const Coeff64 bound, const PointQ& center, const Rational& radius) {
+parse_int        function     22 src/backend/cpp/general.cpp static int64_t parse_int(const char* start, const char* end) {
+decimal_to_rational function     78 src/backend/cpp/general.cpp Rational decimal_to_rational(std::string str) {
+gradient_bounds  function    128 src/backend/cpp/general.cpp std::pair<Coeff64, Coeff64> gradient_bounds(const LinComMapZ<Trig<LinComArrZ<XY>>>& eq) {
+subdivide        function    151 src/backend/cpp/general.cpp std::array<ClosedSegmentQ, 2> subdivide(const ClosedSegmentQ& seg) {
+is_zero_zero     function     21 src/backend/cpp/gradient.cpp static bool is_zero_zero(const Vector2<Interval>& point) {
+is_zero_pi2      function     30 src/backend/cpp/gradient.cpp static bool is_zero_pi2(const Vector2<Interval>& point) {
+is_pi2_zero      function     41 src/backend/cpp/gradient.cpp static bool is_pi2_zero(const Vector2<Interval>& point) {
+is_pi2_pi2       function     52 src/backend/cpp/gradient.cpp static bool is_pi2_pi2(const Vector2<Interval>& point) {
+gradient_zero_pi2 function     66 src/backend/cpp/gradient.cpp std::pair<Coeff64, Coeff64> gradient_zero_pi2(const LinComMapZ<Trig<LinComArrZ<XY>>>& f) {
+gradient_pi2_zero function    128 src/backend/cpp/gradient.cpp std::pair<Coeff64, Coeff64> gradient_pi2_zero(const LinComMapZ<Trig<LinComArrZ<XY>>>& f) {
+gradient_pi2_pi2 function    190 src/backend/cpp/gradient.cpp std::pair<Coeff64, Coeff64> gradient_pi2_pi2(const LinComMapZ<Trig<LinComArrZ<XY>>>& f) {
+zero_gradient    function    253 src/backend/cpp/gradient.cpp std::pair<Coeff64, Coeff64> zero_gradient(const LinComMapZ<Trig<LinComArrZ<XY>>>& lin_com, const Vector2<Interval>& point) {
+gradient         function    273 src/backend/cpp/gradient.cpp Vector2<Interval> gradient(const EquationGradient<XY, LinComArrZ<XYEta>>& eq_grad, const Vector2<Interval>& point) {
+gradient         function    291 src/backend/cpp/gradient.cpp Vector2<Interval> gradient(const EquationGradient<XY, Equation<Trig>>& eq_grad, const Vector2<Interval>& point) {
+makeString       function      9 src/backend/cpp/invalid_code_sequence.cpp inline std::string makeString(const std::vector<int>& codeNumbers, const std::string& sep ) {
+errorMessage     function     18 src/backend/cpp/invalid_code_sequence.cpp inline std::string errorMessage(const std::vector<int>& codeNumbers, InvalidCodeSequence errorCode) {
+in_terms_of      function      4 src/backend/cpp/linear_derivative.cpp LinComArrQ<XEta> in_terms_of<XY::X>(const LinComArrZ<XY>& lin_com, const LinComArrZ<XYEta>& constraint) {
+in_terms_of      function     29 src/backend/cpp/linear_derivative.cpp LinComArrQ<YEta> in_terms_of<XY::Y>(const LinComArrZ<XY>& lin_com, const LinComArrZ<XYEta>& constraint) {
+SideSum          function      7 src/backend/cpp/math/side_sum.cpp SideSum::SideSum(const std::array<int32_t, 3>& coeffs,const float64_t& x,const float64_t& y,const float64_t& z)
+create           function     12 src/backend/cpp/math/side_sum.cpp SideSum SideSum::create(const float64_t& x, const float64_t& y) {
+add              function     17 src/backend/cpp/math/side_sum.cpp void SideSum::add(int32_t num) {
+sub              function     21 src/backend/cpp/math/side_sum.cpp void SideSum::sub(int32_t num) {
+sum              function     25 src/backend/cpp/math/side_sum.cpp float64_t SideSum::sum() {
+copy             function     30 src/backend/cpp/math/side_sum.cpp SideSum SideSum::copy() const {
+to_string        function     34 src/backend/cpp/math/side_sum.cpp std::string SideSum::to_string() const {
+operator <<      function      6 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XY sym) {
+operator <<      function     17 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XYZ sym) {
+operator <<      function     30 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XYPi sym) {
+operator <<      function     43 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XEta sym) {
+operator <<      function     54 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const YEta sym) {
+operator <<      function     65 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XYEta sym) {
+operator <<      function     78 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const XYEtaPhi sym) {
+operator <<      function     93 src/backend/cpp/math/symbols.cpp std::ostream& operator<<(std::ostream& os, const ST sym) {
+other_angle      function    105 src/backend/cpp/math/symbols.cpp XYZ other_angle(const XYZ angle1, const XYZ angle2) {
+operator ()      function     10 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Empty, const cover::Empty) const {
+operator ()      function     14 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Empty, cover::Single& single) const {
+operator ()      function     18 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Empty, cover::Triple& triple) const {
+operator ()      function     23 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Empty, cover::Divide& divide) const {
+operator ()      function     30 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Single& single, const cover::Empty) const {
+operator ()      function     34 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Single& single0, cover::Single& single1) const {
+operator ()      function     43 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Single& single, const cover::Triple&) const {
+operator ()      function     48 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Single& single, const cover::Divide&) const {
+operator ()      function     54 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Triple& triple, const cover::Empty) const {
+operator ()      function     58 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Triple&, cover::Single& single) const {
+operator ()      function     63 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Triple& triple0, cover::Triple& triple1) const {
+operator ()      function     72 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Triple& triple, const cover::Divide&) const {
+operator ()      function     78 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Divide& divide, const cover::Empty) const {
+operator ()      function     82 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Divide&, cover::Single& single) const {
+operator ()      function     86 src/backend/cpp/merge.cpp cover::Cover operator()(const cover::Divide&, cover::Triple& triple) const {
+operator ()      function     91 src/backend/cpp/merge.cpp cover::Cover operator()(cover::Divide& divide0, cover::Divide& divide1) const {
+union_covers     function    103 src/backend/cpp/merge.cpp void union_covers(const std::string& merged_dir, const std::vector<std::string>& dirs, sqlite::Database&) {
+parse_code_sequence function      9 src/backend/cpp/parse.cpp CodeSequence parse_code_sequence(const std::string& str) {
+parse_initial_angles function     22 src/backend/cpp/parse.cpp InitialAngles parse_initial_angles(const std::string& str) {
+is_digit         function     40 src/backend/cpp/parse.cpp static bool is_digit(const char ch) {
+parse_number     function     44 src/backend/cpp/parse.cpp static Coeff64 parse_number(const std::string& num) {
+parse_lin_com_arr_xy function     56 src/backend/cpp/parse.cpp LinComArrZ<XY> parse_lin_com_arr_xy(const std::string& str) {
+parse_lin_com_arr_xypi function    109 src/backend/cpp/parse.cpp LinComArrZ<XYPi> parse_lin_com_arr_xypi(const std::string& str) {
+parse_lin_com_arr_xyeta function    174 src/backend/cpp/parse.cpp LinComArrZ<XYEta> parse_lin_com_arr_xyeta(const std::string& str) {
+parse_lin_com_map_xy function    241 src/backend/cpp/parse.cpp LinComMapZ<Trig<LinComArrZ<XY>>> parse_lin_com_map_xy(const std::string& str, const std::string& trig) {
+parse_lin_com_map_sin_xy function    301 src/backend/cpp/parse.cpp LinComMapZ<Sin<LinComArrZ<XY>>> parse_lin_com_map_sin_xy(const std::string& str) {
+parse_lin_com_map_cos_xy function    305 src/backend/cpp/parse.cpp LinComMapZ<Cos<LinComArrZ<XY>>> parse_lin_com_map_cos_xy(const std::string& str) {
+median           function     68 src/backend/cpp/refine.cpp static Vector2<Real> median(const Vector2<Interval>& point) {
+print_region     function     75 src/backend/cpp/refine.cpp void print_region(const IntervalPolygon& region) {
+print_region     function     81 src/backend/cpp/refine.cpp void print_region(const IntervalLineSegment& line_seg) {
+refine_line_segment function     92 src/backend/cpp/refine.cpp boost::optional<IntervalLineSegment> refine_line_segment(const IntervalLineSegment& line_segment, const T& curve, const EquationGradient<XY, LinComArrZ<XYEta>>& constraint) {
+ZeroInfo         function    377 src/backend/cpp/refine.cpp explicit ZeroInfo(const Sign prev_sign_, const Sign next_sign_)
+operator ==      function    380 src/backend/cpp/refine.cpp friend bool operator==(const ZeroInfo& lhs, const ZeroInfo& rhs) {
+Corner           function    391 src/backend/cpp/refine.cpp explicit Corner(const Sign corner_sign_)
+Corner           function    394 src/backend/cpp/refine.cpp explicit Corner(const Sign corner_sign_, const ZeroInfo& zero_info_)
+operator <<      function    397 src/backend/cpp/refine.cpp friend std::ostream& operator<<(std::ostream& os, const Corner& corner) {
+correct_zeros    function    408 src/backend/cpp/refine.cpp static void correct_zeros(std::vector<Corner>& corners) {
+calculate_corners function    454 src/backend/cpp/refine.cpp std::vector<Corner> calculate_corners(const IntervalPolygon& polygon, const T& curve) {
+refine_polygon   function    520 src/backend/cpp/refine.cpp boost::optional<IntervalPolygon> refine_polygon(const IntervalPolygon& polygon, const T& curve) {
+all_three_angles function     13 src/backend/cpp/reorder.cpp static std::array<Interval, 3> all_three_angles(const Vector2<Interval>& point) {
+calculate_all_points function     23 src/backend/cpp/reorder.cpp std::vector<std::array<Interval, 3>> calculate_all_points(const IntervalPolygon& polygon) {
+calculate_all_points function     36 src/backend/cpp/reorder.cpp std::vector<std::array<Interval, 3>> calculate_all_points(const IntervalLineSegment& line_seg) {
+permute_angles   function     83 src/backend/cpp/reorder.cpp std::array<XYZ, 3> permute_angles(const std::vector<std::array<Interval, 3>>& points) {
+__anon9213f7090102 function     97 src/backend/cpp/reorder.cpp std::sort(std::begin(tuples), std::end(tuples), [](const auto& first, const auto& second) {
+rearrange_points function    114 src/backend/cpp/reorder.cpp std::vector<Vector2<Interval>> rearrange_points(const std::vector<std::array<Interval, 3>>& all_points, const std::array<XYZ, 3>& permutation) {
+invert_permutation function    135 src/backend/cpp/reorder.cpp std::array<XYZ, 3> invert_permutation(const std::array<XYZ, 3>& perm) {
+__anon9213f7090202 function    141 src/backend/cpp/reorder.cpp std::sort(std::begin(sigma), std::end(sigma), [](const auto& first, const auto& second) {
+rearrange_enum_com function    152 src/backend/cpp/reorder.cpp LinComArrZ<XYPi> rearrange_enum_com(const LinComArrZ<XY>& enum_com, const std::array<LinComArrZ<XYPi>, 3>& perm) {
+rearrange_enum_com function    167 src/backend/cpp/reorder.cpp LinComArrZ<XYEta> rearrange_enum_com(const LinComArrZ<XYEta>& enum_com, const std::array<LinComArrZ<XYEta>, 3>& perm) {
+rearrange_lin_com function    186 src/backend/cpp/reorder.cpp LinComMapZ<Sin<LinComArrZ<XY>>> rearrange_lin_com(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com, const std::array<LinComArrZ<XYPi>, 3>& perm) {
+rearrange_lin_com function    204 src/backend/cpp/reorder.cpp LinComMapZ<Cos<LinComArrZ<XY>>> rearrange_lin_com(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com, const std::array<LinComArrZ<XYPi>, 3>& perm) {
+find_even_odd    function      9 src/backend/cpp/search.cpp static std::string find_even_odd(const CodeSequence& code_seq) {
+check_even_odd   function     23 src/backend/cpp/search.cpp static bool check_even_odd(const CodeSequence& code_seq, const std::string& even_odd) {
+code_search      function     46 src/backend/cpp/search.cpp std::string code_search(const CodeType code_type, const size_t length, sqlite::Database& db) {
+code_search      function     81 src/backend/cpp/search.cpp std::string code_search(const CodeType code_type, const std::string& even_odd, sqlite::Database& db) {
+shooting_angle_odd function      4 src/backend/cpp/shooting_vectors.cpp static LinComArrZ<XYPi> shooting_angle_odd(const CodeSequence& code_sequence, const std::vector<LinComArrZ<XYPi>>& code_angles) {
+shooting_angle_closed function     40 src/backend/cpp/shooting_vectors.cpp static LinComArrZ<XYEta> shooting_angle_closed(const CodeSequence& code_sequence, const std::vector<LinComArrZ<XYEta>>& code_angles) {
+__anone0210e460102 function     51 src/backend/cpp/shooting_vectors.cpp const LinComArrZ<XYEta> perp_angle = [&]() {
+shooting_vector_open function     86 src/backend/cpp/shooting_vectors.cpp std::pair<LinComMapZ<Cos<LinComArrZ<XY>>>, LinComMapZ<Sin<LinComArrZ<XY>>>> shooting_vector_open(const CodeSequence& code_sequence, const std::vector<LinComArrZ<XYPi>>& code_angles) {
+shooting_vector_closed function    110 src/backend/cpp/shooting_vectors.cpp std::pair<LinComMapZ<Sin<LinComArrZ<XY>>>, LinComMapZ<Cos<LinComArrZ<XY>>>> shooting_vector_closed(const CodeSequence& code_sequence, const std::vector<LinComArrZ<XYEta>>& code_angles) {
+Vector2D         function     10 src/backend/cpp/triangle_billiard.cpp Vector2D::Vector2D(float64_t x_, float64_t y_) : x(x_), y(y_) {}
+create           function     12 src/backend/cpp/triangle_billiard.cpp Vector2D Vector2D::create(float64_t x, float64_t y) {
+sub              function     16 src/backend/cpp/triangle_billiard.cpp Vector2D Vector2D::sub(Vector2D& v){
+add              function     23 src/backend/cpp/triangle_billiard.cpp Vector2D Vector2D::add(Vector2D& v){
+scale            function     31 src/backend/cpp/triangle_billiard.cpp Vector2D Vector2D::scale(float64_t s){
+norm             function     38 src/backend/cpp/triangle_billiard.cpp float64_t Vector2D::norm(){
+dot              function     42 src/backend/cpp/triangle_billiard.cpp float64_t Vector2D::dot(Vector2D& v, Vector2D& w) {
+cross            function     47 src/backend/cpp/triangle_billiard.cpp float64_t Vector2D::cross(Vector2D& v, Vector2D& w) {
+reflect          function     53 src/backend/cpp/triangle_billiard.cpp Vector2D Vector2D::reflect(Vector2D& l1, Vector2D& l2, Vector2D& reflectMe) {
+to_string        function     63 src/backend/cpp/triangle_billiard.cpp std::string Vector2D::to_string() const {
+equals           function     66 src/backend/cpp/triangle_billiard.cpp bool Vector2D::equals(Vector2D& other) const {
+TriangleBilliard function     79 src/backend/cpp/triangle_billiard.cpp TriangleBilliard::TriangleBilliard(Vector2D& vertexA, Vector2D& vertexB, Vector2D& vertexC,
+create           function     83 src/backend/cpp/triangle_billiard.cpp TriangleBilliard TriangleBilliard::create(float64_t xAngle, float64_t yAngle, float64_t pos) {
+getNext2         function    106 src/backend/cpp/triangle_billiard.cpp void TriangleBilliard::getNext2(bool left) {
+getNext          function    131 src/backend/cpp/triangle_billiard.cpp TriangleBilliard TriangleBilliard::getNext(bool left) {
+getNextReverse   function    152 src/backend/cpp/triangle_billiard.cpp void TriangleBilliard::getNextReverse(bool left) {
+getSpecialAngle  function    182 src/backend/cpp/triangle_billiard.cpp float64_t TriangleBilliard::getSpecialAngle() {
+equals           function    186 src/backend/cpp/triangle_billiard.cpp bool TriangleBilliard::equals(TriangleBilliard &other) const {
+to_string        function    198 src/backend/cpp/triangle_billiard.cpp std::string TriangleBilliard::to_string() const {
+TriangleBilliard4 function     10 src/backend/cpp/triangle_billiard4.cpp TriangleBilliard4::TriangleBilliard4(Vector2D& A, Vector2D& B, Vector2D& C, int32_t s, int32_t o)
+TriangleBilliard4 function     16 src/backend/cpp/triangle_billiard4.cpp TriangleBilliard4::TriangleBilliard4(Vector2D& A, Vector2D& B, Vector2D& C,
+create           function     25 src/backend/cpp/triangle_billiard4.cpp TriangleBilliard4 TriangleBilliard4::create(float64_t xAngle, float64_t yAngle) {
+getNext          function     41 src/backend/cpp/triangle_billiard4.cpp boost::optional<TriangleBilliard4> TriangleBilliard4::getNext(bool left) {
+getSpecialAngle  function     85 src/backend/cpp/triangle_billiard4.cpp float64_t TriangleBilliard4::getSpecialAngle() const {
+between          function     89 src/backend/cpp/triangle_billiard4.cpp bool TriangleBilliard4::between(float64_t perfectAngle) const {
+interval         function     93 src/backend/cpp/triangle_billiard4.cpp float64_t TriangleBilliard4::interval() const {
+toString         function     97 src/backend/cpp/triangle_billiard4.cpp std::string TriangleBilliard4::toString() const {
+reconfigure      function    112 src/backend/cpp/triangle_billiard4.cpp std::vector<Vector2D> TriangleBilliard4::reconfigure(bool left, std::vector<Vector2D>& L, std::vector<Vector2D>& R) {
+atan3            function    144 src/backend/cpp/triangle_billiard4.cpp float64_t TriangleBilliard4::atan3(float64_t y, float64_t x, bool left) {
+mod3             function    152 src/backend/cpp/triangle_billiard4.cpp int32_t TriangleBilliard4::mod3(int32_t value) {
+simplify_sin_xy  function     19 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Sin<LinComArrZ<XY>>> simplify_sin_xy(const LinComArrZ<XY>& arg) {
+simplify_cos_xy  function     38 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Cos<LinComArrZ<XY>>> simplify_cos_xy(const LinComArrZ<XY>& arg) {
+simplify_sin_xypi function     59 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Sin<LinComArrZ<XY>>> simplify_sin_xypi(const LinComArrZ<XYPi>& arg) {
+simplify_cos_xypi function     79 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Cos<LinComArrZ<XY>>> simplify_cos_xypi(const LinComArrZ<XYPi>& arg) {
+simplify_sin_xyeta function    100 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Cos<LinComArrZ<XY>>> simplify_sin_xyeta(const LinComArrZ<XYEta>& arg) {
+simplify_cos_xyeta function    123 src/backend/cpp/trig_identities.cpp std::pair<Coeff64, Sin<LinComArrZ<XY>>> simplify_cos_xyeta(const LinComArrZ<XYEta>& arg) {
+multiply_lin_com function    146 src/backend/cpp/trig_identities.cpp LinComMapZ<Sin<LinComArrZ<XY>>> multiply_lin_com(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com_cos, const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com_sin) {
+multiply_lin_com function    180 src/backend/cpp/trig_identities.cpp LinComMapZ<Sin<LinComArrZ<XY>>> multiply_lin_com(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com_sin, const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com_cos) {
+multiply_lin_com function    215 src/backend/cpp/trig_identities.cpp LinComMapZ<Cos<LinComArrZ<XY>>> multiply_lin_com(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com_sin1, const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com_sin2) {
+get_final_result_formula function    290 src/backend/cpp/trig_identities.cpp LinComMapZ<Cos<LinComArrZ<XY>>> get_final_result_formula(const LinComMapZ<Cos<LinComArrZ<XY>>> lin_com, const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com2, const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com3)
+get_final_result_formula function    300 src/backend/cpp/trig_identities.cpp LinComMapZ<Sin<LinComArrZ<XY>>> get_final_result_formula(const LinComMapZ<Sin<LinComArrZ<XY>>> lin_com, const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com2, const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com3)
+multiply_lin_com function    338 src/backend/cpp/trig_identities.cpp LinComMapZ<Cos<LinComArrZ<XY>>> multiply_lin_com(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com_cos1, const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com_cos2) {
+simplify_sin_pi2 function    373 src/backend/cpp/trig_identities.cpp static Coeff64 simplify_sin_pi2(ParamType<Coeff64> coeff) {
+simplify_cos_pi2 function    390 src/backend/cpp/trig_identities.cpp static Coeff64 simplify_cos_pi2(ParamType<Coeff64> coeff) {
+simplify_lin_com_zero_zero function    407 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_zero_zero(const LinComMapZ<Sin<LinComArrZ<XY>>>&) {
+simplify_lin_com_zero_zero function    412 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_zero_zero(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_zero_pi2 function    425 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_zero_pi2(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_zero_pi2 function    441 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_zero_pi2(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_pi2_zero function    457 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_pi2_zero(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_pi2_zero function    473 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_pi2_zero(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_pi2_pi2 function    489 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_pi2_pi2(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+simplify_lin_com_pi2_pi2 function    506 src/backend/cpp/trig_identities.cpp Coeff64 simplify_lin_com_pi2_pi2(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+CoverTrim        function     13 src/backend/cpp/trim.cpp explicit CoverTrim(const ClosedConvexPolygonQ& polygon_, const ClosedRectangleQ& square_)
+operator ()      function     16 src/backend/cpp/trim.cpp cover::Cover operator()(const cover::Empty) const {
+operator ()      function     20 src/backend/cpp/trim.cpp cover::Cover operator()(cover::Single& single) const {
+operator ()      function     28 src/backend/cpp/trim.cpp cover::Cover operator()(cover::Triple& triple) const {
+operator ()      function     37 src/backend/cpp/trim.cpp cover::Cover operator()(cover::Divide& divide) const {
+trim_cover       function     62 src/backend/cpp/trim.cpp void trim_cover(const ClosedConvexPolygonQ& polygon, const std::string& in_dir, const std::string& out_dir) {
+find_path        function      6 src/backend/cpp/unfolding.cpp static std::vector<Vertex> find_path(const Vertex& start, const Vertex& end) {
+double_if_odd    function     38 src/backend/cpp/unfolding.cpp std::vector<T> double_if_odd(const std::vector<T>& vec) {
+Unfolding        function     50 src/backend/cpp/unfolding.cpp Unfolding::Unfolding(const std::vector<CodeNumber>& tmp_code_numbers, const std::vector<XYZ>& tmp_code_angles) {
+path_vector      function    185 src/backend/cpp/unfolding.cpp std::pair<Equation<Sin>, Equation<Cos>> Unfolding::path_vector(const std::vector<Vertex>& path) const {
+__anone97af0bc0102 function    205 src/backend/cpp/unfolding.cpp auto sum = [&]() {
+__anone97af0bc0202 function    212 src/backend/cpp/unfolding.cpp auto diff = [&]() {
+shooting_vector_general function    264 src/backend/cpp/unfolding.cpp std::pair<Equation<Sin>, Equation<Cos>> Unfolding::shooting_vector_general() const {
+get_all_vectors  function    288 src/backend/cpp/unfolding.cpp std::set<std::pair<Equation<Sin>, Equation<Cos>>> Unfolding::get_all_vectors() const{
+__anone97af0bc0302 function    317 src/backend/cpp/unfolding.cpp boost::asio::post(pool, [this, begin, end, right_n, &thread_sets, t]() {
+generate_curves  function    345 src/backend/cpp/unfolding.cpp Curves Unfolding::generate_curves(const Equation<T>& shooting_vector_x, const Equation<S>& shooting_vector_y, const InitialAngles& initial_angles) const {
+__anone97af0bc0402 function    372 src/backend/cpp/unfolding.cpp boost::asio::post(pool, [this, begin, end, right_n, &shooting_vector_x, &shooting_vector_y, &initial_angles, &thread_curves, t]() {
+generate_curves  function    415 src/backend/cpp/unfolding.cpp Curves Unfolding::generate_curves(const Equation<T>& shooting_vector_x, const Equation<S>& shooting_vector_y, const InitialAngles& initial_angles, const PointQ& center, const Rational& rx, const Rational& ry) const {
+__anone97af0bc0502 function    448 src/backend/cpp/unfolding.cpp boost::asio::post(pool, [this, begin, end, right_n, &shooting_vector_x, &shooting_vector_y, &initial_angles, &thread_inserters, t]() {
+generate_curves_lr function    491 src/backend/cpp/unfolding.cpp CurvesLR Unfolding::generate_curves_lr(const Equation<T>& shooting_vector_x, const Equation<S>& shooting_vector_y) const {
+__anone97af0bc0602 function    517 src/backend/cpp/unfolding.cpp boost::asio::post(pool, [this, begin, end, right_n, &shooting_vector_x, &shooting_vector_y, &thread_curves, t]() {
+generate_curves_lr function    579 src/backend/cpp/unfolding.cpp CurvesLR Unfolding::generate_curves_lr(const Equation<T>& shooting_vector_x, const Equation<S>& shooting_vector_y, const std::vector<LeftRight>& left_rights) const {
+__anone97af0bc0702 function    603 src/backend/cpp/unfolding.cpp boost::asio::post(pool, [this, begin, end, &shooting_vector_x, &shooting_vector_y, &left_rights, &thread_curves, t]() {
+convert          function     10 src/backend/cpp/utils.cpp boost::optional<ClassifiedCodeSequence> convert(const std::vector<int>& codeList) {
+getCodeType      function     66 src/backend/cpp/utils.cpp boost::optional<CodeType> getCodeType(std::vector<int32_t>& codeList) {
+modN             function    113 src/backend/cpp/utils.cpp int32_t modN(int32_t x, int32_t n) {
+to_lower         function    128 src/backend/cpp/utils.cpp std::string to_lower(const std::string& str) {
+__anone6df45470102 function    131 src/backend/cpp/utils.cpp [](unsigned char c) { return std::tolower(c); });
+parse_code_types function    135 src/backend/cpp/utils.cpp std::vector<CodeType> parse_code_types(const std::string& input,
+is_code_type_in_list function    149 src/backend/cpp/utils.cpp bool is_code_type_in_list(CodeType code, const std::vector<CodeType>& allowed) {
+iterateFireAway3 function     20 src/backend/cpp/vary3.cpp void iterateFireAway3(
+__anona111fc4b0102 function    105 src/backend/cpp/vary3.cpp boost::asio::post(pool, [=, &codesFound, &inflight, &codesFoundMutex] {
+fireAway3        function    178 src/backend/cpp/vary3.cpp std::vector<std::vector<int32_t>> fireAway3(const int32_t movesMin, const int32_t movesMax,
+iterateFireAway4 function     19 src/backend/cpp/vary4.cpp void iterateFireAway4(
+makeStarts       function    143 src/backend/cpp/vary4.cpp std::vector<TriangleStart> makeStarts(
+lazySort         function    192 src/backend/cpp/vary4.cpp std::vector<TriangleStart> lazySort(std::vector<TriangleStart> array) {
+__anona12414cc0102 function    193 src/backend/cpp/vary4.cpp std::sort(array.begin(), array.end(), [](const TriangleStart& a, const TriangleStart& b) {
+fireAway4        function    200 src/backend/cpp/vary4.cpp std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_t movesMax,
+__anona12414cc0202 function    231 src/backend/cpp/vary4.cpp boost::asio::post(pool, [=, &allCodes, &codesMutex, &inflight]() {
+get_total_physical_memory function      3 src/backend/cpp/vary_cs.cpp size_t get_total_physical_memory() {
+compute_max_inflight function     32 src/backend/cpp/vary_cs.cpp int compute_max_inflight(float usage_fraction = 0.75f, size_t per_task_bytes = 128) {
+iterateFireAwayCS2 function     54 src/backend/cpp/vary_cs.cpp void iterateFireAwayCS2(
+__anone523442d0102 function    130 src/backend/cpp/vary_cs.cpp boost::asio::post(pool, [=, &codesFound, &inflight, &codesFoundMutex] {
+fireAwayCS       function    209 src/backend/cpp/vary_cs.cpp std::vector<std::vector<int32_t>> fireAwayCS(const int32_t movesMin, const int32_t movesMax,
+parse_singles    function     22 src/backend/cpp/verify.cpp static std::set<CodeSequence> parse_singles(const std::string& str) {
+parse_triples    function     36 src/backend/cpp/verify.cpp static std::set<Triple> parse_triples(const std::string& str) {
+parse_triples_half function     56 src/backend/cpp/verify.cpp static std::set<HalfTriple> parse_triples_half(const std::string& str) {
+parse_polygon    function     85 src/backend/cpp/verify.cpp ClosedConvexPolygonQ parse_polygon(const std::string& str) {
+to_degrees       function    118 src/backend/cpp/verify.cpp static std::string to_degrees(const ClosedRectangleQ& rect) {
+any_singles_positive function    134 src/backend/cpp/verify.cpp static boost::optional<size_t> any_singles_positive(const StableInfos& single_infos, const std::vector<size_t>& single_indices, const ClosedRectangleQ& square, Evaluator& eval) {
+any_triples_positive function    157 src/backend/cpp/verify.cpp static boost::optional<size_t> any_triples_positive(const TripleInfos& triple_infos, const std::vector<size_t>& triple_indices, const ClosedRectangleQ& square, Evaluator& eval) {
+any_half_triples_positive function    176 src/backend/cpp/verify.cpp static boost::optional<size_t> any_half_triples_positive(const HalfTripleInfos& triple_infos, const std::vector<size_t>& triple_indices, const ClosedRectangleQ& square, Evaluator& eval) {
+any_unstables_positive function    214 src/backend/cpp/verify.cpp static boost::optional<size_t> any_unstables_positive(const HalfTripleInfos& triple_infos, const std::vector<size_t>& triple_indices, const ClosedRectangleQ& square, Evaluator& eval) {
+trim_single_indices function    233 src/backend/cpp/verify.cpp static std::vector<size_t> trim_single_indices(const ClosedRectangleQ& square, const StableInfos& single_infos, const std::vector<size_t>& single_indices) {
+trim_triple_indices function    251 src/backend/cpp/verify.cpp static std::vector<size_t> trim_triple_indices(const ClosedRectangleQ& square, const TripleInfos& triple_infos, const std::vector<size_t>& triple_indices) {
+trim_half_triple_indices function    269 src/backend/cpp/verify.cpp static std::vector<size_t> trim_half_triple_indices(const ClosedRectangleQ& square, const HalfTripleInfos& triple_infos, const std::vector<size_t>& triple_indices) {
+cover_square     function    288 src/backend/cpp/verify.cpp static cover::Cover cover_square(const ClosedRectangleQ& square, const ClosedConvexPolygonQ& polygon,
+__anon41c67c8b0102 function    344 src/backend/cpp/verify.cpp const auto l0 = [&] {
+__anon41c67c8b0202 function    348 src/backend/cpp/verify.cpp const auto l1 = [&] {
+__anon41c67c8b0302 function    352 src/backend/cpp/verify.cpp const auto l2 = [&] {
+__anon41c67c8b0402 function    356 src/backend/cpp/verify.cpp const auto l3 = [&] {
+UpdateCover      function    392 src/backend/cpp/verify.cpp explicit UpdateCover(const ClosedRectangleQ& square_, const ClosedConvexPolygonQ& polygon_,
+operator ()      function    400 src/backend/cpp/verify.cpp cover::Cover operator()(const cover::Empty) const {
+operator ()      function    423 src/backend/cpp/verify.cpp cover::Cover operator()(const cover::Single& single) const {
+operator ()      function    427 src/backend/cpp/verify.cpp cover::Cover operator()(const cover::Triple& triple) const {
+operator ()      function    432 src/backend/cpp/verify.cpp cover::Cover operator()(const cover::Divide& divide) const {
+__anon41c67c8b0502 function    445 src/backend/cpp/verify.cpp const auto l0 = [&] {
+__anon41c67c8b0602 function    454 src/backend/cpp/verify.cpp const auto l1 = [&] {
+__anon41c67c8b0702 function    463 src/backend/cpp/verify.cpp const auto l2 = [&] {
+__anon41c67c8b0802 function    472 src/backend/cpp/verify.cpp const auto l3 = [&] {
+rationalToDegrees function    487 src/backend/cpp/verify.cpp static DecReal rationalToDegrees(const Rational& rat) {
+get_or           function    492 src/backend/cpp/verify.cpp uint64_t get_or(const std::map<K, uint64_t>& m, const K& k, const uint64_t v) {
+getEmpties       function    502 src/backend/cpp/verify.cpp const char* getEmpties(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+cover_polygon    function    558 src/backend/cpp/verify.cpp const char* cover_polygon(const cover::Cover& old_cover,
+check_cover      function    766 src/backend/cpp/verify.cpp const char* check_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+cover_small_polygon function    807 src/backend/cpp/verify.cpp const char* cover_small_polygon(const cover::Cover& old_cover,
+parse_fraction_to_double function   1021 src/backend/cpp/verify.cpp double parse_fraction_to_double(const std::string& fractionString) {
+check_small_cover function   1053 src/backend/cpp/verify.cpp const char* check_small_cover(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+check_cover_duplicate_stables function   1101 src/backend/cpp/verify.cpp int32_t check_cover_duplicate_stables(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+update_equation  function   1119 src/backend/cpp/verify.cpp std::string update_equation(CodeSequence code_sequence, StableInfo stable_neg, sqlite::Database& db) {
+update_initial_angles function   1160 src/backend/cpp/verify.cpp std::string update_initial_angles(CodeSequence code_sequence, sqlite::Database& db ) {
+update_points    function   1188 src/backend/cpp/verify.cpp std::string update_points(CodeSequence code_sequence, sqlite::Database& db) {
+update_unstable_equations function   1203 src/backend/cpp/verify.cpp std::string update_unstable_equations(CodeSequence code_sequence, sqlite::Database& db) {
+restore          function   1251 src/backend/cpp/verify.cpp void restore(std::set<std::pair<CodeSequence, std::string>> sequence_equations, std::set<std::pair<CodeSequence, std::string>> sequence_init_angles,
+check_cover_half_duplicate_stables function   1284 src/backend/cpp/verify.cpp bool check_cover_half_duplicate_stables(const std::string& polygon_str, const std::string& singles_str, const std::string& triples_str,
+check_cover_all  function   1295 src/backend/cpp/verify.cpp bool check_cover_all(const std::string& mrr_dir, sqlite::ConnectionPool& pool, const uint32_t extra_depth) {
+__anon41c67c8b0902 function   1302 src/backend/cpp/verify.cpp const std::vector<TriplePair>& mrr_triples) {
+to_cstr          function     46 src/backend/cpp/wrapper.cpp static char* to_cstr(const std::string& str) {
+sqlite_error_logging function     55 src/backend/cpp/wrapper.cpp void sqlite_error_logging() {
+database_create  function     59 src/backend/cpp/wrapper.cpp void database_create(const char* const db_path) {
+database_clear   function     63 src/backend/cpp/wrapper.cpp void database_clear(const char* const db_path) {
+create_connection_pool function     67 src/backend/cpp/wrapper.cpp sqlite::ConnectionPool* create_connection_pool(const char* const db_path, const int32_t pool_size) {
+__anonc5d5e1370102 function     71 src/backend/cpp/wrapper.cpp const auto lambda = [&] {
+destroy_connection_pool function    103 src/backend/cpp/wrapper.cpp void destroy_connection_pool(const sqlite::ConnectionPool* const pool) {
+cover_wrapper    function    112 src/backend/cpp/wrapper.cpp const char* cover_wrapper(const char* const poly_str,
+small_cover_wrapper function    136 src/backend/cpp/wrapper.cpp const char* small_cover_wrapper(const char* const poly_str,
+getNotFilledCoordinates function    157 src/backend/cpp/wrapper.cpp const char* getNotFilledCoordinates(const char* const poly_str,
+cover_wrapper_duplicate_stables function    178 src/backend/cpp/wrapper.cpp int32_t cover_wrapper_duplicate_stables(const char* const poly_str,
+cover_wrapper_half_duplicate_stables function    202 src/backend/cpp/wrapper.cpp int32_t cover_wrapper_half_duplicate_stables(const char* const poly_str,
+cover_wrapper_all function    228 src/backend/cpp/wrapper.cpp int32_t cover_wrapper_all(const char* const mrr_str, sqlite::ConnectionPool* const pool, const int32_t extra_depth) {
+save_to_database function    244 src/backend/cpp/wrapper.cpp static bool save_to_database(const CodeSequence& code_sequence, const CodeType& code_type, sqlite::Database& db) {
+save_to_database function    283 src/backend/cpp/wrapper.cpp static bool save_to_database(const CodeSequence& base_code_sequence, const std::vector<LeftRight>& left_rights, const CodeSequence& code_sequence, const CodeType& code_type, sqlite::Database& db) {
+save_to_database function    341 src/backend/cpp/wrapper.cpp int32_t save_to_database(const int32_t* const code_numbers_ptr,
+delete_from_database function    372 src/backend/cpp/wrapper.cpp static bool delete_from_database(const CodeSequence& code_sequence, const CodeType& code_type, sqlite::Database& db) {
+delete_from_database function    383 src/backend/cpp/wrapper.cpp int32_t delete_from_database(const int32_t* const code_numbers_ptr,
+save_to_database function    409 src/backend/cpp/wrapper.cpp static bool save_to_database(const std::vector<LeftRight>& left_rights, const CodeSequence& code_sequence, const CodeType& code_type, sqlite::Database& db) {
+copy_to_cpicture function    458 src/backend/cpp/wrapper.cpp static void copy_to_cpicture(const Picture& picture, CPicture* const cpicture) {
+load_picture     function    468 src/backend/cpp/wrapper.cpp int32_t load_picture(const int32_t* const code_numbers_ptr,
+cleanup_cpicture function    506 src/backend/cpp/wrapper.cpp void cleanup_cpicture(const CPicture* const cpicture) {
+load_picture_lr_expando function    512 src/backend/cpp/wrapper.cpp int32_t load_picture_lr_expando(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len,
+load_picture_lr  function    584 src/backend/cpp/wrapper.cpp int32_t load_picture_lr(const int32_t* const base_code_numbers_ptr, const int32_t base_code_numbers_len,
+copy_to_cinfoAll function    641 src/backend/cpp/wrapper.cpp static void copy_to_cinfoAll(const CodeInfo& info, CInfoAll* const cinfoAll) {
+load_all_equations function    655 src/backend/cpp/wrapper.cpp int32_t load_all_equations(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfoAll* const cinfoAll, sqlite::ConnectionPool* const pool){
+load_info_all    function    685 src/backend/cpp/wrapper.cpp int32_t load_info_all(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfoAll* const cinfoAll, sqlite::ConnectionPool* const pool){
+copy_to_cinfo    function    712 src/backend/cpp/wrapper.cpp static void copy_to_cinfo(const Info& info, CInfo* const cinfo) {
+load_info        function    725 src/backend/cpp/wrapper.cpp int32_t load_info(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfo* const cinfo, sqlite::ConnectionPool* const pool) {
+copy_to_cinfoAll_2 function    759 src/backend/cpp/wrapper.cpp static void copy_to_cinfoAll_2(const CodeInfo& info, CInfoAll* const cinfoAll) {
+load_slope_info  function    772 src/backend/cpp/wrapper.cpp int32_t load_slope_info(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CInfoAll* const cinfoAll, sqlite::ConnectionPool* const pool) {
+cleanup_cinfo    function    795 src/backend/cpp/wrapper.cpp void cleanup_cinfo(const CInfo* const cinfo) {
+merge_covers     function    805 src/backend/cpp/wrapper.cpp int32_t merge_covers(const char* const merge_dir_ptr, const char* const cover_dirs_ptr, sqlite::ConnectionPool* const pool) {
+code_search_length function    825 src/backend/cpp/wrapper.cpp int32_t code_search_length(const int32_t code_type_int, const int32_t length_int, CString* const cstring, sqlite::ConnectionPool* const pool) {
+code_search_even_odd function    848 src/backend/cpp/wrapper.cpp int32_t code_search_even_odd(const int32_t code_type_int, const char* const even_odd, CString* const cstring, sqlite::ConnectionPool* const pool) {
+trim_cover       function    870 src/backend/cpp/wrapper.cpp int32_t trim_cover(const char* const poly_str, const char* const in_dir, const char* const out_dir) {
+bounding_polygon function    886 src/backend/cpp/wrapper.cpp static std::string bounding_polygon(const CodeSequence& code_seq, sqlite::Database& db) {
+bounding_polygon function    918 src/backend/cpp/wrapper.cpp int32_t bounding_polygon(const int32_t* const code_numbers_ptr, const int32_t code_numbers_len, CString* const cstring, sqlite::ConnectionPool* const pool) {
+parse_equation_database function    946 src/backend/cpp/wrapper.cpp static Equation<T> parse_equation_database(const std::string& equation_str) {
+replaceAll       function    952 src/backend/cpp/wrapper.cpp void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+parse_term       function    962 src/backend/cpp/wrapper.cpp void parse_term(std::string& coeff, std::stringstream& buffer) {
+parse_equation_info function    976 src/backend/cpp/wrapper.cpp static Equation<T> parse_equation_info(const std::string& equation_str) {
+equation_stuff_first_only function   1044 src/backend/cpp/wrapper.cpp static float64_t equation_stuff_first_only(const Equation<T> equation, float64_t x_value, float64_t y_value, std::ostringstream& oss, bool is_p) {
+equation_stuff   function   1063 src/backend/cpp/wrapper.cpp static std::string equation_stuff(const Equation<T> equation, float64_t x_value, float64_t y_value, std::ostringstream& oss,bool is_sin) {
+calculate_gradient function   1185 src/backend/cpp/wrapper.cpp float64_t calculate_gradient(const char* const equation_cstr, float64_t x_value, float64_t y_value, bool from_database, CString* const cstring, CString* const cstring2) {
+cleanup_string   function   1221 src/backend/cpp/wrapper.cpp void cleanup_string(const CString* const cstring) {
+vary_cs_cpp      function   1228 src/backend/cpp/wrapper.cpp int vary_cs_cpp(const int32_t int_movesMin, const int32_t int_movesMax, const float64_t int_xAngle, const float64_t int_yAngle,CString* const result,const char* const reqTypes){
+vary_3_cpp       function   1258 src/backend/cpp/wrapper.cpp int vary_3_cpp(const int32_t int_movesMin, const int32_t int_movesMax,const float64_t db_initPosition, const float64_t db_xAngle, const float64_t db_yAngle,CString* const result,const char* const reqTypes){
+vary_4_cpp       function   1284 src/backend/cpp/wrapper.cpp int vary_4_cpp(const int32_t int_movesMin, const int32_t int_movesMax, const float64_t db_xAngle, const float64_t db_yAngle,CString* const result,const char* const reqTypes){
+backend_cancel   function   1309 src/backend/cpp/wrapper.cpp void backend_cancel() { 
+CodeInfo         function     87 src/backend/headers/bad_angles.hpp explicit CodeInfo(const CodeNumber number_, const XYZ angle_, const bool left_, const LinComArrZ<XYEtaPhi>& path_angle_)
+operator <<      function     94 src/backend/headers/bad_angles.hpp friend std::ostream& operator<<(std::ostream& os, const CodeInfo& info) {
+CodeInfoVec      function    105 src/backend/headers/bad_angles.hpp explicit CodeInfoVec(const XYZ prev_, const std::vector<CodeInfo>& same_, const XYZ next_)
+operator <<      function    111 src/backend/headers/bad_angles.hpp friend std::ostream& operator<<(std::ostream& os, const CodeInfoVec& info) {
+calculate_key_path_angles function    116 src/backend/headers/bad_angles.hpp std::vector<LinComArrZ<XYEtaPhi>> calculate_key_path_angles(const std::vector<std::pair<CodeNumber, XYZ>>& code_nums_angles) {
+calculate_code_info function    157 src/backend/headers/bad_angles.hpp std::vector<CodeInfo> calculate_code_info(const std::vector<std::pair<CodeNumber, XYZ>>& code_nums_angles) {
+get_candidates   function    176 src/backend/headers/bad_angles.hpp std::map<std::vector<XYZ>, std::vector<CodeInfoVec>> get_candidates(const std::vector<CodeInfo>& code_info) {
+insides_equal    function    221 src/backend/headers/bad_angles.hpp bool insides_equal(const CodeInfoVec& info_vec0, const CodeInfoVec& info_vec1) {
+equal_first      function    236 src/backend/headers/bad_angles.hpp bool equal_first(const CodeInfoVec& vec) {
+find_bad_angles  function    262 src/backend/headers/bad_angles.hpp std::set<EnumComZ<XYEta>> find_bad_angles(const std::map<std::vector<XYZ>, std::vector<CodeInfoVec>>& candidates) {
+calculate_bad_angles function    382 src/backend/headers/bad_angles.hpp std::set<EnumComZ<XYEta>> calculate_bad_angles(std::vector<std::pair<CodeNumber, XYZ>> code_nums_angles) {
+__anon80b17ef40102 function    390 src/backend/headers/bad_angles.hpp const auto func = [&] {
+invalid_enum_value function     26 src/backend/headers/basic.hpp std::string invalid_enum_value(const std::string& enum_name, const T value) {
+compare          function     36 src/backend/headers/basic.hpp int compare(const T lhs, const T rhs) {
+operator <<      function     41 src/backend/headers/basic.hpp std::ostream& operator<<(std::ostream& os, const std::pair<T, S>& p) {
+print_container  function     47 src/backend/headers/basic.hpp std::ostream& print_container(std::ostream& os, const Cont& cont) {
+operator <<      function     67 src/backend/headers/basic.hpp std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr) {
+operator <<      function     72 src/backend/headers/basic.hpp std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
+operator <<      function     77 src/backend/headers/basic.hpp std::ostream& operator<<(std::ostream& os, const std::set<T>& set) {
+operator <<      function     82 src/backend/headers/basic.hpp std::ostream& operator<<(std::ostream& os, const std::map<T, S>& map) {
+operator <<      function     19 src/backend/headers/bezier.hpp std::ostream& operator<<(std::ostream& os, const RSOne sym) {
+diff             function     33 src/backend/headers/bezier.hpp LinComR<Cos<EnumComR<RSOne>>> diff(const LinComR<Sin<EnumComR<RSOne>>>& equation) {
+diff             function     52 src/backend/headers/bezier.hpp LinComR<Sin<EnumComR<RSOne>>> diff(const LinComR<Cos<EnumComR<RSOne>>>& equation) {
+EquationGradient function     77 src/backend/headers/bezier.hpp explicit EquationGradient(const Equation& eq)
+evalf            function     87 src/backend/headers/bezier.hpp N evalf(const LinComR<Sin<EnumComR<RSOne>>>& equation, const N& r, const N& s) {
+evalf            function    107 src/backend/headers/bezier.hpp N evalf(const LinComR<Cos<EnumComR<RSOne>>>& equation, const N& r, const N& s) {
+parallel         function    131 src/backend/headers/bezier.hpp bool parallel(const Vector2<Interval>& a, const Vector2<Interval>& b) {
+parametric_intersection function    140 src/backend/headers/bezier.hpp Vector2<Real> parametric_intersection(const Vector2<Real>& p0, const Vector2<Real>& v0, const Vector2<Real>& p1, const Vector2<Real>& v1) {
+calc_b13x        function    164 src/backend/headers/bezier.hpp EnumComR<RSOne> calc_b13x(const Vector2<Real>& p0, const Vector2<Real>& g0, const Vector2<Real>& p3, const Vector2<Real>& g3) {
+calc_b13y        function    199 src/backend/headers/bezier.hpp EnumComR<RSOne> calc_b13y(const Vector2<Real>& p0, const Vector2<Real>& g0, const Vector2<Real>& p3, const Vector2<Real>& g3) {
+calc_b23x        function    233 src/backend/headers/bezier.hpp EnumComR<RSOne> calc_b23x(const Vector2<Real>& p0, const Vector2<Real>& g0, const Vector2<Real>& p3, const Vector2<Real>& g3) {
+calc_b23y        function    267 src/backend/headers/bezier.hpp EnumComR<RSOne> calc_b23y(const Vector2<Real>& p0, const Vector2<Real>& g0, const Vector2<Real>& p3, const Vector2<Real>& g3) {
+intersection_box function    301 src/backend/headers/bezier.hpp Vector2<Real> intersection_box(const EquationGradient<Symbols, T>& eq0, const EquationGradient<Symbols, T>& eq1, const Vector2<Real>& max) {
+__anonb0d42f750102 function    306 src/backend/headers/bezier.hpp const auto inside = [&](const Vector2<Real>& x_trial) {
+cubic_bezier     function    344 src/backend/headers/bezier.hpp std::pair<Vector2<Real>, Vector2<Real>> cubic_bezier(const Vector2<Interval>& a, const EquationGradient<XY, T>& eq_grad, const Vector2<Interval>& b, const bool same_orient) {
+operator <<      function     21 src/backend/headers/bezier_interp.hpp std::ostream& operator<<(std::ostream& os, const XYOne sym) {
+diff             function     38 src/backend/headers/bezier_interp.hpp Real diff<XY::X>(const LinComArrR<XYOne>& equation) {
+diff             function     43 src/backend/headers/bezier_interp.hpp Real diff<XY::Y>(const LinComArrR<XYOne>& equation) {
+evalf            function     49 src/backend/headers/bezier_interp.hpp N evalf(const LinComArrR<XYOne>& equation, ParamType<N> x, ParamType<N> y) {
+evalf            function     58 src/backend/headers/bezier_interp.hpp N evalf(const Real& value, ParamType<N>, ParamType<N>) {
+parametric_to_implicit function     65 src/backend/headers/bezier_interp.hpp LinComArrR<XYOne> parametric_to_implicit(const Vector2<Real>& p, const Vector2<Real>& v) {
+intersection_line function     75 src/backend/headers/bezier_interp.hpp Vector2<Real> intersection_line(const EquationGradient<XY, T>& eq0, const EquationGradient<XY, S>& eq1, const Vector2<Real>& tmp) {
+__anonce0318e60102 function     81 src/backend/headers/bezier_interp.hpp const auto inside = [](const Vector2<Real>&) {
+cubic_bezier_interp function    109 src/backend/headers/bezier_interp.hpp std::pair<Vector2<Real>, Vector2<Real>> cubic_bezier_interp(const Vector2<Real>& a, const EquationGradient<XY, T>& eq_grad, const Vector2<Real>& b) {
+RationalLineSegment function     19 src/backend/headers/bounding_region.hpp explicit RationalLineSegment(const PointQ& point0_,
+RationalPair     function     37 src/backend/headers/bounding_region.hpp explicit RationalPair(const PointQ& point_, const LinComArrZ<XYEta>& side_line_)
+ClassifiedCodeSequence function     38 src/backend/headers/classified_code_sequence.hpp explicit ClassifiedCodeSequence(CodeSequence codeSequence) {
+operator <<      function     13 src/backend/headers/code_type.hpp inline std::ostream& operator<<(std::ostream& os, const CodeType code_type) {
+is_stable        function     30 src/backend/headers/code_type.hpp inline bool is_stable(const CodeType code_type) {
+gradient_bound   function     14 src/backend/headers/common.hpp Coeff64 gradient_bound(const LinComMapZ<Trig<LinComArrZ<XY>>>& eq) {
+map_to_vec       function     33 src/backend/headers/common.hpp EqVec<Trig> map_to_vec(const Equation<Trig>& eq) {
+Triple           function     57 src/backend/headers/common.hpp explicit Triple(const CodeSequence& stable_neg_, const CodeSequence& unstable_, const CodeSequence& stable_pos_)
+operator ==      function     60 src/backend/headers/common.hpp friend bool operator==(const Triple& lhs, const Triple& rhs) {
+operator <       function     64 src/backend/headers/common.hpp friend bool operator<(const Triple& lhs, const Triple& rhs) {
+operator <<      function     68 src/backend/headers/common.hpp friend std::ostream& operator<<(std::ostream& os, const Triple& triple) {
+HalfTriple       function     78 src/backend/headers/common.hpp explicit HalfTriple(const CodeSequence& stable_neg_, const CodeSequence& unstable_)
+operator ==      function     81 src/backend/headers/common.hpp friend bool operator==(const HalfTriple& lhs, const HalfTriple& rhs) {
+operator <       function     85 src/backend/headers/common.hpp friend bool operator<(const HalfTriple& lhs, const HalfTriple& rhs) {
+operator <<      function     89 src/backend/headers/common.hpp friend std::ostream& operator<<(std::ostream& os, const HalfTriple& triple) {
+CodeInfo         function    101 src/backend/headers/common.hpp explicit CodeInfo(const std::vector<PointQ>& points_,
+CodeInfo         function    108 src/backend/headers/common.hpp explicit CodeInfo() {}
+StableInfo       function    116 src/backend/headers/common.hpp explicit StableInfo(const CodeInfo& code_info)
+UnstableInfo     function    138 src/backend/headers/common.hpp explicit UnstableInfo(const CodeInfo& code_info)
+TripleInfo       function    158 src/backend/headers/common.hpp explicit TripleInfo(const StableInfo& stable_neg_info_, const UnstableInfo& unstable_info_, const StableInfo& stable_pos_info_)
+HalfTripleInfo   function    166 src/backend/headers/common.hpp explicit HalfTripleInfo(const StableInfo& stable_neg_info_, const UnstableInfo& unstable_info_)
+CoverAll         function    200 src/backend/headers/common.hpp explicit CoverAll(const ClosedRectangleQ& square_, const ClosedConvexPolygonQ& polygon_,
+CoverAll         function    206 src/backend/headers/common.hpp explicit CoverAll(const ClosedRectangleQ& square_, const ClosedConvexPolygonQ& polygon_,
+CoverInfo        function    231 src/backend/headers/common.hpp explicit CoverInfo(const uint32_t deep)
+CoverVisitor     function    242 src/backend/headers/common.hpp explicit CoverVisitor(CoverInfo& cover_info_, const ClosedConvexPolygonQ& polygon_, const ClosedRectangleQ& square_, const uint32_t depth_)
+operator ()      function    245 src/backend/headers/common.hpp void operator()(const cover::Empty) {
+operator ()      function    254 src/backend/headers/common.hpp void operator()(const cover::Single& stable_covered) {
+operator ()      function    261 src/backend/headers/common.hpp void operator()(const cover::Triple& triple_covered) {
+operator ()      function    266 src/backend/headers/common.hpp void operator()(const cover::HalfTriple& triple_covered) {
+operator ()      function    273 src/backend/headers/common.hpp void operator()(const cover::Divide& sub) {
+get_index_info   function    296 src/backend/headers/common.hpp std::map<T, size_t> get_index_info(const std::map<T, uint64_t>& counts) {
+cover_square_all function    314 src/backend/headers/common.hpp bool cover_square_all(const std::string& mrr_dir, const std::string& all_dir, const Func& load, const uint32_t extra_depth) {
+__anon8d57827d0102 function    318 src/backend/headers/common.hpp const auto print_time = [&](const std::string& msg, const auto& begin, const auto& end) {
+CodePair         function     11 src/backend/headers/cover/cover.hpp explicit CodePair(const CodeSequence& code_sequence_, const InitialAngles& initial_angles_)
+operator ==      function     14 src/backend/headers/cover/cover.hpp friend bool operator==(const CodePair& lhs, const CodePair& rhs) {
+operator <       function     18 src/backend/headers/cover/cover.hpp friend bool operator<(const CodePair& lhs, const CodePair& rhs) {
+operator <<      function     22 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const CodePair& code_pair) {
+UniquePtr        function     35 src/backend/headers/cover/cover.hpp explicit UniquePtr(Args&&... args) {
+get              function     39 src/backend/headers/cover/cover.hpp T& get() {
+get              function     43 src/backend/headers/cover/cover.hpp const T& get() const {
+operator ==      function     47 src/backend/headers/cover/cover.hpp friend bool operator==(const UniquePtr<T>& lhs, const UniquePtr<T>& rhs) {
+operator <       function     51 src/backend/headers/cover/cover.hpp friend bool operator<(const UniquePtr<T>& lhs, const UniquePtr<T>& rhs) {
+operator <<      function     55 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const UniquePtr<T>& p) {
+SharedPtr        function     68 src/backend/headers/cover/cover.hpp explicit SharedPtr(Args&&... args) {
+get              function     72 src/backend/headers/cover/cover.hpp T& get() {
+get              function     76 src/backend/headers/cover/cover.hpp const T& get() const {
+operator ==      function     80 src/backend/headers/cover/cover.hpp friend bool operator==(const SharedPtr<T>& lhs, const SharedPtr<T>& rhs) {
+operator <       function     84 src/backend/headers/cover/cover.hpp friend bool operator<(const SharedPtr<T>& lhs, const SharedPtr<T>& rhs) {
+operator <<      function     88 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const SharedPtr<T>& p) {
+SinglePair       function     97 src/backend/headers/cover/cover.hpp explicit SinglePair(const SharedPtr<CodePair>& stable_)
+operator ==      function    100 src/backend/headers/cover/cover.hpp friend bool operator==(const SinglePair& lhs, const SinglePair& rhs) {
+operator <       function    104 src/backend/headers/cover/cover.hpp friend bool operator<(const SinglePair& lhs, const SinglePair& rhs) {
+operator <<      function    108 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const SinglePair& single_pair) {
+TriplePair       function    119 src/backend/headers/cover/cover.hpp explicit TriplePair(const SharedPtr<CodePair>& stable_neg_,
+operator ==      function    124 src/backend/headers/cover/cover.hpp friend bool operator==(const TriplePair& lhs, const TriplePair& rhs) {
+operator <       function    128 src/backend/headers/cover/cover.hpp friend bool operator<(const TriplePair& lhs, const TriplePair& rhs) {
+operator <<      function    132 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const TriplePair& triple_pair) {
+HalfTriplePair   function    142 src/backend/headers/cover/cover.hpp explicit HalfTriplePair(const SharedPtr<CodePair>& stable_neg_,
+operator ==      function    146 src/backend/headers/cover/cover.hpp friend bool operator==(const HalfTriplePair& lhs, const HalfTriplePair& rhs) {
+operator <       function    150 src/backend/headers/cover/cover.hpp friend bool operator<(const HalfTriplePair& lhs, const HalfTriplePair& rhs) {
+operator <<      function    154 src/backend/headers/cover/cover.hpp friend std::ostream& operator<<(std::ostream& os, const HalfTriplePair& triple_pair) {
+Quarters         function    170 src/backend/headers/cover/cover.hpp explicit Quarters(T ul, T ur, T ll, T lr)
+begin            function    173 src/backend/headers/cover/cover.hpp iterator begin() {
+end              function    177 src/backend/headers/cover/cover.hpp iterator end() {
+begin            function    181 src/backend/headers/cover/cover.hpp const_iterator begin() const {
+end              function    185 src/backend/headers/cover/cover.hpp const_iterator end() const {
+get              function    190 src/backend/headers/cover/cover.hpp T& get() {
+get              function    195 src/backend/headers/cover/cover.hpp const T& get() const {
+at               function    199 src/backend/headers/cover/cover.hpp T& at(const size_t i) {
+at               function    203 src/backend/headers/cover/cover.hpp const T& at(const size_t i) const {
+Single           function    215 src/backend/headers/cover/cover.hpp explicit Single(const SinglePair& single_pair_)
+Triple           function    222 src/backend/headers/cover/cover.hpp explicit Triple(const TriplePair& triple_pair_)
+HalfTriple       function    229 src/backend/headers/cover/cover.hpp explicit HalfTriple(const HalfTriplePair& half_triple_pair_)
+Divide           function    243 src/backend/headers/cover/cover.hpp explicit Divide(Cover&& cover0, Cover&& cover1, Cover&& cover2, Cover&& cover3)
+serialize        function     32 src/backend/headers/database/serialize.hpp std::string serialize(const T& t) {
+table_name       function     39 src/backend/headers/database/serialize.hpp inline std::string table_name(const CodeSequence& code_sequence) {
+Picture          function     11 src/backend/headers/database/viewer.hpp explicit Picture(const std::string& initial_angles_, const std::string& points_, const std::string& equations_)
+Info             function     22 src/backend/headers/database/viewer.hpp explicit Info(const std::string& initial_angles_, const std::string& points_, const std::string& equations_,
+StableRef        function     34 src/backend/headers/database/viewer.hpp explicit StableRef(const LeftRight& left_right_, const size_t index_)
+operator ==      function     39 src/backend/headers/database/viewer.hpp friend bool operator==(const StableRef& lhs, const StableRef& rhs) {
+operator <       function     43 src/backend/headers/database/viewer.hpp friend bool operator<(const StableRef& lhs, const StableRef& rhs) {
+Stable           function     56 src/backend/headers/database/viewer.hpp explicit Stable(const InitialAngles& initial_angles_,
+__anon6cdc6f8a0102 function     71 src/backend/headers/database/viewer.hpp const auto for_each = [&](const auto& stable_ref) {
+operator <<      function     81 src/backend/headers/database/viewer.hpp friend std::ostream & operator << (std::ostream& os, const Stable& stable) {
+Unstable         function    114 src/backend/headers/database/viewer.hpp explicit Unstable(const InitialAngles& initial_angles_,
+operator <<      function    136 src/backend/headers/database/viewer.hpp friend std::ostream& operator<<(std::ostream& os, const Unstable& unstable) {
+diff             function     17 src/backend/headers/diff.hpp LinComMapZ<Cos<LinComArrZ<XY>>> diff(const LinComMapZ<Sin<LinComArrZ<XY>>>& equation) {
+diff             function     36 src/backend/headers/diff.hpp LinComMapZ<Sin<LinComArrZ<XY>>> diff(const LinComMapZ<Cos<LinComArrZ<XY>>>& equation) {
+EquationGradient function     78 src/backend/headers/diff.hpp explicit EquationGradient(const Equation& eq)
+Inserter         function    159 src/backend/headers/division.hpp explicit Inserter(const PointQ& center_, const Rational& rx_, const Rational& ry_)
+insert           function    162 src/backend/headers/division.hpp void insert(const Equation<Sin>& eq) {
+insert           function    171 src/backend/headers/division.hpp void insert(const Equation<Cos>& eq) {
+evalf            function      8 src/backend/headers/evalf.hpp N evalf(const LinComArrQ<XEta>& equation, ParamType<N> x) {
+evalf            function     16 src/backend/headers/evalf.hpp N evalf(const LinComArrQ<YEta>& equation, ParamType<N> y) {
+evalf            function     24 src/backend/headers/evalf.hpp N evalf(const LinComMapQ<Sin<LinComArrQ<XEta>>>& equation, ParamType<N> x) {
+evalf            function     43 src/backend/headers/evalf.hpp N evalf(const LinComMapQ<Cos<LinComArrQ<XEta>>>& equation, ParamType<N> x) {
+evalf            function     62 src/backend/headers/evalf.hpp N evalf(const LinComMapQ<Sin<LinComArrQ<YEta>>>& equation, ParamType<N> y) {
+evalf            function     81 src/backend/headers/evalf.hpp N evalf(const LinComMapQ<Cos<LinComArrQ<YEta>>>& equation, ParamType<N> y) {
+evalf            function    101 src/backend/headers/evalf.hpp N evalf(const Coeff64 value, ParamType<N>, ParamType<N>) {
+evalf            function    106 src/backend/headers/evalf.hpp N evalf(const LinComArrZ<XYEta>& equation, ParamType<N> x, ParamType<N> y) {
+evalf            function    115 src/backend/headers/evalf.hpp N evalf(const LinComMapZ<Sin<LinComArrZ<XY>>>& equation, ParamType<N> x, ParamType<N> y) {
+evalf            function    134 src/backend/headers/evalf.hpp N evalf(const LinComMapZ<Cos<LinComArrZ<XY>>>& equation, ParamType<N> x, ParamType<N> y) {
+evalf            function    150 src/backend/headers/evalf.hpp N evalf(const LinComVecZ<Sin<LinComArrZ<XY>>>& equation, ParamType<N> x, ParamType<N> y) {
+evalf            function    169 src/backend/headers/evalf.hpp N evalf(const LinComVecZ<Cos<LinComArrZ<XY>>>& equation, ParamType<N> x, ParamType<N> y) {
+bound            function    185 src/backend/headers/evalf.hpp N bound(const LinComMapZ<Sin<LinComArrZ<XY>>>& equation) {
+bound            function    200 src/backend/headers/evalf.hpp N bound(const LinComMapZ<Cos<LinComArrZ<XY>>>& equation) {
+multiply_square  function    214 src/backend/headers/evalf.hpp static LinComMapZ<Cos<LinComArrZ<XY>>> multiply_square(const LinComMapZ<Cos<LinComArrZ<XY>>>& equation) {
+multiply_cubic   function    220 src/backend/headers/evalf.hpp static LinComMapZ<Cos<LinComArrZ<XY>>> multiply_cubic(const LinComMapZ<Cos<LinComArrZ<XY>>>& equation) {
+multiply_square  function    228 src/backend/headers/evalf.hpp static LinComMapZ<Cos<LinComArrZ<XY>>> multiply_square(const LinComMapZ<Sin<LinComArrZ<XY>>>& equation) {
+multiply_cubic   function    234 src/backend/headers/evalf.hpp static LinComMapZ<Sin<LinComArrZ<XY>>> multiply_cubic(const LinComMapZ<Sin<LinComArrZ<XY>>>& equation) {
+factor_partial   function     10 src/backend/headers/factor.hpp std::string factor_partial(const LinComMapZ<T>& lin_com, bool one_over_i) {
+factor_partial   function    130 src/backend/headers/factor.hpp std::string factor_partial(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+factor_partial   function    134 src/backend/headers/factor.hpp std::string factor_partial(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+factor_full      function    139 src/backend/headers/factor.hpp std::string factor_full(const LinComMapZ<T>& lin_com, bool one_over_i) {
+factor_full      function    259 src/backend/headers/factor.hpp std::string factor_full(const LinComMapZ<Sin<LinComArrZ<XY>>>& lin_com) {
+factor_full      function    263 src/backend/headers/factor.hpp std::string factor_full(const LinComMapZ<Cos<LinComArrZ<XY>>>& lin_com) {
+range            function     41 src/backend/headers/falgo.hpp boost::integer_range<Integer> range(const Integer upper) {
+range            function     46 src/backend/headers/falgo.hpp boost::integer_range<Integer> range(const Integer lower, const Integer upper) {
+range            function     51 src/backend/headers/falgo.hpp boost::integer_range<Integer> range(const Integer lower, const Integer upper, const Integer step) {
+front            function     64 src/backend/headers/falgo.hpp typename std::vector<T>::reference front(std::vector<T>& vec) {
+front            function     69 src/backend/headers/falgo.hpp typename std::vector<T>::const_reference front(const std::vector<T>& vec) {
+find             function     74 src/backend/headers/falgo.hpp boost::optional<typename std::vector<T>::const_iterator> find(const std::vector<T>& vec, const T& value) {
+unique           function     85 src/backend/headers/falgo.hpp void unique(std::vector<T>& vec) {
+append           function     92 src/backend/headers/falgo.hpp void append(std::vector<T>&) {}
+append           function     95 src/backend/headers/falgo.hpp void append(std::vector<T>& a, const std::vector<T>& b, const Args&... args) {
+back             function    102 src/backend/headers/falgo.hpp typename std::vector<T>::reference back(std::vector<T>& vec) {
+back             function    107 src/backend/headers/falgo.hpp typename std::vector<T>::const_reference back(const std::vector<T>& vec) {
+zip              function    112 src/backend/headers/falgo.hpp std::vector<std::pair<T, S>> zip(const std::vector<T>& first, const std::vector<T>& second) {
+prev_permutation function    125 src/backend/headers/falgo.hpp bool prev_permutation(Container& cont) {
+next_permutation function    130 src/backend/headers/falgo.hpp bool next_permutation(Container& cont) {
+rotate_left      function    135 src/backend/headers/falgo.hpp void rotate_left(Container& cont) {
+all_of           function    142 src/backend/headers/falgo.hpp bool all_of(const Container& cont, const Func& func) {
+sort             function    147 src/backend/headers/falgo.hpp void sort(Container& cont) {
+sort             function    152 src/backend/headers/falgo.hpp void sort(Container& cont, const Comp& comp) {
+reverse          function    157 src/backend/headers/falgo.hpp void reverse(Container& cont) {
+sum              function    162 src/backend/headers/falgo.hpp typename Container::value_type sum(const Container& cont) {
+min              function    167 src/backend/headers/falgo.hpp const T& min(const T& t) {
+min              function    172 src/backend/headers/falgo.hpp const T& min(const T& t, const Ts&... ts) {
+max              function    177 src/backend/headers/falgo.hpp const T& max(const T& t) {
+max              function    182 src/backend/headers/falgo.hpp const T& max(const T& t, const Ts&... ts) {
+repeat_n         function    188 src/backend/headers/falgo.hpp void repeat_n(const Func& func, const std::uintmax_t n) {
+for_each         function    195 src/backend/headers/falgo.hpp void for_each(const Container& cont, const Func& func) {
+transform        function    200 src/backend/headers/falgo.hpp auto transform(const std::array<T, N>& arr, const Func& func) {
+transform        function    210 src/backend/headers/falgo.hpp auto transform(const std::vector<T>& vec, const Func& func) {
+min_rotation     function    326 src/backend/headers/falgo.hpp void min_rotation(Container& cont) {
+__anondcf9521d0102 function    330 src/backend/headers/falgo.hpp const auto func = [&] {
+enumerate        function    341 src/backend/headers/falgo.hpp std::vector<std::pair<std::size_t, typename Container::value_type>> enumerate(const Container& cont) {
+min_range        function    360 src/backend/headers/falgo.hpp void min_range(Val& min, const Gen& gen, const Size& n) {
+InitialAngles    function    107 src/backend/headers/general.hpp explicit InitialAngles(const XYZ first_, const XYZ second_)
+operator <<      function    110 src/backend/headers/general.hpp friend std::ostream& operator<<(std::ostream& os, const InitialAngles& initial_angles) {
+operator ==      function    114 src/backend/headers/general.hpp friend bool operator==(const InitialAngles& lhs, const InitialAngles& rhs) {
+operator <       function    118 src/backend/headers/general.hpp friend bool operator<(const InitialAngles& lhs, const InitialAngles& rhs) {
+operator <<      function    130 src/backend/headers/general.hpp inline std::ostream& operator<<(std::ostream& os, const Sign sign) {
+sign             function    145 src/backend/headers/general.hpp Sign sign(const boost::multiprecision::number<boost::multiprecision::mpfi_float_backend<Precision>>& interval) {
+compare_interval function    190 src/backend/headers/general.hpp inline Order compare_interval(const Interval& a, const Interval& b) {
+subdivide        function    236 src/backend/headers/general.hpp std::array<geometry::Rectangle<Rational, Top>, 4> subdivide(const geometry::Rectangle<Rational, Top>& rect) {
+collinear_element function     22 src/backend/headers/geometry/algorithms.hpp bool collinear_element(const Point<N>& point, const Segment<N, Top>& seg) {
+element          function     32 src/backend/headers/geometry/algorithms.hpp bool element(const N& num, const Interval<N, Topology::Closed>& interval) {
+element          function     37 src/backend/headers/geometry/algorithms.hpp bool element(const N& num, const Interval<N, Topology::Open>& interval) {
+element          function     42 src/backend/headers/geometry/algorithms.hpp bool element(const Point<N>& point, const Rectangle<N, Top>& rectangle) {
+element          function     47 src/backend/headers/geometry/algorithms.hpp bool element(const Point<N>& point, const Segment<N, Top>& segment) {
+element          function     58 src/backend/headers/geometry/algorithms.hpp bool element(const Point<N>& point, const ConvexPolygon<N, Topology::Closed>& polygon) {
+element          function     90 src/backend/headers/geometry/algorithms.hpp bool element(const Point<N>& point, const ConvexPolygon<N, Topology::Open>& polygon) {
+subset           function    117 src/backend/headers/geometry/algorithms.hpp bool subset(const Interval<N, Top>& a, const Interval<N, Top>& b) {
+subset           function    122 src/backend/headers/geometry/algorithms.hpp bool subset(const Rectangle<N, Top>& a, const Rectangle<N, Top>& b) {
+subset           function    127 src/backend/headers/geometry/algorithms.hpp bool subset(const ConvexPolygon<N, Topology::Closed>& polygon, const Rectangle<N, Top>& rectangle) {
+subset           function    140 src/backend/headers/geometry/algorithms.hpp bool subset(const Rectangle<N, Topology::Closed>& rectangle, const ConvexPolygon<N, Top>& polygon) {
+subset           function    154 src/backend/headers/geometry/algorithms.hpp bool subset(const Rectangle<N, Topology::Open>& rectangle, const ConvexPolygon<N, Topology::Closed>& polygon) {
+disjoint         function    173 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Interval<N, Topology::Open>& a, const Interval<N, Topology::Open>& b) {
+disjoint         function    178 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Interval<N, Topology::Open>& a, const Interval<N, Topology::Closed>& b) {
+disjoint         function    183 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Interval<N, Topology::Closed>& a, const Interval<N, Topology::Open>& b) {
+disjoint         function    188 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Interval<N, Topology::Closed>& a, const Interval<N, Topology::Closed>& b) {
+Disjoint         function    197 src/backend/headers/geometry/algorithms.hpp explicit Disjoint(const Interval<N, Top1>& a_)
+operator ()      function    200 src/backend/headers/geometry/algorithms.hpp bool operator()(const N& p) const {
+operator ()      function    204 src/backend/headers/geometry/algorithms.hpp bool operator()(const Interval<N, Top2>& b) const {
+disjoint         function    210 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Interval<N, Top1>& a, const boost::variant<N, Interval<N, Top2>>& b) {
+disjoint         function    216 src/backend/headers/geometry/algorithms.hpp bool disjoint(const boost::variant<N, Interval<N, Top1>>& b, const Interval<N, Top2>& a) {
+separating_axis  function    240 src/backend/headers/geometry/algorithms.hpp bool separating_axis(const Segment<N, Top1>& segment, const Shape<N, Top2>& shape) {
+separating_axis  function    254 src/backend/headers/geometry/algorithms.hpp bool separating_axis(const Rectangle<N, Top1>& rectangle, const Shape<N, Top2>& shape) {
+separating_axis  function    272 src/backend/headers/geometry/algorithms.hpp bool separating_axis(const ConvexPolygon<N, Top1>& polygon, const Shape<N, Top2>& shape) {
+disjoint         function    297 src/backend/headers/geometry/algorithms.hpp bool disjoint(const Shape1& shape1, const Shape2& shape2) {
+intersects       function    302 src/backend/headers/geometry/algorithms.hpp bool intersects(const T& a, const S& b) {
+intersection     function    312 src/backend/headers/geometry/algorithms.hpp intersection(const Interval<N, Topology::Closed>& a, const Interval<N, Topology::Closed>& b) {
+intersection     function    336 src/backend/headers/geometry/algorithms.hpp intersection(const Rectangle<N, Topology::Closed>& rect, const Segment<N, Topology::Closed>& seg) {
+special_intersection function    410 src/backend/headers/geometry/algorithms.hpp special_intersection(const Rectangle<N, Topology::Closed>& rect, const Segment<N, Topology::Open>& seg) {
+collinear_element function     22 src/backend/headers/geometry/convex_polygon.hpp static bool collinear_element(const Point<N>& point, const Point<N>& start, const Point<N>& end) {
+intersects       function     39 src/backend/headers/geometry/convex_polygon.hpp static bool intersects(const Point<N>& l0_start, const Point<N>& l0_end,
+check            function     78 src/backend/headers/geometry/convex_polygon.hpp void check() const {
+normalize        function    190 src/backend/headers/geometry/convex_polygon.hpp void normalize() {
+print_points     function    206 src/backend/headers/geometry/convex_polygon.hpp void print_points(std::ostream& os) const {
+ConvexPolygon    function    224 src/backend/headers/geometry/convex_polygon.hpp ConvexPolygon(const std::vector<Point<N>>& vertices_, const Check ch = Check::Checked)
+begin            function    234 src/backend/headers/geometry/convex_polygon.hpp const_iterator begin() const {
+end              function    238 src/backend/headers/geometry/convex_polygon.hpp const_iterator end() const {
+cbegin           function    242 src/backend/headers/geometry/convex_polygon.hpp const_iterator cbegin() const {
+cend             function    246 src/backend/headers/geometry/convex_polygon.hpp const_iterator cend() const {
+size             function    250 src/backend/headers/geometry/convex_polygon.hpp size_t size() const {
+vertex           function    254 src/backend/headers/geometry/convex_polygon.hpp const Point<N>& vertex(const size_t i) const {
+operator ==      function    262 src/backend/headers/geometry/convex_polygon.hpp friend bool operator==(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator !=      function    266 src/backend/headers/geometry/convex_polygon.hpp friend bool operator!=(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator <       function    270 src/backend/headers/geometry/convex_polygon.hpp friend bool operator<(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator >       function    274 src/backend/headers/geometry/convex_polygon.hpp friend bool operator>(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator <=      function    278 src/backend/headers/geometry/convex_polygon.hpp friend bool operator<=(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator >=      function    282 src/backend/headers/geometry/convex_polygon.hpp friend bool operator>=(const ConvexPolygon<N, Top>& lhs, const ConvexPolygon<N, Top>& rhs) {
+operator <<      function    286 src/backend/headers/geometry/convex_polygon.hpp friend std::ostream& operator<<(std::ostream& os, const ConvexPolygon<N, Top>& poly) {
+check            function     20 src/backend/headers/geometry/interval.hpp void check() const {
+Interval         function     29 src/backend/headers/geometry/interval.hpp Interval(const N& lower, const N& upper, const Check ch = Check::Checked)
+lower            function     37 src/backend/headers/geometry/interval.hpp const N& lower() const {
+upper            function     41 src/backend/headers/geometry/interval.hpp const N& upper() const {
+length           function     45 src/backend/headers/geometry/interval.hpp N length() const {
+center           function     49 src/backend/headers/geometry/interval.hpp N center() const {
+operator ==      function     53 src/backend/headers/geometry/interval.hpp friend bool operator==(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator !=      function     57 src/backend/headers/geometry/interval.hpp friend bool operator!=(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator <       function     61 src/backend/headers/geometry/interval.hpp friend bool operator<(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator >       function     65 src/backend/headers/geometry/interval.hpp friend bool operator>(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator <=      function     69 src/backend/headers/geometry/interval.hpp friend bool operator<=(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator >=      function     73 src/backend/headers/geometry/interval.hpp friend bool operator>=(const Interval<N, Top>& lhs, const Interval<N, Top>& rhs) {
+operator <<      function     79 src/backend/headers/geometry/interval.hpp inline std::ostream& operator<<(std::ostream& os, const Interval<N, Topology::Closed>& interval) {
+operator <<      function     84 src/backend/headers/geometry/interval.hpp inline std::ostream& operator<<(std::ostream& os, const Interval<N, Topology::Open>& interval) {
+Point            function     16 src/backend/headers/geometry/point.hpp Point(const N& x_, const N& y_)
+operator +=      function     19 src/backend/headers/geometry/point.hpp void operator+=(const Point<N>& point) {
+operator -=      function     24 src/backend/headers/geometry/point.hpp void operator-=(const Point<N>& point) {
+operator *=      function     29 src/backend/headers/geometry/point.hpp void operator*=(const N& scale) {
+operator /=      function     34 src/backend/headers/geometry/point.hpp void operator/=(const N& scale) {
+operator +       function     45 src/backend/headers/geometry/point.hpp friend Point<N> operator+(Point<N> lhs, const Point<N>& rhs) {
+operator -       function     50 src/backend/headers/geometry/point.hpp friend Point<N> operator-(Point<N> lhs, const Point<N>& rhs) {
+operator *       function     55 src/backend/headers/geometry/point.hpp friend Point<N> operator*(Point<N> point, const N& scale) {
+operator /       function     60 src/backend/headers/geometry/point.hpp friend Point<N> operator/(Point<N> point, const N& scale) {
+operator ==      function     70 src/backend/headers/geometry/point.hpp friend bool operator==(const Point<N>& lhs, const Point<N>& rhs) {
+operator !=      function     74 src/backend/headers/geometry/point.hpp friend bool operator!=(const Point<N>& lhs, const Point<N>& rhs) {
+operator <       function     78 src/backend/headers/geometry/point.hpp friend bool operator<(const Point<N>& lhs, const Point<N>& rhs) {
+operator >       function     82 src/backend/headers/geometry/point.hpp friend bool operator>(const Point<N>& lhs, const Point<N>& rhs) {
+operator <=      function     86 src/backend/headers/geometry/point.hpp friend bool operator<=(const Point<N>& lhs, const Point<N>& rhs) {
+operator >=      function     90 src/backend/headers/geometry/point.hpp friend bool operator>=(const Point<N>& lhs, const Point<N>& rhs) {
+operator <<      function     94 src/backend/headers/geometry/point.hpp friend std::ostream& operator<<(std::ostream& os, const Point<N>& point) {
+dot              function     98 src/backend/headers/geometry/point.hpp static N dot(const Point<N>& u, const Point<N>& v) {
+cross            function    103 src/backend/headers/geometry/point.hpp static N cross(const Point<N>& u, const Point<N>& v) {
+orientation      function    114 src/backend/headers/geometry/point.hpp static int orientation(const Point<N>& u, const Point<N>& v, const Point<N>& w) {
+project_impl     function     22 src/backend/headers/geometry/project.hpp boost::variant<N, Interval<N, Top>> project_impl(const N& first, const N& second) {
+project_x        function     39 src/backend/headers/geometry/project.hpp boost::variant<N, Interval<N, Top>> project_x(const Segment<N, Top>& seg) {
+project_y        function     45 src/backend/headers/geometry/project.hpp boost::variant<N, Interval<N, Top>> project_y(const Segment<N, Top>& seg) {
+project          function     51 src/backend/headers/geometry/project.hpp boost::variant<N, Interval<N, Top>> project(const Segment<N, Top>& seg, const Point<N>& axis) {
+project_x        function     67 src/backend/headers/geometry/project.hpp Interval<N, Top> project_x(const Rectangle<N, Top>& rect) {
+project_y        function     72 src/backend/headers/geometry/project.hpp Interval<N, Top> project_y(const Rectangle<N, Top>& rect) {
+project          function     77 src/backend/headers/geometry/project.hpp Interval<N, Top> project(const Rectangle<N, Top>& rect, const Point<N>& axis) {
+project_x        function    101 src/backend/headers/geometry/project.hpp Interval<N, Top> project_x(const ConvexPolygon<N, Top>& poly) {
+project_y        function    124 src/backend/headers/geometry/project.hpp Interval<N, Top> project_y(const ConvexPolygon<N, Top>& poly) {
+project          function    150 src/backend/headers/geometry/project.hpp Interval<N, Top> project(const ConvexPolygon<N, Top>& poly, const Point<N>& axis) {
+Rectangle        function     18 src/backend/headers/geometry/rectangle.hpp Rectangle(const Interval<N, Top>& x, const Interval<N, Top>& y)
+interval_x       function     21 src/backend/headers/geometry/rectangle.hpp const Interval<N, Top>& interval_x() const {
+interval_y       function     25 src/backend/headers/geometry/rectangle.hpp const Interval<N, Top>& interval_y() const {
+lower_left       function     29 src/backend/headers/geometry/rectangle.hpp Point<N> lower_left() const {
+lower_right      function     33 src/backend/headers/geometry/rectangle.hpp Point<N> lower_right() const {
+upper_left       function     37 src/backend/headers/geometry/rectangle.hpp Point<N> upper_left() const {
+upper_right      function     41 src/backend/headers/geometry/rectangle.hpp Point<N> upper_right() const {
+width            function     45 src/backend/headers/geometry/rectangle.hpp N width() const {
+height           function     49 src/backend/headers/geometry/rectangle.hpp N height() const {
+center           function     53 src/backend/headers/geometry/rectangle.hpp Point<N> center() const {
+is_square        function     57 src/backend/headers/geometry/rectangle.hpp bool is_square() const {
+operator ==      function     61 src/backend/headers/geometry/rectangle.hpp friend bool operator==(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator !=      function     65 src/backend/headers/geometry/rectangle.hpp friend bool operator!=(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator <       function     69 src/backend/headers/geometry/rectangle.hpp friend bool operator<(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator >       function     73 src/backend/headers/geometry/rectangle.hpp friend bool operator>(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator <=      function     77 src/backend/headers/geometry/rectangle.hpp friend bool operator<=(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator >=      function     81 src/backend/headers/geometry/rectangle.hpp friend bool operator>=(const Rectangle<N, Top>& lhs, const Rectangle<N, Top>& rhs) {
+operator <<      function     85 src/backend/headers/geometry/rectangle.hpp friend std::ostream& operator<<(std::ostream& os, const Rectangle<N, Top>& rect) {
+check            function     20 src/backend/headers/geometry/segment.hpp void check() const {
+Segment          function     27 src/backend/headers/geometry/segment.hpp Segment(const Point<N>& start, const Point<N>& end, const Check ch = Check::Checked)
+start            function     35 src/backend/headers/geometry/segment.hpp const Point<N>& start() const {
+end              function     39 src/backend/headers/geometry/segment.hpp const Point<N>& end() const {
+is_horizontal    function     43 src/backend/headers/geometry/segment.hpp bool is_horizontal() const {
+is_vertical      function     47 src/backend/headers/geometry/segment.hpp bool is_vertical() const {
+midpoint         function     51 src/backend/headers/geometry/segment.hpp Point<N> midpoint() const {
+vector           function     56 src/backend/headers/geometry/segment.hpp Point<N> vector() const {
+side             function     61 src/backend/headers/geometry/segment.hpp int side(const Point<N>& point) const {
+operator ==      function     69 src/backend/headers/geometry/segment.hpp friend bool operator==(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator !=      function     73 src/backend/headers/geometry/segment.hpp friend bool operator!=(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator <       function     77 src/backend/headers/geometry/segment.hpp friend bool operator<(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator >       function     81 src/backend/headers/geometry/segment.hpp friend bool operator>(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator <=      function     85 src/backend/headers/geometry/segment.hpp friend bool operator<=(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator >=      function     89 src/backend/headers/geometry/segment.hpp friend bool operator>=(const Segment<N, Top>& lhs, const Segment<N, Top>& rhs) {
+operator <<      function     93 src/backend/headers/geometry/segment.hpp friend std::ostream& operator<<(std::ostream& os, const Segment<N, Top>& seg) {
+GradientVariant  function     20 src/backend/headers/gradient.hpp explicit GradientVariant(const Vector2<Interval>& point_)
+operator ()      function     24 src/backend/headers/gradient.hpp Vector2<Interval> operator()(const EquationGradient<XY, S>& eq_grad) const {
+curve_sign_at_point function      6 src/backend/headers/intersection.hpp inline Sign curve_sign_at_point(const LinComArrZ<XYEta>& equation, const Vector2<Interval>& point) {
+curve_sign_at_point function     11 src/backend/headers/intersection.hpp inline Sign curve_sign_at_point(const Equation<Sin>& equation, const Vector2<Interval>& point) {
+curve_sign_at_point function     67 src/backend/headers/intersection.hpp inline Sign curve_sign_at_point(const Equation<Cos>& equation, const Vector2<Interval>& point) {
+point_sign_line  function    126 src/backend/headers/intersection.hpp inline int point_sign_line(const Vector2<Real>& p, const Vector2<Real>& q, const Vector2<Real>& x) {
+intersection_unchecked function    138 src/backend/headers/intersection.hpp Vector2<Interval> intersection_unchecked(const EquationGradient<Symbols, T>& eq0, const EquationGradient<Symbols, S>& eq1, const Vector2<Real>& a, const Vector2<Real>& b) {
+__anoncbdfd6cb0102 function    143 src/backend/headers/intersection.hpp const auto inside = [&](const Vector2<Real>& x_trial) {
+intersection_zero function    170 src/backend/headers/intersection.hpp Vector2<Interval> intersection_zero(const EquationGradient<Symbols, T>& eq0, const EquationGradient<Symbols, S>& eq1, const Vector2<Real>& v, const Vector2<Real>& w) {
+intersection     function    239 src/backend/headers/intersection.hpp Vector2<Interval> intersection(const EquationGradient<Symbols, T>& eq0, const EquationGradient<Symbols, S>& eq1, const Vector2<Real>& v, const Vector2<Real>& w) {
+IntersectionVariant function    297 src/backend/headers/intersection.hpp explicit IntersectionVariant(const EquationGradient<Symbols, T>& curve_, const Vector2<Real>& point0_, const Vector2<Real>& point1_)
+operator ()      function    306 src/backend/headers/intersection.hpp Vector2<Interval> operator()(const EquationGradient<Symbols, S>& eq_grad) const {
+IntersectionZeroVariant function    319 src/backend/headers/intersection.hpp explicit IntersectionZeroVariant(const EquationGradient<Symbols, T>& curve_, const Vector2<Real>& point0_, const Vector2<Real>& point1_)
+operator ()      function    328 src/backend/headers/intersection.hpp Vector2<Interval> operator()(const EquationGradient<Symbols, S>& eq_grad) const {
+in_terms_of      function     81 src/backend/headers/linear_derivative.hpp LinComMapQ<Trig<LinComArrQ<typename Eta<Symbol>::Type>>> in_terms_of(const LinComMapZ<Trig<LinComArrZ<XY>>>& equation, const LinComArrZ<XYEta>& line) {
+negate_sign      function    100 src/backend/headers/linear_derivative.hpp inline Sign negate_sign(const Sign sign) {
+linear_derivative_sign function    113 src/backend/headers/linear_derivative.hpp Sign linear_derivative_sign(const LinComMapQ<Trig<LinComArrQ<T>>>& equation, const Interval& point, const bool increasing) {
+is_increasing    function    174 src/backend/headers/linear_derivative.hpp inline bool is_increasing(const Order order) {
+linear_derivative_sign function    188 src/backend/headers/linear_derivative.hpp Sign linear_derivative_sign(const LinComMapZ<Trig<LinComArrZ<XY>>>& curve, const LinComArrZ<XYEta>& line, const Vector2<Interval>& a, const Vector2<Interval>& b) {
+abs              function      9 src/backend/headers/math/arith.hpp T abs(const T val) {
+gcd              function     21 src/backend/headers/math/arith.hpp T gcd(T a, T b) {
+LinComArr        function     31 src/backend/headers/math/lin_com_arr.hpp constexpr explicit LinComArr() {
+LinComArr        function     39 src/backend/headers/math/lin_com_arr.hpp constexpr explicit LinComArr(const T&... coeffs_)
+begin            function     45 src/backend/headers/math/lin_com_arr.hpp iterator begin() {
+end              function     49 src/backend/headers/math/lin_com_arr.hpp iterator end() {
+begin            function     53 src/backend/headers/math/lin_com_arr.hpp const_iterator begin() const {
+end              function     57 src/backend/headers/math/lin_com_arr.hpp const_iterator end() const {
+add              function     61 src/backend/headers/math/lin_com_arr.hpp void add(const E expr) {
+sub              function     65 src/backend/headers/math/lin_com_arr.hpp void sub(const E expr) {
+add              function     69 src/backend/headers/math/lin_com_arr.hpp void add(const N coeff, const E expr) {
+sub              function     77 src/backend/headers/math/lin_com_arr.hpp void sub(const N coeff, const E expr) {
+add              function     82 src/backend/headers/math/lin_com_arr.hpp void add(const LinComArr<E, N>& other) {
+sub              function     86 src/backend/headers/math/lin_com_arr.hpp void sub(const LinComArr<E, N>& other) {
+add              function     90 src/backend/headers/math/lin_com_arr.hpp void add(const N scale, const LinComArr<E, N>& other) {
+sub              function     98 src/backend/headers/math/lin_com_arr.hpp void sub(const N scale, const LinComArr<E, N>& other) {
+add              function    105 src/backend/headers/math/lin_com_arr.hpp static LinComArr<E, N> add(LinComArr<E, N> lhs, const LinComArr<E, N>& rhs) {
+sub              function    110 src/backend/headers/math/lin_com_arr.hpp static LinComArr<E, N> sub(LinComArr<E, N> lhs, const LinComArr<E, N>& rhs) {
+scale            function    115 src/backend/headers/math/lin_com_arr.hpp void scale(const N scale) {
+unit             function    126 src/backend/headers/math/lin_com_arr.hpp N unit() const {
+divide_unit      function    144 src/backend/headers/math/lin_com_arr.hpp void divide_unit() {
+content          function    150 src/backend/headers/math/lin_com_arr.hpp N content() const {
+divide_content   function    164 src/backend/headers/math/lin_com_arr.hpp void divide_content() {
+coeff            function    177 src/backend/headers/math/lin_com_arr.hpp N coeff(const E expr) const {
+coeff            function    183 src/backend/headers/math/lin_com_arr.hpp N coeff() const {
+is_zero          function    189 src/backend/headers/math/lin_com_arr.hpp bool is_zero() const {
+operator ==      function    199 src/backend/headers/math/lin_com_arr.hpp friend bool operator==(const LinComArr<E, N>& lhs, const LinComArr<E, N>& rhs) {
+operator <       function    203 src/backend/headers/math/lin_com_arr.hpp friend bool operator<(const LinComArr<E, N>& lhs, const LinComArr<E, N>& rhs) {
+operator <<      function    207 src/backend/headers/math/lin_com_arr.hpp friend std::ostream& operator<<(std::ostream& os, const LinComArr<E, N>& lin_com) {
+LinComMap        function     24 src/backend/headers/math/lin_com_map.hpp explicit LinComMap(const std::initializer_list<value_type>& init)
+begin            function     27 src/backend/headers/math/lin_com_map.hpp iterator begin() {
+end              function     31 src/backend/headers/math/lin_com_map.hpp iterator end() {
+begin            function     35 src/backend/headers/math/lin_com_map.hpp const_iterator begin() const {
+end              function     39 src/backend/headers/math/lin_com_map.hpp const_iterator end() const {
+add              function     43 src/backend/headers/math/lin_com_map.hpp void add(const T& expr) {
+sub              function     48 src/backend/headers/math/lin_com_map.hpp void sub(const T& expr) {
+add              function     53 src/backend/headers/math/lin_com_map.hpp void add(const N coeff, const T& expr) {
+sub              function     74 src/backend/headers/math/lin_com_map.hpp void sub(const N coeff, const T& expr) {
+add              function     95 src/backend/headers/math/lin_com_map.hpp void add(const LinComMap<T, N>& other) {
+sub              function    101 src/backend/headers/math/lin_com_map.hpp void sub(const LinComMap<T, N>& other) {
+scale            function    107 src/backend/headers/math/lin_com_map.hpp void scale(const N scale) {
+content          function    118 src/backend/headers/math/lin_com_map.hpp N content() const {
+divide_content   function    131 src/backend/headers/math/lin_com_map.hpp void divide_content() {
+size             function    142 src/backend/headers/math/lin_com_map.hpp size_t size() const {
+is_zero          function    146 src/backend/headers/math/lin_com_map.hpp bool is_zero() const {
+coeff            function    151 src/backend/headers/math/lin_com_map.hpp N coeff(const T& expr) const {
+operator ==      function    163 src/backend/headers/math/lin_com_map.hpp friend bool operator==(const LinComMap<T, N>& lhs, const LinComMap<T, N>& rhs) {
+operator <       function    167 src/backend/headers/math/lin_com_map.hpp friend bool operator<(const LinComMap<T, N>& lhs, const LinComMap<T, N>& rhs) {
+operator <<      function    171 src/backend/headers/math/lin_com_map.hpp friend std::ostream& operator<<(std::ostream& os, const LinComMap<T, N>& lin_com) {
+LinComVec        function     28 src/backend/headers/math/lin_com_vec.hpp explicit LinComVec()
+LinComVec        function     31 src/backend/headers/math/lin_com_vec.hpp explicit LinComVec(const LinComMap<T, N>& lin_com_map) {
+begin            function     38 src/backend/headers/math/lin_com_vec.hpp const_iterator begin() const {
+end              function     42 src/backend/headers/math/lin_com_vec.hpp const_iterator end() const {
+size             function     46 src/backend/headers/math/lin_com_vec.hpp size_t size() const {
+is_zero          function     50 src/backend/headers/math/lin_com_vec.hpp bool is_zero() const {
+operator ==      function     55 src/backend/headers/math/lin_com_vec.hpp friend bool operator==(const LinComVec<T, N>& lhs, const LinComVec<T, N>& rhs) {
+operator <       function     59 src/backend/headers/math/lin_com_vec.hpp friend bool operator<(const LinComVec<T, N>& lhs, const LinComVec<T, N>& rhs) {
+operator <<      function     63 src/backend/headers/math/lin_com_vec.hpp friend std::ostream& operator<<(std::ostream& os, const LinComVec<T, N>& lin_com) {
+Monomial         function     28 src/backend/headers/math/monomial.hpp constexpr explicit Monomial() {
+Monomial         function     36 src/backend/headers/math/monomial.hpp constexpr explicit Monomial(const T&... exps)
+begin            function     42 src/backend/headers/math/monomial.hpp iterator begin() {
+end              function     46 src/backend/headers/math/monomial.hpp iterator end() {
+begin            function     50 src/backend/headers/math/monomial.hpp const_iterator begin() const {
+end              function     54 src/backend/headers/math/monomial.hpp const_iterator end() const {
+multiply         function     58 src/backend/headers/math/monomial.hpp void multiply(const E expr, const N exponent = 1) {
+divide           function     66 src/backend/headers/math/monomial.hpp void divide(const E expr, const N exponent = 1) {
+multiply         function     71 src/backend/headers/math/monomial.hpp void multiply(const Monomial<E, N>& other) {
+divide           function     77 src/backend/headers/math/monomial.hpp void divide(const Monomial<E, N>& other) {
+power            function     83 src/backend/headers/math/monomial.hpp void power(const N power) {
+divides          function     90 src/backend/headers/math/monomial.hpp bool divides(const Monomial<E, N>& other) const {
+exponent         function    101 src/backend/headers/math/monomial.hpp N exponent() const {
+exponent         function    106 src/backend/headers/math/monomial.hpp N exponent(const E expr) const {
+is_one           function    111 src/backend/headers/math/monomial.hpp bool is_one() const {
+operator ==      function    122 src/backend/headers/math/monomial.hpp friend bool operator==(const Monomial<E, N>& lhs, const Monomial<E, N>& rhs) {
+operator !=      function    126 src/backend/headers/math/monomial.hpp friend bool operator!=(const Monomial<E, N>& lhs, const Monomial<E, N>& rhs) {
+operator <       function    130 src/backend/headers/math/monomial.hpp friend bool operator<(const Monomial<E, N>& lhs, const Monomial<E, N>& rhs) {
+operator <<      function    134 src/backend/headers/math/monomial.hpp friend std::ostream& operator<<(std::ostream& os, const Monomial<E, N>& monom) {
+operator *       function    166 src/backend/headers/math/monomial.hpp friend Monomial<E, N> operator*(Monomial<E, N> lhs, const Monomial<E, N>& rhs) {
+operator /       function    171 src/backend/headers/math/monomial.hpp friend Monomial<E, N> operator/(Monomial<E, N> lhs, const Monomial<E, N>& rhs) {
+Polynomial       function     31 src/backend/headers/math/polynomial.hpp explicit Polynomial(const std::initializer_list<value_type>& init)
+begin            function     34 src/backend/headers/math/polynomial.hpp iterator begin() {
+end              function     38 src/backend/headers/math/polynomial.hpp iterator end() {
+begin            function     42 src/backend/headers/math/polynomial.hpp const_iterator begin() const {
+end              function     46 src/backend/headers/math/polynomial.hpp const_iterator end() const {
+rbegin           function     50 src/backend/headers/math/polynomial.hpp reverse_iterator rbegin() {
+rend             function     54 src/backend/headers/math/polynomial.hpp reverse_iterator rend() {
+rbegin           function     58 src/backend/headers/math/polynomial.hpp const_reverse_iterator rbegin() const {
+rend             function     62 src/backend/headers/math/polynomial.hpp const_reverse_iterator rend() const {
+leading_term     function     66 src/backend/headers/math/polynomial.hpp boost::optional<std::pair<Monomial<E, N>, N>> leading_term() const {
+add              function     75 src/backend/headers/math/polynomial.hpp void add(const Polynomial<E, N>& other) {
+sub              function     81 src/backend/headers/math/polynomial.hpp void sub(const Polynomial<E, N>& other) {
+add              function     87 src/backend/headers/math/polynomial.hpp void add(const Monomial<E, N>& mono, const N coeff = 1) {
+sub              function    108 src/backend/headers/math/polynomial.hpp void sub(const Monomial<E, N>& mono, const N coeff = 1) {
+scale            function    129 src/backend/headers/math/polynomial.hpp void scale(const N scale) {
+is_zero          function    140 src/backend/headers/math/polynomial.hpp bool is_zero() const {
+size             function    144 src/backend/headers/math/polynomial.hpp size_t size() const {
+coeff            function    148 src/backend/headers/math/polynomial.hpp N coeff(const Monomial<E, N>& mono) const {
+operator ==      function    160 src/backend/headers/math/polynomial.hpp friend bool operator==(const Polynomial<E, N>& lhs, const Polynomial<E, N>& rhs) {
+operator <       function    164 src/backend/headers/math/polynomial.hpp friend bool operator<(const Polynomial<E, N>& lhs, const Polynomial<E, N>& rhs) {
+operator <<      function    168 src/backend/headers/math/polynomial.hpp friend std::ostream& operator<<(std::ostream& os, const Polynomial<E, N>& poly) {
+Sin              function     12 src/backend/headers/math/trig.hpp explicit Sin(const T& arg_)
+operator ==      function     21 src/backend/headers/math/trig.hpp friend bool operator==(const Sin<T>& lhs, const Sin<T>& rhs) {
+operator <       function     25 src/backend/headers/math/trig.hpp friend bool operator<(const Sin<T>& lhs, const Sin<T>& rhs) {
+operator <<      function     29 src/backend/headers/math/trig.hpp friend std::ostream& operator<<(std::ostream& os, const Sin<T>& sin) {
+Cos              function     39 src/backend/headers/math/trig.hpp explicit Cos(const T& arg_)
+operator ==      function     46 src/backend/headers/math/trig.hpp friend bool operator==(const Cos<T>& lhs, const Cos<T>& rhs) {
+operator <       function     50 src/backend/headers/math/trig.hpp friend bool operator<(const Cos<T>& lhs, const Cos<T>& rhs) {
+operator <<      function     54 src/backend/headers/math/trig.hpp friend std::ostream& operator<<(std::ostream& os, const Cos<T>& cos) {
+otherAngle       function      6 src/backend/headers/math/xyz.hpp inline XYZ otherAngle(XYZ angle1, XYZ angle2) {
+operator ()      function     16 src/backend/headers/merge.hpp void operator()(const cover::Empty) {}
+operator ()      function     18 src/backend/headers/merge.hpp void operator()(const cover::Single& single) {
+operator ()      function     22 src/backend/headers/merge.hpp void operator()(const cover::Triple& triple) {
+operator ()      function     26 src/backend/headers/merge.hpp void operator()(const cover::Divide& divide) {
+get_index_info   function     35 src/backend/headers/merge.hpp std::map<T, size_t> get_index_info(const std::set<T>& used) {
+test_delta       function      6 src/backend/headers/newton.hpp inline bool test_delta(const Vector2<Real>& dx, ParamType<Real> eps) {
+Newton           function     53 src/backend/headers/newton.hpp explicit Newton(const EquationGradient<Symbols, Eq0>& eq0_, const EquationGradient<Symbols, Eq1>& eq1_, const Func& inside_, const bool reduce_norm_ = true)
+f                function     60 src/backend/headers/newton.hpp Vector2<Real> f(const Vector2<Real>& x) const {
+jac              function     68 src/backend/headers/newton.hpp Matrix2<Real> jac(const Vector2<Real>& x) const {
+solve            function     80 src/backend/headers/newton.hpp Vector2<Real> solve(Vector2<Real> x) const {
+gnewton_iterate  function    128 src/backend/headers/newton.hpp void gnewton_iterate(Vector2<Real>& x, Vector2<Real>& dx) const {
+operator ()      function     16 src/backend/headers/refine.hpp std::string operator()(const EquationGradient<Symbols, S>& eq_grad) const {
+IntervalLineSegment function     35 src/backend/headers/refine.hpp explicit IntervalLineSegment(const Vector2<Interval>& point0_, const BoundaryEquation& equation0_, const Vector2<Interval>& point1_, const BoundaryEquation& equation1_)
+IntervalPair     function     50 src/backend/headers/refine.hpp explicit IntervalPair(const Vector2<Interval>& point_, const BoundaryEquation& equation_)
+operator ()      function     15 src/backend/headers/reorder.hpp bool operator()(const std::array<Interval, 3>& first, const std::array<Interval, 3>& second) const {
+min              function     21 src/backend/headers/reorder.hpp Interval min(const std::vector<std::array<Interval, 3>>& points) {
+max              function     27 src/backend/headers/reorder.hpp Interval max(const std::vector<std::array<Interval, 3>>& points) {
+RearrangeVariant function     52 src/backend/headers/reorder.hpp explicit RearrangeVariant(const std::array<LinComArrZ<XYEta>, 3>& inverse_perm_eta_, const std::array<LinComArrZ<XYPi>, 3>& inverse_perm_pi_)
+operator ()      function     59 src/backend/headers/reorder.hpp std::string operator()(const EquationGradient<XY, LinComArrZ<XYEta>>&) const {
+operator ()      function     79 src/backend/headers/reorder.hpp std::string operator()(const EquationGradient<XY, LinComMapZ<Sin<LinComArrZ<XY>>>>& eq_grad) const {
+operator ()      function     88 src/backend/headers/reorder.hpp std::string operator()(const EquationGradient<XY, LinComMapZ<Cos<LinComArrZ<XY>>>>& eq_grad) const {
+result_code_string function     45 src/backend/headers/sqlite.hpp inline std::string result_code_string(const int result_code) {
+error_message    function    114 src/backend/headers/sqlite.hpp inline std::string error_message(const int error_code) {
+error_message    function    120 src/backend/headers/sqlite.hpp inline std::string error_message(const int error_code, sqlite3* const db) {
+error_log_callback function    125 src/backend/headers/sqlite.hpp inline void error_log_callback(void*, const int error_code, const char* const error_message) {
+error_logging    function    133 src/backend/headers/sqlite.hpp inline void error_logging() {
+Statement        function    151 src/backend/headers/sqlite.hpp explicit Statement(sqlite3_stmt* const stmt_)
+Statement        function    156 src/backend/headers/sqlite.hpp Statement(Statement&& other)
+~Statement       function    161 src/backend/headers/sqlite.hpp ~Statement() {
+bind_value       function    170 src/backend/headers/sqlite.hpp void bind_value(const int index, const double val) {
+bind_value       function    179 src/backend/headers/sqlite.hpp void bind_value(const int index, const int64_t val) {
+bind_value       function    188 src/backend/headers/sqlite.hpp void bind_value(const int index, const std::string& val) {
+bind_unpack      function    197 src/backend/headers/sqlite.hpp void bind_unpack(const int) {}
+bind_unpack      function    200 src/backend/headers/sqlite.hpp void bind_unpack(const int index, const T& val, const Args&... args) {
+bind             function    207 src/backend/headers/sqlite.hpp Statement&& bind(const Args&... args) {
+get_value        function    223 src/backend/headers/sqlite.hpp void get_value(const int col, double& val) {
+get_value        function    233 src/backend/headers/sqlite.hpp void get_value(const int col, int64_t& val) {
+get_value        function    242 src/backend/headers/sqlite.hpp void get_value(const int col, std::string& val) {
+column_unpack    function    265 src/backend/headers/sqlite.hpp void column_unpack(const int) {}
+column_unpack    function    268 src/backend/headers/sqlite.hpp void column_unpack(const int index, T& val, Args&... args) {
+exec             function    276 src/backend/headers/sqlite.hpp void exec(Args&... args) {
+step             function    324 src/backend/headers/sqlite.hpp bool step(Args&... args) {
+operator |       function    366 src/backend/headers/sqlite.hpp constexpr Open operator|(const Open a, const Open b) {
+Database         function    379 src/backend/headers/sqlite.hpp explicit Database(const std::string& db_path, const Open flags) {
+Database         function    401 src/backend/headers/sqlite.hpp Database(Database&& other)
+~Database        function    407 src/backend/headers/sqlite.hpp ~Database() {
+prepare          function    414 src/backend/headers/sqlite.hpp Statement prepare(const std::string& sql) {
+borrow           function    442 src/backend/headers/sqlite.hpp Database borrow() {
+__anona1d59d460102 function    455 src/backend/headers/sqlite.hpp cv.wait(lock, [this]() {
+unborrow         function    465 src/backend/headers/sqlite.hpp void unborrow(Database db) {
+ConnectionPool   function    475 src/backend/headers/sqlite.hpp explicit ConnectionPool(const Func& func, const size_t pool_size) : pool_size{pool_size} {
+curr_size        function    482 src/backend/headers/sqlite.hpp size_t curr_size() const {
+start_size       function    486 src/backend/headers/sqlite.hpp size_t start_size() const {
+PooledConnection function    498 src/backend/headers/sqlite.hpp explicit PooledConnection(ConnectionPool& pool_)
+~PooledConnection function    501 src/backend/headers/sqlite.hpp ~PooledConnection() {
+Vector2D         function     30 src/backend/headers/triangle_billiard.hpp Vector2D() : x(0.0), y(0.0) {} // Add this!
+signum           function      7 src/backend/headers/trig_identities.hpp Int signum(const Int val) {
+Edge             function     15 src/backend/headers/unfolding.hpp explicit Edge(const XYZ edge_type_, const LinComArrZ<XYPi>& polar_angle_)
+operator ==      function     18 src/backend/headers/unfolding.hpp friend bool operator==(const Edge& lhs, const Edge& rhs) {
+operator <       function     22 src/backend/headers/unfolding.hpp friend bool operator<(const Edge& lhs, const Edge& rhs) {
+operator <<      function     26 src/backend/headers/unfolding.hpp friend std::ostream& operator<<(std::ostream& os, const Edge& edge) {
+cancel_flag      function     20 src/backend/headers/utils.hpp inline std::atomic<bool>& cancel_flag() {
+Vertex           function     11 src/backend/headers/vertex_left_right.hpp explicit Vertex(const size_t number_, const size_t branch_)
+operator ==      function     14 src/backend/headers/vertex_left_right.hpp friend bool operator==(const Vertex& lhs, const Vertex& rhs) {
+operator <       function     18 src/backend/headers/vertex_left_right.hpp friend bool operator<(const Vertex& lhs, const Vertex& rhs) {
+operator <<      function     22 src/backend/headers/vertex_left_right.hpp friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex) {
+LeftRight        function     31 src/backend/headers/vertex_left_right.hpp explicit LeftRight(const Vertex& left_, const Vertex& right_)
+operator ==      function     34 src/backend/headers/vertex_left_right.hpp friend bool operator==(const LeftRight& lhs, const LeftRight& rhs) {
+operator <       function     38 src/backend/headers/vertex_left_right.hpp friend bool operator<(const LeftRight& lhs, const LeftRight& rhs) {
+operator <<      function     42 src/backend/headers/vertex_left_right.hpp friend std::ostream& operator<<(std::ostream& os, const LeftRight& lr) {

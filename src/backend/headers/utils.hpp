@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <atomic>
 #include <thread>
+#include <limits>
 
 #include <unordered_map>
 
@@ -25,14 +26,32 @@ inline std::atomic<bool>& cancel_flag() {
     return f;
 }
 
-inline unsigned int billiards_worker_count(unsigned int max_workers = 8) {
-    const unsigned int reported = std::thread::hardware_concurrency();
-    unsigned int workers = reported == 0 ? 1 : reported;
+inline std::atomic<unsigned int>& configured_worker_count() {
+    static std::atomic<unsigned int> worker_count{0};
+    return worker_count;
+}
 
-    // Release builds run on 8-16GB machines as well as developer workstations.
-    // Keep native MPFR/GMP-heavy work bounded by default, but let Windows,
-    // macOS, and Linux launchers override it without changing source.
-    if (const char* raw = std::getenv("BILLIARDS_NATIVE_THREADS")) {
+inline void billiards_set_worker_count(const unsigned int worker_count) {
+    configured_worker_count().store(worker_count, std::memory_order_relaxed);
+}
+
+inline unsigned int billiards_worker_count(
+        unsigned int max_workers = std::numeric_limits<unsigned int>::max()) {
+    const unsigned int reported = std::thread::hardware_concurrency();
+    const unsigned int hardware_workers = reported == 0 ? 1 : reported;
+    unsigned int workers = std::max(1u, hardware_workers / 2);
+
+    // Java parses the release-facing --threads argument before the backend is
+    // used and calls backend_set_worker_threads(). That gives Java executors
+    // and native Boost/TBB pools one shared worker limit instead of requiring
+    // users to set both a JVM property and a native environment variable.
+    const unsigned int configured_workers = configured_worker_count().load(std::memory_order_relaxed);
+    if (configured_workers > 0) {
+        workers = configured_workers;
+    } else if (const char* raw = std::getenv("BILLIARDS_NATIVE_THREADS")) {
+        // Keep the old native-only environment override for scripts and
+        // profiling sessions that start backend tests without Java calling
+        // backend_set_worker_threads().
         char* end = nullptr;
         const long requested = std::strtol(raw, &end, 10);
         if (end != raw && requested > 0) {

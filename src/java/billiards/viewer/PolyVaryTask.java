@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -164,7 +165,7 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> implements
             try {
                 localCodes = autoCodesFiltered(coord, shotExecutor);
             } catch(RuntimeException e) {
-                if(this.gracefulCancelRequested || this.isCancelled() || Thread.interrupted()) {
+                if(shouldStopAfterVaryFailure(e)) {
                     break;
                 } else {
                     System.err.println("Terminating because of uncaught exception when finding codeSet");
@@ -274,6 +275,10 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> implements
 
     // Calculates codeSequence set at a specific coordinate 
     private MutableSortedSet<ClassifiedCodeSequence> autoCodesFiltered(final Vector2 coords, final ExecutorService executor) {
+        if (this.gracefulCancelRequested || this.isCancelled() || executor.isShutdown()) {
+            return new TreeSortedSet<>();
+        }
+
         // autoVary requires coordinates to be in degree format
         final Vector2 degCoords = Vector2.create(Math.toDegrees(coords.x), Math.toDegrees(coords.y));
         final MutableSortedSet<ClassifiedCodeSequence> codes = new TreeSortedSet<>();
@@ -289,6 +294,17 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> implements
             }
         }
         return codes;
+    }
+
+    private boolean shouldStopAfterVaryFailure(final RuntimeException e) {
+        if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+            return true;
+        }
+
+        // Progress dialogs request graceful cancellation first, then other cleanup paths may shut down the per-run
+        // shot executor. A rejected submit from that terminated executor means "stop scanning coordinates", not
+        // "crash the JavaFX Application Thread".
+        return e instanceof RejectedExecutionException && this.shotExecutor.isShutdown();
     }
 
     // Converts list of points into array of coordinate pairs 
@@ -395,9 +411,14 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> implements
     private boolean loadStorageFromDB(ClassifiedCodeSequence classCodeSeq, MutableSortedSet<ClassifiedCodeSequence> usedCodes,
                                       MutableList<Future<Either<String, Storage>>> futures, AtomicInteger progress,
                                       int todo) {
+        if (this.gracefulCancelRequested || this.isCancelled() || this.storageExecutor.isShutdown()) {
+            return true;
+        }
+
         usedCodes.add(classCodeSeq);
         // Submit the runnable for this code
-        futures.add(storageExecutor.submit(new PriorityCallable<Either<String, Storage>>() {
+        try {
+            futures.add(storageExecutor.submit(new PriorityCallable<Either<String, Storage>>() {
                     @Override
                     public Either<String, Storage> call() {
                         Either<String, Storage> result = loadStorage(classCodeSeq);
@@ -410,7 +431,13 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> implements
                         return classCodeSeq.length();
                     }
                 })
-        );
+            );
+        } catch (final RejectedExecutionException e) {
+            if (this.gracefulCancelRequested || this.isCancelled() || this.storageExecutor.isShutdown()) {
+                return true;
+            }
+            throw e;
+        }
 
         return false;
     }

@@ -25,10 +25,19 @@ public final class Main extends Application {
     // It would be a lot simpler if these methods didn't exist, and I just did
     // stuff myself. A lot less magic that way.
 
+    public static void main(final String[] args) {
+        // Parse the user-facing thread argument before JavaFX constructs this
+        // Application. The executor field below is initialized during
+        // construction, so this must happen before launch().
+        Utils.configureThreadCountFromArgs(args);
+        launch(args);
+    }
+
     // We currently don't use this
     @Override
     public void init() {
         Wrapper.errorLogging();
+        Wrapper.configureNativeThreads(Utils.numThreads);
     }
 
     @Override

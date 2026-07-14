@@ -302,6 +302,10 @@ public final class QueryStage {
         this.stage.show();
     }
 
+    public void close() {
+        this.stage.close();
+    }
+
     private static boolean verifyEvenOdd(final String evenOdd) {
         for (int i = 0; i < evenOdd.length(); ++i) {
             final char ch = evenOdd.charAt(i);

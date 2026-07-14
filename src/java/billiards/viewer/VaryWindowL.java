@@ -359,6 +359,13 @@ public final class VaryWindowL {
     	}
         return this.result;
     }
+
+    public void close() {
+        // Dismiss an open vary-parameter window during app shutdown without pretending the user pressed Load.
+        this.result = Optional.empty();
+        stage.close();
+    }
+
     public boolean getOverride() {
         return Override;
     }

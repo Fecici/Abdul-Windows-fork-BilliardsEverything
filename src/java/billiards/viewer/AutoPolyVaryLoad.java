@@ -239,6 +239,13 @@ public class AutoPolyVaryLoad {
     	stage.showAndWait();
     	return this.result;
     }
+
+    public void close() {
+        // Closing the main viewer should dismiss an open parameter dialog without starting a vary run.
+        this.result = Optional.empty();
+        stage.close();
+    }
+
     public Boolean getOverride() {
         return Override;
     }

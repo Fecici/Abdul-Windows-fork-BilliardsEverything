@@ -412,6 +412,12 @@ public class CycleVaryWindow {
         stage.show();
     }
 
+    public void close() {
+        // The coordinate editor is useful state even when no CycleVary run is started, so persist it on app shutdown.
+        Utils.writeToFile(coordsFileName, coordinateCodeArea.getText());
+        stage.close();
+    }
+
     public boolean getMagnificationIsSelected() {
         return this.magnifyCheckBox.isSelected();
     }

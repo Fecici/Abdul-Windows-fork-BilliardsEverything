@@ -459,6 +459,7 @@ public final class Viewer {
 
     final TextField txtCodeSequence = new TextField();
     final Button btnCalculate = new Button();
+    final CheckBox calculateAddToCoverCheckBox = new CheckBox();
     final ComboBox<String> calculateChooser = new ComboBox<>();
 
     final Button cboxRegionColor0 = new Button();
@@ -2657,6 +2658,12 @@ public final class Viewer {
 
         labelCodeWindow.textProperty().bindBidirectional(labelMainWindow.textProperty());
 
+        // The center BorderPane can offer more vertical room than the image
+        // itself. Keep the stack fixed to the 600x600 pixel image size so the
+        // reflect transform flips the drawing surface, not a taller layout box.
+        imageStack.setMinSize(SIDE, SIDE);
+        imageStack.setPrefSize(SIDE, SIDE);
+        imageStack.setMaxSize(SIDE, SIDE);
         imageStack.getChildren().addAll(backgroundImageView, regionsImageView, guideLinesImageView,
                 boundsImageView, oboImageView, topImageView);
 
@@ -2733,6 +2740,13 @@ public final class Viewer {
         Utils.colorButton(btnCalculate2, Color.SKYBLUE, clickColor);
 
         btnCalculate2.setOnAction(event -> btnCalculateAction(pool));
+
+        calculateAddToCoverCheckBox.setText("Add to Cover");
+        calculateAddToCoverCheckBox.setTooltip(Utils.toolTip(
+                "When selected, the existing Calculate button also writes a successful stable code or "
+                        + "stable-unstable-stable triple into the Cover window. Unstable singles and incomplete "
+                        + "or empty triples are skipped because the cover format cannot use them directly."));
+        calculateAddToCoverCheckBox.setStyle(textBoxColor);
 
         resetBtn.setText("Reset");
         resetBtn.setTooltip(Utils.toolTip("Change the zoom level back to the default, like it was"
@@ -3798,7 +3812,8 @@ public final class Viewer {
                 mergeButton,loadCoverButton,calculateChooser);//george july15th hide the trimmer button and red button
         backForOBOHBox.getChildren().addAll(stablesButton, btnOBOBackward, fieldOBOStep, btnOBOForward);
         clickActionHBox.getChildren().addAll(selectRdoBtn, magnifyRdoBtn, demagnifyRdoBtn, centerBtn);
-        twoHBox.getChildren().addAll(txtCodeSequence, btnCalculate, zoomRegionButton, iterateToLimitBtn);
+        twoHBox.getChildren().addAll(txtCodeSequence, btnCalculate, calculateAddToCoverCheckBox,
+                zoomRegionButton, iterateToLimitBtn);
         boyanZoomHBox.getChildren().addAll(zoomButton, xMinTextField, yMinTextField);
         boyanMenuExtra.getChildren().addAll(loadDirectoryButton, coverBtn, loadHolesBtn, btnLoadFile, compareCheckBox, saveV3Btn);
         //coverExtraHBox.getChildren().addAll(halfTripleBtn, cornerBtn, unstableBtn);
@@ -3901,7 +3916,7 @@ public final class Viewer {
         mainWindow.setTitle(windowTitle);
         mainWindow.setOnCloseRequest(event -> {
             try {
-                saveChildWindowState();
+                closeChildWindowsForExit();
             } catch (final RuntimeException e) {
                 e.printStackTrace();
                 final Alert alert = new Alert(AlertType.ERROR);
@@ -3914,20 +3929,42 @@ public final class Viewer {
             }
 
             // close all the windows
-            // TODOx? simply close all remaining windows directly instead
-            // of using Platform.exit() (which causes a crash sometimes)
             System.out.println("Send close request");
             Platform.exit();
         });
         mainWindow.setScene(scene);
     }
 
-    private void saveChildWindowState() {
-        // Java does not run a destructor for these child stages on application exit. Save explicitly so text typed into
-        // Cover, Small Cover, or Stables is persisted even when the user closes the main window first.
-        coverWindow.saveToFile();
-        smallCoverWindow.saveToFile();
-        stablesWindow.saveToFile();
+    private void closeChildWindowsForExit() {
+        // JavaFX does not run destructors for child windows. Close the viewer-owned stages explicitly so their text
+        // buffers are saved before Platform.exit() tears down the application.
+        coverWindow.close();
+        smallCoverWindow.close();
+        stablesWindow.close();
+        iterationPolyWindow.close();
+        queryStage.close();
+        closeStage(codeWindow);
+
+        if (iterateToLimitWindow != null) iterateToLimitWindow.close();
+        if (cycleVaryWindow != null) cycleVaryWindow.close();
+        if (varyWindow != null) varyWindow.close();
+        if (middleVaryWindow != null) middleVaryWindow.close();
+        if (autoPolyVaryWindow != null) autoPolyVaryWindow.close();
+        if (superPolyVaryWindow != null) superPolyVaryWindow.close();
+
+        // Some utility windows are intentionally created as throwaway objects, so the Viewer does not keep references
+        // to them. Hide anything still open after the persistent windows have saved their state.
+        for (final javafx.stage.Window window : new ArrayList<>(javafx.stage.Window.getWindows())) {
+            if (window != mainWindow && window.isShowing()) {
+                window.hide();
+            }
+        }
+    }
+
+    private static void closeStage(final Stage stage) {
+        if (stage != null) {
+            stage.close();
+        }
     }
 
     // Do initial rendering
@@ -3947,7 +3984,7 @@ public final class Viewer {
     private void updateReflection() {
         if (reflectCheckBox.isSelected()) {
             reflectionTransform.setMyy(-1);
-            reflectionTransform.setTy(imageStack.getBoundsInLocal().getHeight());
+            reflectionTransform.setTy(SIDE);
             if (!imageStack.getTransforms().contains(reflectionTransform)) {
                 imageStack.getTransforms().add(reflectionTransform);
             }
@@ -5091,11 +5128,65 @@ public final class Viewer {
                     System.out.println(print.replace(", ~", ""));
                 }
             });
+            appendCalculatedCodeToCoverIfRequested(pool);
         } else {
             // it's a single code
             System.out.println(buttonCalulator(textCodeSeq, pool, 0));
             setupButtons(pool, 1);
             setupButtons(pool, 2);
+            appendCalculatedCodeToCoverIfRequested(pool);
+        }
+    }
+
+    private void appendCalculatedCodeToCoverIfRequested(final ConnectionPool pool) {
+        if (!calculateAddToCoverCheckBox.isSelected()) {
+            return;
+        }
+
+        final ArrayList<Storage> storages = new ArrayList<>();
+        final StringBuilder tripleString = new StringBuilder();
+        for (int i = 0; i < currentCodeNumbers.length; i++) {
+            if (currentCodeNumbers[i].isEmpty()) {
+                continue;
+            }
+
+            final Either<InvalidCodeSequence, ClassifiedCodeSequence> either =
+                    ClassifiedCodeSequence.create(currentCodeNumbers[i]);
+            if (either.isLeft()) {
+                return;
+            }
+
+            final Optional<Storage> storage = Database.loadStorage(either.get(), pool);
+            if (storage.isEmpty()) {
+                return;
+            }
+
+            if (tripleString.length() > 0) {
+                tripleString.append(", ");
+            }
+            tripleString.append(storage.get().classCodeSeq);
+            storages.add(storage.get());
+        }
+
+        // The Cover window stores stable singles and stable-unstable-stable
+        // triples in different text areas. The main Calculate button can draw
+        // unstable singles, but those are not directly useful cover entries.
+        if (storages.size() == 1) {
+            final Storage storage = storages.get(0);
+            if (storage.classCodeSeq.stable) {
+                final String stableEntry = getCoverCodeString(storage);
+                if (!coverWindow.containsStableInfo(stableEntry)) {
+                    coverWindow.appendStablesInfo(stableEntry);
+                }
+            }
+        } else if (storages.size() == 3
+                && storages.get(0).classCodeSeq.stable
+                && !storages.get(1).classCodeSeq.stable
+                && storages.get(2).classCodeSeq.stable) {
+            final String tripleEntry = tripleString.toString();
+            if (!coverWindow.containsTripleInfo(tripleEntry)) {
+                coverWindow.appendTriplesInfo(tripleEntry);
+            }
         }
     }
 

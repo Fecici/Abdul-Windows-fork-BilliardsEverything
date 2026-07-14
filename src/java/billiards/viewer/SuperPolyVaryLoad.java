@@ -288,6 +288,12 @@ public class SuperPolyVaryLoad {
     	return this.result;
     }
 
+    public void close() {
+        // Closing the main viewer should dismiss an open parameter dialog without starting a super vary run.
+        this.result = Optional.empty();
+        stage.close();
+    }
+
 	public boolean getMagnificationIsSelected() {
 		return this.magnifyCheckBox.isSelected();
 	}
