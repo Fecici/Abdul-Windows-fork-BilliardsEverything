@@ -257,7 +257,9 @@ static boost::optional<IntervalPolygon> calculate_final_polygon(const std::vecto
                 poly = std::move(*maybe);
             }
 
-            // QUESTION: how does sin poly update if cos poly happens right after?
+            // Each worker owns this local polygon. It first applies its assigned
+            // sine constraints, then its assigned cosine constraints; the main
+            // thread intersects all worker polygons after the pool joins.
             for (const auto* curve : batch.cos_curves) {
                 if (polygon_is_tiny(poly)) {
                     break;
@@ -285,8 +287,9 @@ static boost::optional<IntervalPolygon> calculate_final_polygon(const std::vecto
             result = std::move(batch_result);
         } else {
             // Each batch applied a subset of half-plane constraints; intersecting
-            // the partial polygons combines those commutative constraints.
-            // QUESTION: what does this mean? 'commutative constraint?' half-plane conrainst? etc?
+            // the partial polygons combines those constraints regardless of
+            // batch order because geometric intersection is associative and
+            // commutative for these half-plane refinements.
             auto maybe = intersect_polygons(*result, *batch_result);
             if (!maybe) {
                 return boost::none;
@@ -295,7 +298,7 @@ static boost::optional<IntervalPolygon> calculate_final_polygon(const std::vecto
         }
     }
 
-    return result;//note george aug 26,2019 the last stuff is the mrr region
+    return result;
 }
 
 static boost::optional<IntervalLineSegment> calculate_final_line_segment(const std::vector<CodeNumber>& code_numbers, const std::vector<XYZ>& code_angles, const LinComArrZ<XYEta>& constraint, const CurvesLR& curves) {

@@ -513,7 +513,9 @@ boost::optional<IntervalPolygon> refine_polygon(const IntervalPolygon& polygon, 
     }
 
     {
-        // QUESTION: is it okay that we dont use GMP here?
+        // Use interval endpoints for a conservative bounding-box test. If the
+        // curve sign is decisive over this whole box, the curve cannot cross
+        // the polygon and the expensive per-corner pass is avoidable.
         Real x_low = boost::multiprecision::lower(polygon[0].point[0]);
         Real x_high = boost::multiprecision::upper(polygon[0].point[0]);
         Real y_low = boost::multiprecision::lower(polygon[0].point[1]);
@@ -804,7 +806,10 @@ static boost::optional<IntervalPolygon> intersect_one_way(const IntervalPolygon&
         if (!maybe) {
             return boost::none;
         }
-        result = *maybe;
+        // refine_polygon returns a fresh polygon. Move it into the running
+        // clipping result so combining parallel batches does not copy every
+        // vertex after each clip equation.
+        result = std::move(*maybe);
     }
     return result;
 }

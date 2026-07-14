@@ -81,6 +81,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleUnaryOperator;
 import java.util.stream.Stream;
@@ -526,6 +527,12 @@ public final class Viewer {
     final CheckBox boundsCheckBox = new CheckBox(); // where to put this in the menu?
 
     ExecutorService executorService;
+
+    // Full image redraws are expensive and can be requested repeatedly by zoom,
+    // toggles, and cover/vary updates. This pair lets renderRegions discard a
+    // stale redraw before it overwrites a newer JavaFX image.
+    private volatile Future<?> renderFuture;
+    private final AtomicLong renderGeneration = new AtomicLong();
     QueryStage queryStage;
 
     // the Boyan Menu
@@ -5647,12 +5654,12 @@ public final class Viewer {
 
     private Color color(final List<Storage.Stable> storages,
                         final LinkedHashMap<Storage, Color> colors, final double rx, final double ry,
-                        final double halfWidth, final double offset) {
+                        final double halfWidth, final double offset, final boolean proverSelected) {
         // only return the color of the first thing that works
         for (final Storage.Stable stable : storages) {
             final Location location = stable.polygon.location(rx, ry);
             if (location == Location.INSIDE) {
-                if (proverCheckBox.isSelected()) {
+                if (proverSelected) {
                     if (stable.isPositiveProver(rx, ry, halfWidth, offset)) {
                         return colors.get(stable);
                     }
@@ -5667,7 +5674,9 @@ public final class Viewer {
     }
 
     private WritableImage redoFromScratch(
-            final LinkedHashMap<Storage, Color> regions, final ExecutorService executor) {
+            final LinkedHashMap<Storage, Color> regions,
+            final ExecutorService executor,
+            final RenderOptions options) {
         // only depends on map
         final Rectangle viewRectangle = map.getViewRectangle();
 
@@ -5675,7 +5684,7 @@ public final class Viewer {
         final List<Storage.Unstable> unstableRegions = new ArrayList<>();
 
         for (final Storage storage : regions.keySet()) {
-            if (storage.intersects(viewRectangle) || allCheckBox.isSelected()) {
+            if (storage.intersects(viewRectangle) || options.allSelected) {
                 if (storage.classCodeSeq.stable) {
                     stableRegions.add((Storage.Stable) storage);
                 } else {
@@ -5701,27 +5710,55 @@ public final class Viewer {
             rys[pixelY] = ry;
         }
 
-        final Object[][] futures = new Object[SIDE][SIDE];
-
         final double halfWidth = map.pixelSize() / 2;
         final double offset = getOffset();
 
+        final Color[][] colors = new Color[SIDE][SIDE];
+
+        // The old renderer submitted one Future per pixel, which means about
+        // SIDE*SIDE tasks for a normal redraw. Batch by image row instead: each
+        // worker still computes independent pixels, but the executor and heap
+        // only see SIDE jobs.
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        final Future<Color[]>[] rowFutures = new Future[SIDE];
         for (int pixelX = 0; pixelX < SIDE; pixelX += 1) {
             final double rx = rxs[pixelX];
-            for (int pixelY = 0; pixelY < SIDE; pixelY += 1) {
-                final double ry = rys[pixelY];
-
-                if (allCheckBox.isSelected()) { // all feature part 2/3
-                    final List<Double> subList = Arrays.asList(rx, ry, Math.PI - (rx + ry));
-                    Collections.sort(subList);
-                    futures[pixelX][pixelY] =
-                            executor.submit(()
-                                    -> color(stableRegions, regions, subList.get(0),
-                                    subList.get(1), halfWidth, offset));
-                } else {
-                    futures[pixelX][pixelY] = executor.submit(
-                            () -> color(stableRegions, regions, rx, ry, halfWidth, offset));
+            rowFutures[pixelX] = executor.submit(() -> {
+                final Color[] row = new Color[SIDE];
+                for (int pixelY = 0; pixelY < SIDE; pixelY += 1) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new CancellationException("Render row cancelled");
+                    }
+                    final double ry = rys[pixelY];
+                    if (options.allSelected) { // all feature part 2/3
+                        final List<Double> subList = Arrays.asList(rx, ry, Math.PI - (rx + ry));
+                        Collections.sort(subList);
+                        row[pixelY] = color(stableRegions, regions, subList.get(0),
+                                subList.get(1), halfWidth, offset, options.proverSelected);
+                    } else {
+                        row[pixelY] = color(stableRegions, regions, rx, ry, halfWidth, offset,
+                                options.proverSelected);
+                    }
                 }
+                return row;
+            });
+        }
+
+        for (int pixelX = 0; pixelX < SIDE; pixelX += 1) {
+            try {
+                colors[pixelX] = rowFutures[pixelX].get();
+            } catch (InterruptedException e) {
+                // The coalescing renderer cancels old redraws by interrupting
+                // this parent job. Cancel the row jobs too so old pixel work
+                // does not keep competing with the newest redraw.
+                Utils.cancelFutures(Arrays.asList(rowFutures));
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (CancellationException e) {
+                Utils.cancelFutures(Arrays.asList(rowFutures));
+                throw e;
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -5729,13 +5766,10 @@ public final class Viewer {
         final PixelWriter writer = regionImage.getPixelWriter();
         for (int pixelX = 0; pixelX < SIDE; pixelX += 1) {
             for (int pixelY = 0; pixelY < SIDE; pixelY += 1) {
-                @SuppressWarnings("unchecked")
-                final Future<Color> future = (Future<Color>) futures[pixelX][pixelY];
-
-                if (boundsCheckBox.isSelected()) {
+                if (options.boundsSelected) {
                     double rx = map.radianX(pixelX + 0.5);
                     double ry = map.radianY(pixelY + 0.5);
-                    if (allCheckBox.isSelected()) {
+                    if (options.allSelected) {
                         final List<Double> subList = Arrays.asList(rx, ry, Math.PI - (rx + ry));
                         Collections.sort(subList);
                         rx = subList.get(0);
@@ -5748,22 +5782,17 @@ public final class Viewer {
                         }
                     }
                 }
-                try {
-                    final Color color = future.get();
-                    writer.setColor(pixelX, pixelY, color);
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
+                writer.setColor(pixelX, pixelY, colors[pixelX][pixelY]);
             }
         }
 
-        if (showFillsCheckBox.isSelected()) {
+        if (options.showFillsSelected) {
             drawFills(writer);
         }
 
         // Now draw the unstable ones in serial
         unstableRegions.forEach(
-                unstable -> renderUnstable(unstable, writer, viewRectangle, regions.get(unstable)));
+                unstable -> renderUnstable(unstable, writer, viewRectangle, regions.get(unstable), options));
 
         return regionImage;
     }
@@ -5801,11 +5830,76 @@ public final class Viewer {
     void renderRegions(final LinkedHashMap<Storage, Color> regions,
                        final ImageView guideLinesImageView, final ImageView regionsImageView,
                        final ExecutorService executor) {
+        final RenderOptions options = snapshotRenderOptions();
+
+        // Coalescing is deliberately limited to the long-lived viewer executor.
+        // Several AutoVary/cover paths pass short-lived draw executors and then
+        // shut them down as part of task cleanup; those renders must stay
+        // synchronous so progress-saving cancel paths still finish deterministically.
+        if (!Utils.renderCoalescing || executor != executorService) {
+            commitRenderedImages(buildRenderedImages(regions, executor, options), guideLinesImageView, regionsImageView);
+            return;
+        }
+
+        final long generation = renderGeneration.incrementAndGet();
+        final Future<?> previousRender = renderFuture;
+        if (previousRender != null) {
+            previousRender.cancel(true);
+        }
+
+        // Snapshot the map because UI callbacks may add/remove regions while a
+        // background redraw is still computing pixels for the previous view.
+        final LinkedHashMap<Storage, Color> regionsCopy = new LinkedHashMap<>(regions);
+        try {
+            renderFuture = executor.submit(() -> {
+                final RenderedImages images;
+                try {
+                    images = buildRenderedImages(regionsCopy, executor, options);
+                } catch (final RuntimeException e) {
+                    if (Thread.currentThread().isInterrupted()
+                            || generation != renderGeneration.get()
+                            || e instanceof CancellationException) {
+                        return;
+                    }
+                    throw e;
+                }
+
+                if (Thread.currentThread().isInterrupted() || generation != renderGeneration.get()) {
+                    return;
+                }
+
+                Platform.runLater(() -> {
+                    if (generation == renderGeneration.get()) {
+                        commitRenderedImages(images, guideLinesImageView, regionsImageView);
+                    }
+                });
+            });
+        } catch (final RejectedExecutionException e) {
+            // The app is usually closing if the persistent executor rejects a
+            // redraw. Rendering a final stale image is not worth reviving work.
+        }
+    }
+
+    private RenderOptions snapshotRenderOptions() {
+        // Read JavaFX controls once before drawing. The renderer may run on a
+        // worker thread, and the pixel loop should use a stable view of these
+        // toggles instead of repeatedly touching scene controls.
+        return new RenderOptions(
+                allCheckBox.isSelected(),
+                boundsCheckBox.isSelected(),
+                showFillsCheckBox.isSelected(),
+                proverCheckBox.isSelected());
+    }
+
+    private RenderedImages buildRenderedImages(
+            final LinkedHashMap<Storage, Color> regions,
+            final ExecutorService executor,
+            final RenderOptions options) {
         // Image 1: Guidelines
         final WritableImage guideLinesImage = renderGuideLines();
 
         // Image 2: Regions
-        final WritableImage regionImage = redoFromScratch(regions, executor);
+        final WritableImage regionImage = redoFromScratch(regions, executor, options);
 
         // Zhao Yu Li, Jul 29, 2025.
         // Squares are optionally rendered (whereas they were unconditionally rendered before).
@@ -5818,7 +5912,7 @@ public final class Viewer {
         rectangles.addAll(coverRects.stableEntrySet());
         rectangles.sort(Comparator.comparingDouble(o -> o.intervalX.max - o.intervalX.min));
         for (Rectangle rect : rectangles) {
-            renderRectLoad(rect, regionImage, coverRects.getColor(rect), Color.FIREBRICK);
+            renderRectLoad(rect, regionImage, coverRects.getColor(rect), Color.FIREBRICK, options);
         }
         // }
 
@@ -5846,16 +5940,58 @@ public final class Viewer {
         // Image 4: One-by-One
         final WritableImage oboImage = new WritableImage(SIDE, SIDE);
         if (currentOBOStorage != null) {
-            renderRegion(currentOBOStorage, oboImage, currentOBOColor);
+            renderRegion(currentOBOStorage, oboImage, currentOBOColor, options);
         }
 
-        // Update all the images at once to avoid jarring rendering.
-        guideLinesImageView.setImage(guideLinesImage);
-        regionsImageView.setImage(regionImage);
-        boundsImageView.setImage(boundsImage);
-        oboImageView.setImage(oboImage);
+        return new RenderedImages(guideLinesImage, regionImage, boundsImage, oboImage);
     }
 
+    private void commitRenderedImages(
+            final RenderedImages images, final ImageView guideLinesImageView, final ImageView regionsImageView) {
+        // Update all the images at once to avoid jarring rendering. Only this
+        // method touches the JavaFX ImageViews; buildRenderedImages can run in
+        // the background while it prepares detached WritableImages.
+        guideLinesImageView.setImage(images.guideLinesImage);
+        regionsImageView.setImage(images.regionImage);
+        boundsImageView.setImage(images.boundsImage);
+        oboImageView.setImage(images.oboImage);
+    }
+
+    private static final class RenderOptions {
+        final boolean allSelected;
+        final boolean boundsSelected;
+        final boolean showFillsSelected;
+        final boolean proverSelected;
+
+        RenderOptions(
+                final boolean allSelected,
+                final boolean boundsSelected,
+                final boolean showFillsSelected,
+                final boolean proverSelected) {
+            this.allSelected = allSelected;
+            this.boundsSelected = boundsSelected;
+            this.showFillsSelected = showFillsSelected;
+            this.proverSelected = proverSelected;
+        }
+    }
+
+    private static final class RenderedImages {
+        final WritableImage guideLinesImage;
+        final WritableImage regionImage;
+        final WritableImage boundsImage;
+        final WritableImage oboImage;
+
+        RenderedImages(
+                final WritableImage guideLinesImage,
+                final WritableImage regionImage,
+                final WritableImage boundsImage,
+                final WritableImage oboImage) {
+            this.guideLinesImage = guideLinesImage;
+            this.regionImage = regionImage;
+            this.boundsImage = boundsImage;
+            this.oboImage = oboImage;
+        }
+    }
 
 
     // use this when the length of the code numbers changes
@@ -6342,7 +6478,8 @@ public final class Viewer {
     }
 
     private void renderRectLoad(final Rectangle rect, final WritableImage image,
-                                final Color colorInside, final Color colorBound) {
+                                final Color colorInside, final Color colorBound,
+                                final RenderOptions options) {
 
         final PixelWriter pixelWriter = image.getPixelWriter();
         final PixelReader pixelReader = image.getPixelReader();
@@ -6351,7 +6488,7 @@ public final class Viewer {
         final int endPX = Math.min((int) map.pixelX(rect.intervalX.max), SIDE);
         final int endPY = Math.min((int) map.pixelY(rect.intervalY.max), SIDE);
 
-        if (!allCheckBox.isSelected()) {
+        if (!options.allSelected) {
             for (int i = startPX; i <= endPX; i++) {
                 for (int j = startPY; j <= endPY; j++) {
                     if (SIDE > i && i >= 0 && SIDE > j && j >= 0) {
@@ -6417,7 +6554,8 @@ public final class Viewer {
     }
 
     private void renderUnstable(final Storage.Unstable unstable, final PixelWriter pixelWriter,
-                                final Rectangle viewRectangle, final Color color) {
+                                final Rectangle viewRectangle, final Color color,
+                                final RenderOptions options) {
         final List<Vector2> points = new ArrayList<>();
 
         final int xCoeff = unstable.constraint.coeff(XYPi.X);
@@ -6434,7 +6572,7 @@ public final class Viewer {
         int extraPixelX = 0;
         int extraPixelY = 0;
 
-        if (allCheckBox.isSelected()) {
+        if (options.allSelected) {
             final double x1 = (viewRectangle.intervalX.min + viewRectangle.intervalX.max) / 2;
             final double y1 = (viewRectangle.intervalY.min + viewRectangle.intervalY.max) / 2;
             final List<Double> translate = Arrays.asList(x1, y1, Math.PI - (x1 + y1));
@@ -6452,11 +6590,11 @@ public final class Viewer {
             // solve for y
             final double y = -(double) piCoeff / yCoeff * Math.PI;
 
-            if (viewRectangle.intervalY.contains(y) || allCheckBox.isSelected()) {
+            if (viewRectangle.intervalY.contains(y) || options.allSelected) {
                 // now we iterate over the vertical lines
                 for (int i = startPixelX; i < endPixelX; i += 1) {
                     final double radX = map.radianX(i);
-                    if (proverCheckBox.isSelected()) {
+                    if (options.proverSelected) {
                         if (!unstable.isPositiveProver(radX, y, halfWidth, offset)) {
                             continue;
                         }
@@ -6470,11 +6608,11 @@ public final class Viewer {
             // solve for x
             final double x = -(double) piCoeff / xCoeff * Math.PI;
 
-            if (viewRectangle.intervalX.contains(x) || allCheckBox.isSelected()) {
+            if (viewRectangle.intervalX.contains(x) || options.allSelected) {
                 // now iterate over the horizontal lines
                 for (int i = startPixelY; i < endPixelY; i += 1) {
                     final double radY = map.radianY(i);
-                    if (proverCheckBox.isSelected()) {
+                    if (options.proverSelected) {
                         if (!unstable.isPositiveProver(x, radY, halfWidth, offset)) {
                             continue;
                         }
@@ -6495,13 +6633,13 @@ public final class Viewer {
             for (int i = startPixelX; i < endPixelX; i += 1) {
                 final double radX = map.radianX(i);
                 final double radY = y.applyAsDouble(radX);
-                if (proverCheckBox.isSelected()) {
+                if (options.proverSelected) {
                     if (!unstable.isPositiveProver(radX, radY, halfWidth, offset)) {
                         continue;
                     }
                 }
                 // need to make sure intersection is in the viewing box
-                if (viewRectangle.intervalY.contains(radY) || allCheckBox.isSelected()) {
+                if (viewRectangle.intervalY.contains(radY) || options.allSelected) {
                     final Vector2 point = Vector2.create(radX, radY);
                     points.add(point);
                 }
@@ -6510,21 +6648,21 @@ public final class Viewer {
             for (int i = startPixelY; i < endPixelY; i += 1) {
                 final double radY = map.radianY(i);
                 final double radX = x.applyAsDouble(radY);
-                if (proverCheckBox.isSelected()) {
+                if (options.proverSelected) {
                     if (!unstable.isPositiveProver(radX, radY, halfWidth, offset)) {
                         continue;
                     }
                 }
-                if (viewRectangle.intervalX.contains(radX) || allCheckBox.isSelected()) {
+                if (viewRectangle.intervalX.contains(radX) || options.allSelected) {
                     final Vector2 point = Vector2.create(radX, radY);
                     points.add(point);
                 }
             }
-            if (allCheckBox.isSelected()) {
+            if (options.allSelected) {
                 for (int i = extraPixelX; i < extraPixelX + (SIDE * 2); i += 1) {
                     final double radX = map.radianX(i);
                     final double radY = y.applyAsDouble(radX);
-                    if (proverCheckBox.isSelected()) {
+                    if (options.proverSelected) {
                         if (!unstable.isPositiveProver(radX, radY, halfWidth, offset)) {
                             continue;
                         }
@@ -6536,7 +6674,7 @@ public final class Viewer {
                 for (int i = extraPixelY; i < extraPixelY + (SIDE * 2); i += 1) {
                     final double radY = map.radianY(i);
                     final double radX = x.applyAsDouble(radY);
-                    if (proverCheckBox.isSelected()) {
+                    if (options.proverSelected) {
                         if (!unstable.isPositiveProver(radX, radY, halfWidth, offset)) {
                             continue;
                         }
@@ -6600,7 +6738,7 @@ public final class Viewer {
                 } catch (final IndexOutOfBoundsException e) {
                 }
             }
-            if (allCheckBox.isSelected()) {
+            if (options.allSelected) {
                 final double rz = Math.PI - (rx + ry);
                 final double[][] coords = {
                         {rx, rz}, {ry, rz}, {rz, rx}, {rz, ry}, {ry, rx}, {rx, ry}};
@@ -6619,12 +6757,20 @@ public final class Viewer {
     }
 
     void renderRegion(final Storage region, final WritableImage image, final Color color) {
+        renderRegion(region, image, color, snapshotRenderOptions());
+    }
+
+    private void renderRegion(
+            final Storage region,
+            final WritableImage image,
+            final Color color,
+            final RenderOptions options) {
         final PixelReader pixelReader = image.getPixelReader();
         final PixelWriter pixelWriter = image.getPixelWriter();
 
         // now we create a rectangle that describes the current viewing screen
         final Rectangle viewRectangle = map.getViewRectangle();
-        if (region.intersects(viewRectangle) || allCheckBox.isSelected()) {
+        if (region.intersects(viewRectangle) || options.allSelected) {
             if (region.classCodeSeq.stable) {
                 final Storage.Stable stable = (Storage.Stable) region;
 
@@ -6640,17 +6786,17 @@ public final class Viewer {
                         // if it's not colored our color already, then let's see if we can color it
                         if (pixelColor != color && !color.equals(Color.TRANSPARENT)) {
                             // if the point is inside the bounding rectangle and is positive
-                            if (allCheckBox.isSelected()) { // all feature part 1/3
+                            if (options.allSelected) { // all feature part 1/3
                                 final List<Double> subList =
                                         Arrays.asList(rx, ry, Math.PI - (rx + ry));
                                 Collections.sort(subList);
                                 final Location location =
                                         stable.polygon.location(subList.get(0), subList.get(1));
                                 if (location == Location.INSIDE) {
-                                    if (boundsCheckBox.isSelected()) {
+                                    if (options.boundsSelected) {
                                         pixelWriter.setColor(readX, readY, fillBoundColor);
                                     }
-                                    if (proverCheckBox.isSelected()) {
+                                    if (options.proverSelected) {
                                         if (stable.isPositiveProver(subList.get(0), subList.get(1),
                                                 halfWidth, offset)) {
                                             pixelWriter.setColor(readX, readY, color);
@@ -6664,10 +6810,10 @@ public final class Viewer {
                             } else {
                                 final Location location = stable.polygon.location(rx, ry);
                                 if (location == Location.INSIDE) {
-                                    if (boundsCheckBox.isSelected()) {
+                                    if (options.boundsSelected) {
                                         pixelWriter.setColor(readX, readY, fillBoundColor);
                                     }
-                                    if (proverCheckBox.isSelected()) {
+                                    if (options.proverSelected) {
                                         if (stable.isPositiveProver(rx, ry, halfWidth, offset)) {
                                             pixelWriter.setColor(readX, readY, color);
                                         }
@@ -6682,7 +6828,7 @@ public final class Viewer {
                     }
                 }
             } else {
-                renderUnstable((Storage.Unstable) region, pixelWriter, viewRectangle, color);
+                renderUnstable((Storage.Unstable) region, pixelWriter, viewRectangle, color, options);
             }
         }
     }

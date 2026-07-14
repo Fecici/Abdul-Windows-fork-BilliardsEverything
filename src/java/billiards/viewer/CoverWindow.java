@@ -18,7 +18,9 @@ import org.eclipse.collections.api.list.primitive.IntList;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List; // added jul31,2025 marco
+import java.util.Map;
 import java.util.Optional;//added oct 15,2017 george
 import java.util.concurrent.ForkJoinPool;
 
@@ -856,6 +858,22 @@ public final class CoverWindow {
                                Utils.readFromFile(Viewer.tmpDir + "/cover_stables.txt");
         final StringBuilder postInfo = new StringBuilder();
 
+        // cover/info.txt can contain thousands of lines. Build the annotation
+        // lookup once so redoInfo is linear in the number of pre-info and info
+        // rows instead of rescanning every pre-info row for every output row.
+        final Map<String, String> preInfoMap = new HashMap<>();
+        for (final String preLine : preInfo.split("\\r?\\n")) {
+            final String trimmed = Utils.tripleTrimmer(preLine.split("#")[0].trim());
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (preLine.contains("#")) {
+                preInfoMap.put(trimmed, preLine.split("#")[1].trim());
+            } else {
+                preInfoMap.put(trimmed, "");
+            }
+        }
+
         for (final String line : info.split("\\r?\\n")) {
             postInfo.append(line.trim());
             if (line.startsWith("//") || line.trim().isEmpty()) {
@@ -870,13 +888,9 @@ public final class CoverWindow {
                 else code = code.split(" - ")[1];
             }
 
-            for (String preLine : preInfo.split("\\r?\\n")) {
-                if (Utils.tripleTrimmer(preLine.split("#")[0].trim()).equals(code)) {
-
-                    if (preLine.contains("#")) postInfo.append(" # " + preLine.split("#")[1].trim());
-
-                    break;
-                }
+            final String suffix = preInfoMap.get(code);
+            if (suffix != null && !suffix.isEmpty()) {
+                postInfo.append(" # ").append(suffix);
             }
             postInfo.append("\n");
         }

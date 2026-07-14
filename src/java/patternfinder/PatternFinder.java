@@ -99,49 +99,49 @@ public class PatternFinder {
     public PatternFinder(final Stage primaryStage, final String version,
                          final ConnectionPool pool, final String dbName) {
 
-    	mainWindow = primaryStage;
-    	this.pool = pool;
+	mainWindow = primaryStage;
+	this.pool = pool;
 
         final String windowTitle = String.format("Pattern Finder %s (%s)", version, dbName);
 
         Utils.setupCustomTooltipBehavior(
-        		(int) (TipOpenDelay * 1000), (int) (TipCloseDelay * 1000), 200);
+		(int) (TipOpenDelay * 1000), (int) (TipCloseDelay * 1000), 200);
 
-    	cleanBtn.setText("Clean");
-    	cleanBtn.setTooltip(Utils.toolTip("Clean the output field so the results may be put in "
-    			+ "the cover window."));
-    	Utils.colorButton(cleanBtn, Color.LIGHTGRAY, clickColor);
-    	cleanBtn.setOnAction(event -> fireCleanBtn());
+	cleanBtn.setText("Clean");
+	cleanBtn.setTooltip(Utils.toolTip("Clean the output field so the results may be put in "
+			+ "the cover window."));
+	Utils.colorButton(cleanBtn, Color.LIGHTGRAY, clickColor);
+	cleanBtn.setOnAction(event -> fireCleanBtn());
 
-    	superCheckBtn.setText("Super Check");
-    	superCheckBtn.setTooltip(Utils.toolTip("Do the superCheck on the results Field."));
-    	Utils.colorButton(superCheckBtn, Color.THISTLE, clickColor);
-    	superCheckBtn.setOnAction(event -> fireSuperCheckBtn(true));
+	superCheckBtn.setText("Super Check");
+	superCheckBtn.setTooltip(Utils.toolTip("Do the superCheck on the results Field."));
+	Utils.colorButton(superCheckBtn, Color.THISTLE, clickColor);
+	superCheckBtn.setOnAction(event -> fireSuperCheckBtn(true));
 
-    	extendBtn.setText("Add +");
-    	extendBtn.setTooltip(Utils.toolTip("Add '+' to all iteration lines in the input."));
-    	Utils.colorButton(extendBtn, Color.THISTLE, clickColor);
-    	extendBtn.setOnAction(event -> fireExtendBtn());
+	extendBtn.setText("Add +");
+	extendBtn.setTooltip(Utils.toolTip("Add '+' to all iteration lines in the input."));
+	Utils.colorButton(extendBtn, Color.THISTLE, clickColor);
+	extendBtn.setOnAction(event -> fireExtendBtn());
 
-    	calcBtn.setText("Calculate");
-    	calcBtn.setTooltip(Utils.toolTip("Calculate Action. Will search input Field for "
-    			+ "patterns, and will calculate any extensions."));
-    	Utils.colorButton(calcBtn, Color.THISTLE, clickColor);
-    	calcBtn.setOnAction(event -> fireCalcBtn());
+	calcBtn.setText("Calculate");
+	calcBtn.setTooltip(Utils.toolTip("Calculate Action. Will search input Field for "
+			+ "patterns, and will calculate any extensions."));
+	Utils.colorButton(calcBtn, Color.THISTLE, clickColor);
+	calcBtn.setOnAction(event -> fireCalcBtn());
 
-    	upBtn.setText(" ^ ");
-    	upBtn.setTooltip(Utils.toolTip("Put the text from the results field into the input "
-    			+ "field."));
-    	upBtn.setMaxHeight(20);
-    	Utils.colorButton(upBtn, Color.THISTLE, clickColor);
-    	upBtn.setOnAction(event -> {
-    		codesField.setText(resultField.getText());
-    		resultField.clear();
-    	});
+	upBtn.setText(" ^ ");
+	upBtn.setTooltip(Utils.toolTip("Put the text from the results field into the input "
+			+ "field."));
+	upBtn.setMaxHeight(20);
+	Utils.colorButton(upBtn, Color.THISTLE, clickColor);
+	upBtn.setOnAction(event -> {
+		codesField.setText(resultField.getText());
+		resultField.clear();
+	});
 
-    	downBtn.setText(" v ");
-    	Utils.colorButton(downBtn, Color.THISTLE, clickColor);
-    	downBtn.setOnAction(event -> fireDownBtn());
+	downBtn.setText(" v ");
+	Utils.colorButton(downBtn, Color.THISTLE, clickColor);
+	downBtn.setOnAction(event -> fireDownBtn());
 
         searchBtn.setText("Search");
         searchBtn.setTooltip(Utils.toolTip("Brings up a window that allows you to search for something"));
@@ -153,131 +153,131 @@ public class PatternFinder {
         Utils.colorButton(oneCodeBtn, Color.LIGHTPINK, clickColor);
         oneCodeBtn.setOnAction(event -> new OneCodeWindow(windowTitle).show());
 
-    	calcAndXtBtn.setText("Calc & Ext");
-    	calcAndXtBtn.setTooltip(Utils.toolTip("Preform a specific sequence of events."
-    			+ " See instructions for how to use this."));
-    	Utils.colorButton(calcAndXtBtn, Color.AQUAMARINE, clickColor);
-    	calcAndXtBtn.setOnAction(event -> {
-        	outputCB.setValue("Iteration: End");
-        	final String backUp = codesField.getText();
+	calcAndXtBtn.setText("Calc & Ext");
+	calcAndXtBtn.setTooltip(Utils.toolTip("Preform a specific sequence of events."
+			+ " See instructions for how to use this."));
+	Utils.colorButton(calcAndXtBtn, Color.AQUAMARINE, clickColor);
+	calcAndXtBtn.setOnAction(event -> {
+	outputCB.setValue("Iteration: End");
+	final String backUp = codesField.getText();
 
-    		// Going to str8 up just fire the buttons that do the sequence of commands we want
-        	fireCalcBtn();
-        	upBtn.fire();
-        	fireCalcBtn();
-        	fireSuperCheckBtn(false);
-        	codesField.setText(backUp);
+		// Going to str8 up just fire the buttons that do the sequence of commands we want
+	fireCalcBtn();
+	upBtn.fire();
+	fireCalcBtn();
+	fireSuperCheckBtn(false);
+	codesField.setText(backUp);
 
-    	});
+	});
 
-    	removeDupesBtn.setText("DUPLICATES");
-    	removeDupesBtn.setOnAction(event -> {
-    		final FileChooser fileChooser = new FileChooser();
+	removeDupesBtn.setText("DUPLICATES");
+	removeDupesBtn.setOnAction(event -> {
+		final FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Import Text");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
             final File file = fileChooser.showOpenDialog(mainWindow);
 
             if (file != null) {
-            	final Stream<String> stream;
-            	try {
+	final Stream<String> stream;
+	try {
 					 stream = Files.lines(file.toPath());
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 
-            	MutableSet<String> results = new UnifiedSet<>();
-            	String input = "";
+	MutableSet<String> results = new UnifiedSet<>();
+	final StringBuilder input = new StringBuilder();
 
-            	for (String line : (Iterable<String>) stream::iterator) {
-            		results.add(Utils.trimCodeLine(line));
-            		input += line + "\n";
-            	}
-            	stream.close();
+	for (String line : (Iterable<String>) stream::iterator) {
+		results.add(Utils.trimCodeLine(line));
+		input.append(line).append("\n");
+	}
+	stream.close();
 
-            	final StringBuilder builder = new StringBuilder();
-            	for (String line : results) {
-            		builder.append(line);
-            		builder.append("\n");
-            	}
-            	resultField.setText(builder.toString());
-            	codesField.setText(input);
+	final StringBuilder builder = new StringBuilder();
+	for (String line : results) {
+		builder.append(line);
+		builder.append("\n");
+	}
+	resultField.setText(builder.toString());
+	codesField.setText(input.toString());
             }
-    	});
+	});
 
-    	CScb.setText("CS");
-    	CScb.setSelected(true);
-    	OSOcb.setText("OSO");
-    	OSOcb.setSelected(true);
-    	ONScb.setText("ONS");
-    	ONScb.setSelected(true);
-    	CNScb.setText("CNS");
-    	CNScb.setSelected(true);
-    	OSNOcb.setText("OSNO");
-    	OSNOcb.setSelected(true);
+	CScb.setText("CS");
+	CScb.setSelected(true);
+	OSOcb.setText("OSO");
+	OSOcb.setSelected(true);
+	ONScb.setText("ONS");
+	ONScb.setSelected(true);
+	CNScb.setText("CNS");
+	CNScb.setSelected(true);
+	OSNOcb.setText("OSNO");
+	OSNOcb.setSelected(true);
 
-    	checkLRsCB.setText("LR");
-    	checkLRsCB.setSelected(true);
-    	checkLenField.setText("500");
-    	checkLenField.setPrefWidth(80);
-    	checkLenField.setTooltip(Utils.toolTip("How far should we super check?"));
+	checkLRsCB.setText("LR");
+	checkLRsCB.setSelected(true);
+	checkLenField.setText("500");
+	checkLenField.setPrefWidth(80);
+	checkLenField.setTooltip(Utils.toolTip("How far should we super check?"));
 
-    	verifyCB.setText("Check for Empties");
-    	verifyCB.setTooltip(Utils.toolTip("When calculating, if this is checked, the results "
-    			+ "will be tested to see if they are empty."));
+	verifyCB.setText("Check for Empties");
+	verifyCB.setTooltip(Utils.toolTip("When calculating, if this is checked, the results "
+			+ "will be tested to see if they are empty."));
 
-    	codesField.setPromptText("Enter Code Sequences");
-    	resultField.setEditable(false);
-    	VBox.setVgrow(codesField, Priority.SOMETIMES);
-    	VBox.setVgrow(resultField, Priority.SOMETIMES);
+	codesField.setPromptText("Enter Code Sequences");
+	resultField.setEditable(false);
+	VBox.setVgrow(codesField, Priority.SOMETIMES);
+	VBox.setVgrow(resultField, Priority.SOMETIMES);
 
-    	outputCB.getItems().addAll("List All", "Iteration: Base", "Iteration: Start", "Iteration: End");
-    	outputCB.setTooltip(Utils.toolTip("In what format to output any found patterns."));
-    	outputCB.setPrefWidth(145);
-    	outputCB.setStyle(Utils.hex(Color.THISTLE));
-    	outputCB.setValue("List All");
+	outputCB.getItems().addAll("List All", "Iteration: Base", "Iteration: Start", "Iteration: End");
+	outputCB.setTooltip(Utils.toolTip("In what format to output any found patterns."));
+	outputCB.setPrefWidth(145);
+	outputCB.setStyle(Utils.hex(Color.THISTLE));
+	outputCB.setValue("List All");
 
-    	printLbl.setText("Printing:");
+	printLbl.setText("Printing:");
 
-    	extMin.setPrefWidth(50);
+	extMin.setPrefWidth(50);
         extMin.setTooltip(Utils.toolTip("The min number of iterations you want to extend any "
                 + "extension lines by."));
         extMin.setText("0");
 
-    	extMax.setPrefWidth(50);
-    	extMax.setTooltip(Utils.toolTip("The max number of iterations you want to extend any "
-    			+ "extension lines by."));
-    	extMax.setText("4");
-    	extLable.setText("Extend:");
+	extMax.setPrefWidth(50);
+	extMax.setTooltip(Utils.toolTip("The max number of iterations you want to extend any "
+			+ "extension lines by."));
+	extMax.setText("4");
+	extLable.setText("Extend:");
 
-    	splitLbl.setText(" | ");
+	splitLbl.setText(" | ");
 
-    	patSize.setText("4");
-    	patSize.setTooltip(Utils.toolTip("The minimum pattern length you want to qualify as a "
-    			+ "useful pattern."));
-    	patSize.setPrefWidth(60);
-    	patSizeLbl.setText("Min. Length:");
+	patSize.setText("4");
+	patSize.setTooltip(Utils.toolTip("The minimum pattern length you want to qualify as a "
+			+ "useful pattern."));
+	patSize.setPrefWidth(60);
+	patSizeLbl.setText("Min. Length:");
 
-    	final HBox typesHBox = new HBox(10);
-    	typesHBox.setAlignment(Pos.CENTER);
-    	typesHBox.getChildren().addAll(CScb, OSOcb, CNScb, ONScb, OSNOcb);
+	final HBox typesHBox = new HBox(10);
+	typesHBox.setAlignment(Pos.CENTER);
+	typesHBox.getChildren().addAll(CScb, OSOcb, CNScb, ONScb, OSNOcb);
 
-    	final HBox extMinMax = new HBox();
-    	extMinMax.setAlignment(Pos.CENTER);
-    	extMinMax.getChildren().addAll(extMin, extMax);
+	final HBox extMinMax = new HBox();
+	extMinMax.setAlignment(Pos.CENTER);
+	extMinMax.getChildren().addAll(extMin, extMax);
 
-    	final HBox controls = new HBox(10);
-    	controls.setPadding(new Insets(0));
-    	controls.setAlignment(Pos.CENTER);
-    	controls.getChildren().addAll(calcBtn, patSizeLbl, patSize, extLable, extMinMax,
-    	        printLbl, outputCB, splitLbl, searchBtn, extendBtn, superCheckBtn, checkLenField,
-    	        checkLRsCB, cleanBtn, upBtn,downBtn, oneCodeBtn);
+	final HBox controls = new HBox(10);
+	controls.setPadding(new Insets(0));
+	controls.setAlignment(Pos.CENTER);
+	controls.getChildren().addAll(calcBtn, patSizeLbl, patSize, extLable, extMinMax,
+	        printLbl, outputCB, splitLbl, searchBtn, extendBtn, superCheckBtn, checkLenField,
+	        checkLRsCB, cleanBtn, upBtn,downBtn, oneCodeBtn);
 
-    	mainVBox.setSpacing(10);
-    	mainVBox.setPadding(new Insets(10, 10, 10, 10));
-    	mainVBox.getChildren().setAll(controls, typesHBox, codesField, resultField);
+	mainVBox.setSpacing(10);
+	mainVBox.setPadding(new Insets(10, 10, 10, 10));
+	mainVBox.getChildren().setAll(controls, typesHBox, codesField, resultField);
 
-    	mainWindow.setTitle(windowTitle);
+	mainWindow.setTitle(windowTitle);
         mainWindow.setOnCloseRequest(event -> {
             // close all the windows
             Platform.exit();
@@ -290,7 +290,7 @@ public class PatternFinder {
     }
 
     private void fireCalcBtn() {
-    	resultField.setText("");
+	resultField.setText("");
 
 		int minLen;
 		int eMin;
@@ -314,7 +314,7 @@ public class PatternFinder {
 		final ArrayList<Single> singleTasks = new ArrayList<>();
 		final ArrayList<Triple> tripTasks = new ArrayList<>();
 		final ArrayList<String> xtndTasks = new ArrayList<>();
-		String errorsString = "";
+		final StringBuilder errorsString = new StringBuilder();
 
 		final String[] text = codesField.getText().trim().split("\\r?\\n");
 
@@ -328,70 +328,75 @@ public class PatternFinder {
 
 			} else if(singLine.isPresent()) {
 				final Single code = singLine.get();
-		    	final Either<InvalidCodeSequence, ClassifiedCodeSequence> codeSeq
-		    						= ClassifiedCodeSequence.create(code.getCode());
+			final Either<InvalidCodeSequence, ClassifiedCodeSequence> codeSeq
+								= ClassifiedCodeSequence.create(code.getCode());
 				if (codeSeq.isRight()) {
 					if (correctType(codeSeq.get().codeType))
-    				singleTasks.add(code);
+				singleTasks.add(code);
 				}
 			} else if(tripLine.isPresent()) {
 				final Triple code = tripLine.get();
 				boolean valid = true;
 				for (int j = 0; j < 3; j++) {
 					final ImmutableIntList codePart = code.getCode(j);
-    		    	final Either<InvalidCodeSequence, ClassifiedCodeSequence> codeSeq
-    		    						= ClassifiedCodeSequence.create(codePart);
-    				if (codeSeq.isRight()) {
-    					if (!correctType(codeSeq.get().codeType)) {
-    						valid = false;
-    					}
-    				}
+			final Either<InvalidCodeSequence, ClassifiedCodeSequence> codeSeq
+								= ClassifiedCodeSequence.create(codePart);
+				if (codeSeq.isRight()) {
+					if (!correctType(codeSeq.get().codeType)) {
+						valid = false;
+					}
+				}
 				}
 				if (valid) {
 					tripTasks.add(code);
 				}
 			} else {
 				if (!line.trim().isEmpty()) {
-					errorsString += (i + 1) + ", ";
+					errorsString.append(i + 1).append(", ");
 				}
 			}
 		}
 
-		String results = "";
+		// The pattern finder can emit many lines. Accumulate into one buffer so
+		// each append preserves the existing output text without repeatedly
+		// copying all prior results.
+		final StringBuilder results = new StringBuilder();
 		final String singles = singAction(singleTasks, minLen, outputCB.getValue(),
 				                          pool, verifyCB.isSelected());
 		final String triples = tripAction(tripTasks, minLen, outputCB.getValue(),
 				                          pool, verifyCB.isSelected());
 		final String extend = xtndAction(xtndTasks, eMin, eMax, pool, verifyCB.isSelected());
-		if (!errorsString.isEmpty()) {
-			errorsString += "~";
-			results += "// errors exist in line(s) " + errorsString.replace(", ~", "") + ".\n\n";
+		if (errorsString.length() > 0) {
+			final String errStr = errorsString.toString() + "~";
+			results.append("// errors exist in line(s) ")
+					.append(errStr.replace(", ~", ""))
+					.append(".\n\n");
 		}
 		if (!singles.isEmpty()) {
-			results += "//------------------------ SINGLE RESULTS ------------------------//\n";
-			results += singles;
+			results.append("//------------------------ SINGLE RESULTS ------------------------//\n");
+			results.append(singles);
 		}
 		if (!triples.isEmpty()) {
-			results += "//------------------------ TRIPLE RESULTS ------------------------//\n";
-			results += triples;
+			results.append("//------------------------ TRIPLE RESULTS ------------------------//\n");
+			results.append(triples);
 		}
 		if (!extend.isEmpty()) {
-			results += "//------------------------ EXTEND RESULTS ------------------------//\n";
-			results += extend + "\n";
+			results.append("//------------------------ EXTEND RESULTS ------------------------//\n");
+			results.append(extend).append("\n");
 		}
 
-		resultBackup = results;
-		resultField.setText(results);
+		resultBackup = results.toString();
+		resultField.setText(results.toString());
     }
 
     private void fireDownBtn() {
 
-        String results = "";
+        final StringBuilder results = new StringBuilder();
 
         final StringBuilder singles = new StringBuilder();
         final StringBuilder triples = new StringBuilder();
         final StringBuilder extend = new StringBuilder();
-        String errorsString = "";
+        final StringBuilder errorsString = new StringBuilder();
 
         final String[] text = codesField.getText().trim().split("\\r?\\n");
 
@@ -415,30 +420,33 @@ public class PatternFinder {
 
             } else {
                 if (!line.trim().isEmpty()) {
-                    errorsString += (i + 1) + ", ";
+                    errorsString.append(i + 1).append(", ");
                 }
             }
         }
 
-        if (!errorsString.isEmpty()) {
-            errorsString += "~";
-            results += "// errors exist in line(s) " + errorsString.replace(", ~", "") + ".\n\n";
+        if (errorsString.length() > 0) {
+            final String errStr = errorsString.toString() + "~";
+            results.append("// errors exist in line(s) ")
+                    .append(errStr.replace(", ~", ""))
+                    .append(".\n\n");
         }
-        if (!singles.toString().isEmpty()) {
-            results += "//------------------------ SINGLE RESULTS ------------------------//\n";
-            results += singles.toString() + "\n\n";
+        if (singles.length() > 0) {
+            results.append("//------------------------ SINGLE RESULTS ------------------------//\n");
+            results.append(singles).append("\n\n");
         }
-        if (!triples.toString().isEmpty()) {
-            results += "//------------------------ TRIPLE RESULTS ------------------------//\n";
-            results += triples.toString() + "\n\n";
+        if (triples.length() > 0) {
+            results.append("//------------------------ TRIPLE RESULTS ------------------------//\n");
+            results.append(triples).append("\n\n");
         }
-        if (!extend.toString().isEmpty()) {
-            results += "//------------------------ EXTEND RESULTS ------------------------//\n";
-            results += extend.toString() + "\n\n";
+        if (extend.length() > 0) {
+            results.append("//------------------------ EXTEND RESULTS ------------------------//\n");
+            results.append(extend).append("\n\n");
         }
 
-        resultBackup = results.trim();
-        resultField.setText(results.trim());
+        final String resultsStr = results.toString().trim();
+        resultBackup = resultsStr;
+        resultField.setText(resultsStr);
 
     }
 
@@ -458,10 +466,10 @@ public class PatternFinder {
 		}
 
 		task.setOnSucceeded(e -> {
-    		try {
+		try {
 
-    			final String result = task.get();
-    			final String[] newBlocks = result.trim().split("\\r?\\n\\r?\\n");
+			final String result = task.get();
+			final String[] newBlocks = result.trim().split("\\r?\\n\\r?\\n");
 
 				resultField.setText(result);
 				resultBackup = result;
@@ -486,13 +494,13 @@ public class PatternFinder {
 				}
 
 			} catch (InterruptedException e1) {
-	    		System.out.println("Interrupted Exeption in Super Checker");
+			System.out.println("Interrupted Exeption in Super Checker");
 			} catch (ExecutionException e1) {
-	    		System.out.println("Execution Exeption in Super Checker");
+			System.out.println("Execution Exeption in Super Checker");
 			}
-    		if (showProgress) {
-        		progress.close();
-    		}
+		if (showProgress) {
+		progress.close();
+		}
             executor.shutdown();
 
 		});
@@ -504,35 +512,35 @@ public class PatternFinder {
         task.setOnFailed(e -> {
             System.out.println("Something went wrong");
             if (showProgress) {
-        		progress.close();
-    		}
+		progress.close();
+		}
             executor.shutdown();
         });
 
         executor.execute(task);
         if (showProgress) {
-    		progress.show();
+		progress.show();
 		}
     }
 
     private void fireExtendBtn() {
 		final String[] text = codesField.getText().trim().split("\\r?\\n");
 
-		String newTxt = "";
+		final StringBuilder newTxt = new StringBuilder();
 
 		for (int i = 0; i < text.length; i++) {
 			if (PatUtils.xtndValidate(text[i]) && !text[i].contains("+")) {
-				newTxt += "+" + text[i].trim() + "\n";
+				newTxt.append("+").append(text[i].trim()).append("\n");
 			} else {
-				newTxt += text[i] + "\n";
+				newTxt.append(text[i]).append("\n");
 			}
 		}
-		codesField.setText(newTxt);
+		codesField.setText(newTxt.toString());
     }
 
     private void fireCleanBtn() {
-		String singText = "";
-		String tripText = "";
+		final StringBuilder singText = new StringBuilder();
+		final StringBuilder tripText = new StringBuilder();
 
 		// split on the blocks of results
 		final String[] blocks = resultField.getText().trim().split("\\r?\\n\\r?\\n");
@@ -544,346 +552,351 @@ public class PatternFinder {
 			final String[] text = blocks[block].split("\\r?\\n");
 
 			for (int i = 0; i < text.length; i++) {
-    			if (!text[i].contains("//") && !text[i].contains("+")
-    									&& !text[i].trim().isEmpty()) {
-    				if (text[i].contains(",") && !text[i].contains(")")) {
-    					//triple
-    					tripText += text[i].trim() + "\n";
-    				} else {
-    					//single
-	    				if (text[i].contains(")")) {
-	    					singText += text[i].split(Pattern.quote(")"))[1].trim() + "\n";
-	    				} else {
-	    					singText += text[i].trim() + "\n";
-	    				}
-    				}
+			if (!text[i].contains("//") && !text[i].contains("+")
+									&& !text[i].trim().isEmpty()) {
+				if (text[i].contains(",") && !text[i].contains(")")) {
+					//triple
+					tripText.append(text[i].trim()).append("\n");
+				} else {
+					//single
+					if (text[i].contains(")")) {
+						singText.append(text[i].split(Pattern.quote(")"))[1].trim()).append("\n");
+					} else {
+						singText.append(text[i].trim()).append("\n");
+					}
+				}
 
-    			}
-    		}
+			}
+		}
 		}
 
-		resultField.setText(singText + "\n" + tripText);
+		resultField.setText(singText.toString() + "\n" + tripText.toString());
 
     }
 
 
     private boolean correctType(final CodeType type) {
-    	if (type.equals(CodeType.OSNO) && OSNOcb.isSelected()) {
-    		return true;
-    	} else if (type.equals(CodeType.OSO) && OSOcb.isSelected()) {
-    		return true;
-    	} else if (type.equals(CodeType.CS) && CScb.isSelected()) {
-    		return true;
-    	} else if (type.equals(CodeType.ONS) && ONScb.isSelected()) {
-    		return true;
-    	} else if (type.equals(CodeType.CNS) && CNScb.isSelected()) {
-    		return true;
-    	} else {
-    		return false;
-    	}
+	if (type.equals(CodeType.OSNO) && OSNOcb.isSelected()) {
+		return true;
+	} else if (type.equals(CodeType.OSO) && OSOcb.isSelected()) {
+		return true;
+	} else if (type.equals(CodeType.CS) && CScb.isSelected()) {
+		return true;
+	} else if (type.equals(CodeType.ONS) && ONScb.isSelected()) {
+		return true;
+	} else if (type.equals(CodeType.CNS) && CNScb.isSelected()) {
+		return true;
+	} else {
+		return false;
+	}
     }
 
     private static String xtndAction(ArrayList<String> lines,final int eMin, final int eMax,
-    								 final ConnectionPool pool, final boolean verify) {
+								 final ConnectionPool pool, final boolean verify) {
 
-    	final StringBuilder result = new StringBuilder();
+	final StringBuilder result = new StringBuilder();
 
-    	for (String line : lines) {
-    		final String codeStr = Utils.tripleTrimmer(line.split("#")[0].trim());
-    		final String patStr = line.split("#")[1].trim();
+	for (String line : lines) {
+		final String codeStr = Utils.tripleTrimmer(line.split("#")[0].trim());
+		final String patStr = line.split("#")[1].trim();
 
             final int extlen = eMax - eMin;
 
-    		if (codeStr.contains(",")) {
-    			// triple
-    			final String[] codes = codeStr.split(",");
-    			final String[] pats = patStr.split(",");
-    			if (codes.length != 3 || pats.length != 3) {
-    				return "";
-    			}
+		if (codeStr.contains(",")) {
+			// triple
+			final String[] codes = codeStr.split(",");
+			final String[] pats = patStr.split(",");
+			if (codes.length != 3 || pats.length != 3) {
+				return "";
+			}
 
-    			result.append("// pat: " + patStr);
+			result.append("// pat: " + patStr);
 				result.append("\n// base: " + codeStr);
 				result.append("\n// n = " + eMin + " -> " + eMax + "\n");
-    			final String[] results = new String[extlen];
-    			Arrays.fill(results, "");
+			final StringBuilder[] results = new StringBuilder[extlen];
+			for (int r = 0; r < extlen; r++) {
+				results[r] = new StringBuilder();
+			}
 
-    			for (int pos = 0; pos < 3; pos++) {
-        			final Optional<ImmutableIntList> code = Utils.splitString(codes[pos]);
-        			final Optional<ImmutableIntList> pat = Utils.splitString(pats[pos]);
+			for (int pos = 0; pos < 3; pos++) {
+			final Optional<ImmutableIntList> code = Utils.splitString(codes[pos]);
+			final Optional<ImmutableIntList> pat = Utils.splitString(pats[pos]);
 
-        			if (code.isPresent() && pat.isPresent()) {
-        				for (int i = eMin; i < eMax; i++) {
-        					final ImmutableIntList newCode = PatUtils.addImm(
-        							code.get(), pat.get(), i);
-        					if (verify && !PatUtils.emptyVerify(newCode, pool)) {
-            					results[i - eMin] += "empty ";
-            				}
-        					results[i - eMin] += PatUtils.printImm(newCode);
-        					if (pos < 2) {
-        						results[i - eMin] += ", ";
-        					} else {
-        						results[i - eMin] += " # " + patStr.trim() + "\n";
-        					}
-        				}
-        			}
-    			}
+			if (code.isPresent() && pat.isPresent()) {
+				for (int i = eMin; i < eMax; i++) {
+					final ImmutableIntList newCode = PatUtils.addImm(
+							code.get(), pat.get(), i);
+					if (verify && !PatUtils.emptyVerify(newCode, pool)) {
+					results[i - eMin].append("empty ");
+				}
+					results[i - eMin].append(PatUtils.printImm(newCode));
+					if (pos < 2) {
+						results[i - eMin].append(", ");
+					} else {
+						results[i - eMin].append(" # ").append(patStr.trim()).append("\n");
+					}
+				}
+			}
+			}
 
-    			final StringBuilder codeString = new StringBuilder();
-    			for (int i = 0; i < results.length; i++) {
-    				if (results[i].contains("empty")) {
-    					codeString.append("// ");
-    					codeString.append(results[i]);
-        				break;
-    				}
-    				codeString.append(results[i]);
-    			}
-    			result.append(codeString.toString() + "\n");
-    		} else {
-    			// single
-    			final Optional<ImmutableIntList> code = Utils.splitString(codeStr);
-    			final Optional<ImmutableIntList> pat = Utils.splitString(patStr);
+			final StringBuilder codeString = new StringBuilder();
+			for (int i = 0; i < results.length; i++) {
+				if (results[i].toString().contains("empty")) {
+					codeString.append("// ");
+					codeString.append(results[i]);
+				break;
+				}
+				codeString.append(results[i]);
+			}
+			result.append(codeString.toString() + "\n");
+		} else {
+			// single
+			final Optional<ImmutableIntList> code = Utils.splitString(codeStr);
+			final Optional<ImmutableIntList> pat = Utils.splitString(patStr);
 
-    			if (code.isPresent() && pat.isPresent()) {
-    				result.append("// pat: " + PatUtils.printImm(pat.get()));
-    				result.append("\n// base: " + PatUtils.printImm(code.get()));
-    				result.append("\n// n = " + eMin + " -> " + eMax + "\n");
-    				String codeString = "";
+			if (code.isPresent() && pat.isPresent()) {
+				result.append("// pat: " + PatUtils.printImm(pat.get()));
+				result.append("\n// base: " + PatUtils.printImm(code.get()));
+				result.append("\n// n = " + eMin + " -> " + eMax + "\n");
+				final StringBuilder codeString = new StringBuilder();
 
-    				for (int i = eMin; i < eMax; i++) {
-    					final ImmutableIntList newCode = PatUtils.addImm(
-    							code.get(), pat.get(), i);
-        				final Optional<String> standard = Utils.standard(newCode, i);
-        				if (standard.isPresent()) {
-        					if (verify && !PatUtils.emptyVerify(newCode, pool)) {
-            					codeString += "//empty set " + PatUtils.printImm(newCode);
-            					break;
-            				} else {
-            					codeString += standard.get();
-            				}
+				for (int i = eMin; i < eMax; i++) {
+					final ImmutableIntList newCode = PatUtils.addImm(
+							code.get(), pat.get(), i);
+				final Optional<String> standard = Utils.standard(newCode, i);
+				if (standard.isPresent()) {
+					if (verify && !PatUtils.emptyVerify(newCode, pool)) {
+					codeString.append("//empty set ").append(PatUtils.printImm(newCode));
+					break;
+				} else {
+					codeString.append(standard.get());
+				}
 
-        				} else {
-        					// we have an invalid code sequence
-        					codeString += "// (Invalid) " + PatUtils.printImm(newCode);
-        					break;
-        				}
-        				codeString += " # " + PatUtils.printImm(pat.get()) + "\n";
-    				}
-    				result.append(codeString + "\n");
-    			}
-    		}
-    	}
-    	return result.toString();
+				} else {
+					// we have an invalid code sequence
+					codeString.append("// (Invalid) ").append(PatUtils.printImm(newCode));
+					break;
+				}
+				codeString.append(" # ").append(PatUtils.printImm(pat.get())).append("\n");
+				}
+				result.append(codeString).append("\n");
+			}
+		}
+	}
+	return result.toString();
     }
 
     private static String singAction(ArrayList<Single> lines, final int minLen,
-    		final String printing, final ConnectionPool pool, final boolean verify) {
+		final String printing, final ConnectionPool pool, final boolean verify) {
 
-    	String result = "";
+	final StringBuilder result = new StringBuilder();
 
-    	final LinkedHashMap<Spattern, MutableSet<Single>> map = new LinkedHashMap<>();
-    	for (int i = 0; i < lines.size() - 1; i++) {
-    		for (int j = i+1; j < lines.size(); j++) {
-    			if (lines.get(i).isEmpty() || lines.get(i).isEmpty()) {
-    				continue;
-    			}
-        		final Optional<Spattern> optPat = subtCodes(lines.get(i).getCode(), lines.get(j).getCode());
+	final LinkedHashMap<Spattern, MutableSet<Single>> map = new LinkedHashMap<>();
+	for (int i = 0; i < lines.size() - 1; i++) {
+		for (int j = i+1; j < lines.size(); j++) {
+			if (lines.get(i).isEmpty() || lines.get(i).isEmpty()) {
+				continue;
+			}
+		final Optional<Spattern> optPat = subtCodes(lines.get(i).getCode(), lines.get(j).getCode());
 
-        		if (optPat.isPresent()) {
-        			Spattern pat = optPat.get();
-    				if (map.containsKey(pat)) {
-        				map.get(pat).addAll(Arrays.asList(lines.get(i), lines.get(j)));
-        			} else {
-        				map.put(pat, new UnifiedSet<>(Arrays.asList(lines.get(i), lines.get(j))));
-        			}
-        		}
-        	}
-    	}
+		if (optPat.isPresent()) {
+			Spattern pat = optPat.get();
+				if (map.containsKey(pat)) {
+				map.get(pat).addAll(Arrays.asList(lines.get(i), lines.get(j)));
+			} else {
+				map.put(pat, new UnifiedSet<>(Arrays.asList(lines.get(i), lines.get(j))));
+			}
+		}
+	}
+	}
 
-    	for (Spattern pat : map.keySet()) {
-     		if (map.get(pat).size() >= minLen) {
+	for (Spattern pat : map.keySet()) {
+		if (map.get(pat).size() >= minLen) {
 	            final MutableSortedSet<Single> patSet = map.get(pat).toSortedSet();
 	            if (patSet.size() < minLen) {
-	            	// there were repeats
-	            	continue;
+		// there were repeats
+		continue;
 	            }
-    			String patString = pat + "\n// n = ";
-     			String codeString = "";
-     			final MutableIntList ns = new IntArrayList();
+			final StringBuilder patString = new StringBuilder();
+			patString.append(pat).append("\n// n = ");
+			final StringBuilder codeString = new StringBuilder();
+			final MutableIntList ns = new IntArrayList();
 
-	    		for (Single code : patSet) {
-	    			final int n = pat.getN(code);
-        			ns.add(n);
-        			if (printing.equals("List All")) {
-        				final Optional<String> standard = Utils.standard(code.getCode(), n);
-        				if (standard.isPresent()) {
-        					if (verify && !PatUtils.emptyVerify(code.getCode(), pool)) {
-        						codeString += "//empty set " + PatUtils.printImm(code.getCode()) + "\n";
-            				} else {
-            					codeString += standard.get() + "\n";
-            				}
+			for (Single code : patSet) {
+				final int n = pat.getN(code);
+			ns.add(n);
+			if (printing.equals("List All")) {
+				final Optional<String> standard = Utils.standard(code.getCode(), n);
+				if (standard.isPresent()) {
+					if (verify && !PatUtils.emptyVerify(code.getCode(), pool)) {
+						codeString.append("//empty set ").append(PatUtils.printImm(code.getCode())).append("\n");
+				} else {
+					codeString.append(standard.get()).append("\n");
+				}
 
-        				} else {
-        					// we have an invalid code sequence
-        					codeString += "// (Invalid) " + PatUtils.printImm(code.getCode()) + "\n";
-        				}
-        			}
-	    		}
-	    		if (printing.equals("Iteration: Start")) {
-	    			codeString += "+" + PatUtils.printImm(patSet.min().getCode())
-	    			                  + " # " + PatUtils.printPat(pat.getPat()) + "\n";
-	    		} else if (printing.equals("Iteration: Base")) {
-	    			codeString += "+" + PatUtils.printImm(pat.getBase())
-	                  + " # " + PatUtils.printPat(pat.getPat()) + "\n";
-	    		} else if (printing.equals("Iteration: End")) {
-	    			codeString += "+" + PatUtils.printImm(patSet.max().getCode())
-	                  + " # " + PatUtils.printPat(pat.getPat()) + "\n";
-	    		}
-	    		patString += createNs(ns);
-            	result += patString + "\n" + codeString + "\n";
-     		}
-    	}
-    	return result;
+				} else {
+					// we have an invalid code sequence
+					codeString.append("// (Invalid) ").append(PatUtils.printImm(code.getCode())).append("\n");
+				}
+			}
+			}
+			if (printing.equals("Iteration: Start")) {
+				codeString.append("+").append(PatUtils.printImm(patSet.min().getCode()))
+				                  .append(" # ").append(PatUtils.printPat(pat.getPat())).append("\n");
+			} else if (printing.equals("Iteration: Base")) {
+				codeString.append("+").append(PatUtils.printImm(pat.getBase()))
+	                  .append(" # ").append(PatUtils.printPat(pat.getPat())).append("\n");
+			} else if (printing.equals("Iteration: End")) {
+				codeString.append("+").append(PatUtils.printImm(patSet.max().getCode()))
+	                  .append(" # ").append(PatUtils.printPat(pat.getPat())).append("\n");
+			}
+			patString.append(createNs(ns));
+	result.append(patString).append("\n").append(codeString).append("\n");
+		}
+	}
+	return result.toString();
     }
 
     // for some reason map.keySet().contains(key) was not working on the Tpatterns, and I gave up
     // staring at it and wrote this function instead.
     private static Optional<Tpattern> keySetContains(
-    		LinkedHashMap<Tpattern, MutableSet<Triple>> map, Tpattern key) {
-    	for (Tpattern item : map.keySet()) {
-    		if (item.equals(key)) {
-    			return Optional.of(item);
-    		}
-    	}
-    	return Optional.empty();
+		LinkedHashMap<Tpattern, MutableSet<Triple>> map, Tpattern key) {
+	for (Tpattern item : map.keySet()) {
+		if (item.equals(key)) {
+			return Optional.of(item);
+		}
+	}
+	return Optional.empty();
     }
 
 
     private static String tripAction(ArrayList<Triple> lines, final int minLen, final String printing,
-    		                         final ConnectionPool pool, final boolean verify) {
+		                         final ConnectionPool pool, final boolean verify) {
 
-    	String result = "";
-    	final LinkedHashMap<Tpattern, MutableSet<Triple>> map = new LinkedHashMap<>();
-    	for (int i = 0; i < lines.size() - 1; i++) {
-    		for (int j = i+1; j < lines.size(); j++) {
-        		final Optional<Tpattern> optPat = subtCodes(lines.get(i), lines.get(j));
-        		if (optPat.isPresent()) {
-        			Tpattern pat = optPat.get();
-        			// if Keyset.Contains wasn't working and I gave up trying, so now we do this:
-        			final Optional<Tpattern> opt = keySetContains(map, pat);
-        			if (opt.isPresent()) {
-        				map.get(opt.get()).addAll(Arrays.asList(lines.get(i), lines.get(j)));
-        			} else {
-        				map.put(pat, new UnifiedSet<>(Arrays.asList(lines.get(i), lines.get(j))));
-        			}
-        		}
-        	}
-    	}
-     	for (Tpattern pat : map.keySet()) {
-     		if (map.get(pat).size() >= minLen) {
+	final StringBuilder result = new StringBuilder();
+	final LinkedHashMap<Tpattern, MutableSet<Triple>> map = new LinkedHashMap<>();
+	for (int i = 0; i < lines.size() - 1; i++) {
+		for (int j = i+1; j < lines.size(); j++) {
+		final Optional<Tpattern> optPat = subtCodes(lines.get(i), lines.get(j));
+		if (optPat.isPresent()) {
+			Tpattern pat = optPat.get();
+			// if Keyset.Contains wasn't working and I gave up trying, so now we do this:
+			final Optional<Tpattern> opt = keySetContains(map, pat);
+			if (opt.isPresent()) {
+				map.get(opt.get()).addAll(Arrays.asList(lines.get(i), lines.get(j)));
+			} else {
+				map.put(pat, new UnifiedSet<>(Arrays.asList(lines.get(i), lines.get(j))));
+			}
+		}
+	}
+	}
+	for (Tpattern pat : map.keySet()) {
+		if (map.get(pat).size() >= minLen) {
 	            final MutableSortedSet<Triple> patSet = map.get(pat).toSortedSet();
 	            if (patSet.size() < minLen) {
-	            	// there were repeats
-	            	continue;
+		// there were repeats
+		continue;
 	            }
-     			String patString = pat + "\n// n = ";
-     			String codeString = "";
-     			final MutableIntList ns = new IntArrayList();
+			final StringBuilder patString = new StringBuilder();
+			patString.append(pat).append("\n// n = ");
+			final StringBuilder codeString = new StringBuilder();
+			final MutableIntList ns = new IntArrayList();
 
-        		for (Triple code : patSet) {
-        			final int n = pat.getN(code);
-        			ns.add(n);
-        			if (printing.equals("List All")) {
-        				if (verify) {
-	        				final String tPrinted = PatUtils.printAndTestTrip(code, pool);
-	        				if (tPrinted.contains("empty") || tPrinted.contains("Invalid")) {
-	        					codeString += "// " + tPrinted + "\n";
-	        					break;
-	        				}
-	        				codeString += tPrinted + "\n";
-        				} else {
-        					codeString += code + "\n";
-        				}
-        			}
-        		}
+		for (Triple code : patSet) {
+			final int n = pat.getN(code);
+			ns.add(n);
+			if (printing.equals("List All")) {
+				if (verify) {
+					final String tPrinted = PatUtils.printAndTestTrip(code, pool);
+					if (tPrinted.contains("empty") || tPrinted.contains("Invalid")) {
+						codeString.append("// ").append(tPrinted).append("\n");
+						break;
+					}
+					codeString.append(tPrinted).append("\n");
+				} else {
+					codeString.append(code).append("\n");
+				}
+			}
+		}
 
-	    		if (printing.equals("Iteration: Start")) {
-	    			codeString += "+" + patSet.min() + " # " + pat.patString() + "\n";
+			if (printing.equals("Iteration: Start")) {
+				codeString.append("+").append(patSet.min()).append(" # ").append(pat.patString()).append("\n");
 
-	    		} else if (printing.equals("Iteration: Base")) {
-	    			codeString += "+" + pat.baseString() + " # " + pat.patString() + "\n";
+			} else if (printing.equals("Iteration: Base")) {
+				codeString.append("+").append(pat.baseString()).append(" # ").append(pat.patString()).append("\n");
 
-	    		} else if (printing.equals("Iteration: End")) {
-	    			codeString += "+" + patSet.max() + " # " + pat.patString() + "\n";
-	    		}
+			} else if (printing.equals("Iteration: End")) {
+				codeString.append("+").append(patSet.max()).append(" # ").append(pat.patString()).append("\n");
+			}
 
-	    		patString += createNs(ns);
-            	result += patString.replace(", ~", "") + "\n" + codeString + "\n";
-     		}
-    	}
-    	return result;
+			patString.append(createNs(ns));
+	result.append(patString.toString().replace(", ~", "")).append("\n").append(codeString).append("\n");
+		}
+	}
+	return result.toString();
     }
 
 
     private static String header(final ImmutableIntList pat, final ImmutableIntList code, final int num) {
-        String result = "";
-    	result += "// pat: " + PatUtils.printImm(pat);
-    	result += "\n// base: " + PatUtils.printImm(code);
-    	result += "\n// n = 0 -> " + num + "\n";
+        final StringBuilder result = new StringBuilder();
+	result.append("// pat: ").append(PatUtils.printImm(pat));
+	result.append("\n// base: ").append(PatUtils.printImm(code));
+	result.append("\n// n = 0 -> ").append(num).append("\n");
 
-    	return result;
+	return result.toString();
     }
 
 
     // just makes a string to display which elements of a pattern are present
     private static String createNs(MutableIntList ns) {
-    	String result = "" + ns.getFirst();
+	final StringBuilder result = new StringBuilder();
+	result.append(ns.getFirst());
 
-    	for (int i = 1; i < ns.size(); i++) {
-    		if (ns.get(i) == 1 + ns.get(i - 1)) {
-    			if (!result.endsWith(" -> ")) {
-    				result += " -> ";
-    			}
-    		} else {
-    			if (result.endsWith(" -> ")) {
-    				result += ns.get(i - 1);
-    			}
-    			result += ", " + ns.get(i);
-    		}
-    	}
+	for (int i = 1; i < ns.size(); i++) {
+		if (ns.get(i) == 1 + ns.get(i - 1)) {
+			if (!result.toString().endsWith(" -> ")) {
+				result.append(" -> ");
+			}
+		} else {
+			if (result.toString().endsWith(" -> ")) {
+				result.append(ns.get(i - 1));
+			}
+			result.append(", ").append(ns.get(i));
+		}
+	}
 
-    	if (result.endsWith(" -> ")) {
-			result += ns.getLast();
+	if (result.toString().endsWith(" -> ")) {
+			result.append(ns.getLast());
 		}
 
-    	return result;
+	return result.toString();
     }
 
     private static Optional<Tpattern> subtCodes(Triple t1, Triple t2) {
-    	final Tpattern result = new Tpattern();
-    	if (Triple.compare(t1, t2) != 0) {
-    		return Optional.empty();
-    	}
+	final Tpattern result = new Tpattern();
+	if (Triple.compare(t1, t2) != 0) {
+		return Optional.empty();
+	}
 		int negative = 0;
-    	for (int i = 0; i < 3; i++) {
-    		final ImmutableIntList c1 = t1.getCode(i);
-    		final ImmutableIntList c2 = t2.getCode(i);
-    		if (negative == 0) {
-    			negative = PatUtils.intListCompare(c1, c2);
-    		} else {
-    			if (negative != PatUtils.intListCompare(c1, c2)) {
-    				return Optional.empty();
-    			}
-    		}
-    		final Optional<Spattern> pat = subtCodes(c1, c2);
+	for (int i = 0; i < 3; i++) {
+		final ImmutableIntList c1 = t1.getCode(i);
+		final ImmutableIntList c2 = t2.getCode(i);
+		if (negative == 0) {
+			negative = PatUtils.intListCompare(c1, c2);
+		} else {
+			if (negative != PatUtils.intListCompare(c1, c2)) {
+				return Optional.empty();
+			}
+		}
+		final Optional<Spattern> pat = subtCodes(c1, c2);
 
-    		if (!pat.isPresent()) {
-    			return Optional.empty();
-    		}
-    		result.setPat(pat.get(), i);
-    	}
-    	result.setBase(t1.getCodes());
-    	return Optional.of(result);
+		if (!pat.isPresent()) {
+			return Optional.empty();
+		}
+		result.setPat(pat.get(), i);
+	}
+	result.setBase(t1.getCodes());
+	return Optional.of(result);
     }
 
     // subtracts lines from each other. Returns a ImmutableIntList of the proper pattern,

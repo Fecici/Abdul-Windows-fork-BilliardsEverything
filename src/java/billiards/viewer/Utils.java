@@ -55,6 +55,13 @@ public final class Utils {
     // override lets a debug or release launcher tune this without editing code.
     public static final int numThreads = configuredThreadCount();
 
+    // Render coalescing moves a full redraw request onto the viewer executor and
+    // cancels any older redraw that has not committed to the JavaFX scene yet.
+    // It needs at least two workers because the coalescing job submits row jobs
+    // to the same executor; with one worker the parent job could wait forever
+    // for row work that cannot start.
+    public static final boolean renderCoalescing = configuredRenderCoalescing();
+
     private static int configuredThreadCount() {
         final int fallback = defaultThreadCount();
         final String propertyValue = System.getProperty("billiards.threads");
@@ -85,6 +92,52 @@ public final class Utils {
         }
 
         System.err.println("Ignoring invalid " + source + "=" + rawValue + "; using " + fallback + " threads");
+        return fallback;
+    }
+
+    private static boolean configuredRenderCoalescing() {
+        final boolean requested = configuredBoolean(
+                "billiards.renderCoalescing",
+                "BILLIARDS_RENDER_COALESCING",
+                true);
+
+        if (requested && numThreads <= 1) {
+            System.err.println(
+                    "Disabling render coalescing because billiards.threads/BILLIARDS_THREADS is 1; "
+                            + "use at least 2 render workers to avoid executor self-deadlock.");
+            return false;
+        }
+
+        return requested;
+    }
+
+    private static boolean configuredBoolean(
+            final String propertyName, final String envName, final boolean fallback) {
+        final String propertyValue = System.getProperty(propertyName);
+        if (propertyValue != null && !propertyValue.isBlank()) {
+            return parseBoolean(propertyName, propertyValue, fallback);
+        }
+
+        final String envValue = System.getenv(envName);
+        if (envValue != null && !envValue.isBlank()) {
+            return parseBoolean(envName, envValue, fallback);
+        }
+
+        return fallback;
+    }
+
+    private static boolean parseBoolean(final String source, final String rawValue, final boolean fallback) {
+        final String value = rawValue.trim();
+        if ("true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)
+                || "on".equalsIgnoreCase(value) || "1".equals(value)) {
+            return true;
+        }
+        if ("false".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value)
+                || "off".equalsIgnoreCase(value) || "0".equals(value)) {
+            return false;
+        }
+
+        System.err.println("Ignoring invalid " + source + "=" + rawValue + "; using " + fallback);
         return fallback;
     }
 

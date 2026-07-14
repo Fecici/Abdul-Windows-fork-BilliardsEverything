@@ -301,11 +301,11 @@ static cover::Cover cover_square(const ClosedRectangleQ& square, const ClosedCon
         // Else if it is a subset or it intersects, then we can continue
     }
 
-    // Each thread must get its own evaluator, and we want to re-use the evaluator as much as possible,
-    // so let's create it here and then pass it along. In theory, it would be more efficient to have
-    // one thread-local evaluator for each thread, but I unfortunately don't have that kind of control here.
-
-    Evaluator eval{prec};
+    // Each cover worker thread gets its own MPFR/MPFI scratch evaluator. The
+    // evaluator is reused across recursive square checks at the same precision,
+    // which keeps the old thread-isolation guarantee while removing repeated
+    // native allocation/free cycles inside large cover calculations.
+    Evaluator& eval = Evaluator::thread_local_instance(prec);
 
     const auto single_trimmed = trim_single_indices(square, single_infos, single_indices);
      /*std::cout<<square<< std::endl;

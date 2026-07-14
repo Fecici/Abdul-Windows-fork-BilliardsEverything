@@ -130,7 +130,10 @@ std::vector<Vector2D> TriangleBilliard4::reconfigure(bool left, std::vector<Vect
         Vector2D end = L.back();
         for (int32_t i = 0; i < static_cast<int32_t>(R.size()); ++i) {
             Vector2D direc = end;
-            direc.sub(L[i]);
+            // This branch trims the right-hand candidate list, so compare
+            // against R[i]. Using L[i] here can read past L when R is longer
+            // and also computes the wrong limiting angle for Vary4.
+            direc.sub(R[i]);
             float64_t result = std::abs(std::atan2(direc.y, direc.x));
             if (std::abs(specMax) > result) {
                 specMax = result;

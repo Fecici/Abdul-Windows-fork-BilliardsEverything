@@ -11,3 +11,5 @@ obj/
 *.exe
 
 .vscode/
+cover/
+middleVary3.txt

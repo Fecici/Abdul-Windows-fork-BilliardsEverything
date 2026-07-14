@@ -37,80 +37,82 @@ public class PatUtils {
     }
 
     public static String tripleTrimmer(String line) {
-    	if (line.contains(",") && !line.contains(")")) {
-    		return line.trim();
-    	}
-    	else {
-    		return trimCodeLine(line);
-    	}
+	if (line.contains(",") && !line.contains(")")) {
+		return line.trim();
+	}
+	else {
+		return trimCodeLine(line);
+	}
     }
 
     public static String[] removeEmpty(String[] withEmpties) {
-    	final ArrayList<String> resultList = new ArrayList<>();
-    	for (int i = 0; i < withEmpties.length; i++) {
-    		if (!withEmpties[i].replace(" ", "").isEmpty()) {
-    			resultList.add(withEmpties[i]);
-    		}
-    	}
-    	final String[] resultArray = new String[resultList.size()];
-    	for (int i = 0; i < resultList.size(); i++) {
-    		resultArray[i] = resultList.get(i);
-    	}
-    	return resultArray;
+	final ArrayList<String> resultList = new ArrayList<>();
+	for (int i = 0; i < withEmpties.length; i++) {
+		if (!withEmpties[i].replace(" ", "").isEmpty()) {
+			resultList.add(withEmpties[i]);
+		}
+	}
+	final String[] resultArray = new String[resultList.size()];
+	for (int i = 0; i < resultList.size(); i++) {
+		resultArray[i] = resultList.get(i);
+	}
+	return resultArray;
     }
 
     public static ImmutableIntList listGCD(int[] l) {
-    	return listGCD(l, 1);
+	return listGCD(l, 1);
     }
 
     public static ImmutableIntList listGCD(int[] l, Integer coef) {
-    	int gcd = l[0];
+	int gcd = l[0];
 
-    	for (int i = 1; i < l.length; i++) {
-    		if (gcd == 0) {
-    			gcd = l[i];
-    		} else {
-    			gcd = GCD(gcd, l[i]);
-    		}
-    	}
+	for (int i = 1; i < l.length; i++) {
+		if (gcd == 0) {
+			gcd = l[i];
+		} else {
+			gcd = GCD(gcd, l[i]);
+		}
+	}
 
-    	final MutableIntList l2 = new IntArrayList();
-    	for (int i = 0; i < l.length; i++) {
-    		l2.add(coef * l[i]/gcd);
-    	}
-    	return l2.toImmutable();
+	final MutableIntList l2 = new IntArrayList();
+	for (int i = 0; i < l.length; i++) {
+		l2.add(coef * l[i]/gcd);
+	}
+	return l2.toImmutable();
     }
 
     public static int GCD(Integer a1, Integer a2) {
-    	if (a1 == 0 || a2 == 0) {
-    		return a1;
-    	}
-    	int n1 = a1;
-    	int n2 = a2;
-    	while (n1 != n2) {
-    		if (n1 > n2) {
-    			n1 -= n2;
-    		} else {
-    			n2 -= n1;
-    		}
-    	}
-    	return n1;
+	if (a1 == 0 || a2 == 0) {
+		return a1;
+	}
+	int n1 = a1;
+	int n2 = a2;
+	while (n1 != n2) {
+		if (n1 > n2) {
+			n1 -= n2;
+		} else {
+			n2 -= n1;
+		}
+	}
+	return n1;
     }
 
     public static String printAndTestTrip(final Triple trip, final ConnectionPool pool) {
-    	String result = "";
-    	for (int i = 0; i < 3; i++) {
+	// Pattern-finder result text can become large; keep one mutable buffer
+	// so each append does not copy the entire accumulated string again.
+	final StringBuilder result = new StringBuilder();
+	for (int i = 0; i < 3; i++) {
 			if (!PatUtils.emptyVerify(trip.getCode(i), pool)) {
-				result += "empty " + PatUtils.printImm(trip.getCode(i));
+				result.append("empty ").append(PatUtils.printImm(trip.getCode(i)));
 			} else {
-				result += printImm(trip.getCode(i));
+				result.append(printImm(trip.getCode(i)));
 			}
 			if (i < 2) {
-				result += ", ";
+				result.append(", ");
 			}
 
-    	}
-    	return result;
+	}
+	return result.toString();
     }
 
     public static String repeat(String str, int times) {
@@ -118,30 +120,30 @@ public class PatUtils {
     }
 
     public static String printImm(ImmutableIntList imm) {
-    	String result = "";
+	final StringBuilder result = new StringBuilder();
 		for (int j = 0; j < imm.size(); j++) {
-			result += " " + imm.get(j);
+			result.append(' ').append(imm.get(j));
 		}
-    	return result.trim();
+	return result.toString().trim();
     }
 
     public static String printPat(ImmutableIntList pat) {
-    	String result = "";
+	final StringBuilder result = new StringBuilder();
 		for (int j = 0; j < pat.size(); j++) {
-			result += repeat(" " + (j + 1), pat.get(j));
+			result.append(repeat(" " + (j + 1), pat.get(j)));
 		}
-    	return result.trim();
+	return result.toString().trim();
     }
 
     public static int intListCompare(final ImmutableIntList l1, final ImmutableIntList l2) {
-    	for (int i = 0; i < l1.size(); i++) {
-    		if (l1.get(i) > l2.get(i)) {
-    			return 1;
-    		} else if (l1.get(i) < l2.get(i)) {
-    			return -1;
-    		}
-    	}
-    	return 0;
+	for (int i = 0; i < l1.size(); i++) {
+		if (l1.get(i) > l2.get(i)) {
+			return 1;
+		} else if (l1.get(i) < l2.get(i)) {
+			return -1;
+		}
+	}
+	return 0;
     }
 
 	// this checks if the element is an empty set
@@ -166,26 +168,26 @@ public class PatUtils {
     // add a pattern to a code, 'times' times.
     public static ImmutableIntList addImm(ImmutableIntList code, ImmutableIntList pat, int times) {
 
-    	final MutableIntList result = new IntArrayList();
-    	
+	final MutableIntList result = new IntArrayList();
 
-    	final int[] muteCode = code.toArray();
-    	for (int i = 0; i < pat.size(); i++) {
-    		int value = muteCode[pat.get(i) - 1];
-    		muteCode[pat.get(i) - 1] = value + (2 * times);
-    	}
 
-    	for (int i = 0; i < code.size(); i++) {
-    		result.add(muteCode[i]);
-    	}
-    	return result.toImmutable();
+	final int[] muteCode = code.toArray();
+	for (int i = 0; i < pat.size(); i++) {
+		int value = muteCode[pat.get(i) - 1];
+		muteCode[pat.get(i) - 1] = value + (2 * times);
+	}
+
+	for (int i = 0; i < code.size(); i++) {
+		result.add(muteCode[i]);
+	}
+	return result.toImmutable();
     }
 
     // check if a line with extend is valid
     public static boolean xtndValidate(final String line) {
-    	if (!line.contains("#")) {
-    		return false;
-    	}
+	if (!line.contains("#")) {
+		return false;
+	}
 
 		final String codeStr;
 		final String patStr;
@@ -226,10 +228,10 @@ public class PatUtils {
 
     public static Optional<ImmutableIntList> splitString(final String textCodeSeq) {
         // split on whitespace
-    	final String tcsTrim = textCodeSeq.trim();
-    	if (tcsTrim.isEmpty()) {
-    		return Optional.empty();
-    	}
+	final String tcsTrim = textCodeSeq.trim();
+	if (tcsTrim.isEmpty()) {
+		return Optional.empty();
+	}
         final String[] textCodeNumbers = tcsTrim.split("\\s+");
 
         final MutableIntList list = new IntArrayList();

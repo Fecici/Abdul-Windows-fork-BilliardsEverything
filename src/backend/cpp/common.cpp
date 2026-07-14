@@ -792,7 +792,10 @@ static cover::Cover cover_square(const ClosedConvexPolygonQ& polygon, const Sing
         return cover::Empty{};
     }
 
-    Evaluator eval{prec};
+    // Each TBB worker keeps its own MPFR/MPFI scratch evaluator. This avoids
+    // per-square allocation churn without sharing mutable numeric state across
+    // cover worker threads.
+    Evaluator& eval = Evaluator::thread_local_instance(prec);
 
     const auto center = square.center();
     const Rational radius = square.width() / 2;
@@ -849,7 +852,10 @@ static cover::Cover cover_square(const ClosedConvexPolygonQ& polygon, const Trip
         return cover::Empty{};
     }
 
-    Evaluator eval{prec};
+    // Reuse the thread-local evaluator for the same reason as the single-cover
+    // path above: cover subdivision can call this thousands of times at one
+    // precision, and the evaluator owns expensive MPFR/MPFI temporaries.
+    Evaluator& eval = Evaluator::thread_local_instance(prec);
 
     const auto center = square.center();
     const Rational radius = square.width() / 2;

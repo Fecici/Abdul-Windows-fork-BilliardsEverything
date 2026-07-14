@@ -82,8 +82,11 @@ class Newton final {
         // Once each component of dx is less than eps,
         // we return the approximation.
         // Can't be 1e-45 for 1 1 48 1 1 150 1 2 1 55 1 1 156 1 1 52 1 1 154 1 1 52 1 1 156 1 1 55 1 2 1 150
-        // (At least at 50 digits of precision)
-        const Real eps{"1e-40"};
+        // (At least at 50 digits of precision). The Linux stability pass also
+        // found 1e-40 too tight for practical MPFR convergence in long code
+        // paths, so keep Newton's stop tolerance aligned with the intersection
+        // interval width below.
+        const Real eps{"1e-25"};
 
         constexpr uint64_t max_iters = 100;
 

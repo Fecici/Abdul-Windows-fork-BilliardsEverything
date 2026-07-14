@@ -75,46 +75,74 @@ static size_t smallest_index(const std::vector<CodeNumber>& code_numbers) {
     return size;
 }
 
-// If we're going to mutate a parameter, it's better to just
-// do so in a meaningful way instead of returning the actual result
-// WARNING: this method involves quite a bit of mutability. Be careful.
-// It turns out this is a well known problem in computer science:
-// https://en.wikipedia.org/wiki/Lexicographically_minimal_string_rotation
-// If this ever becomes a performance bottleneck (say if we want to generate
-// lists of all valid code sequences), then this might be useful
-// We could also just concatenate the vector with itself
-// See also Lyndon words
+// Booth/Lyndon-style least rotation. This returns the starting index of the
+// lexicographically smallest cyclic shift in O(n), which preserves the old
+// canonical code-sequence choice without the old O(n^2) rotate-and-compare scan.
+static size_t least_rotation_index(const std::vector<CodeNumber>& input) {
+    const size_t n = input.size();
+    if (n <= 1) {
+        return 0;
+    }
+
+    std::vector<CodeNumber> doubled;
+    doubled.reserve(2 * n);
+    doubled.insert(doubled.end(), input.begin(), input.end());
+    doubled.insert(doubled.end(), input.begin(), input.end());
+
+    size_t i = 0;
+    size_t answer = 0;
+    while (i < n) {
+        answer = i;
+        size_t j = i + 1;
+        size_t k = i;
+        while (j < 2 * n && doubled.at(k) <= doubled.at(j)) {
+            if (doubled.at(k) < doubled.at(j)) {
+                k = i;
+            } else {
+                ++k;
+            }
+            ++j;
+        }
+        while (i <= k) {
+            i += j - k;
+        }
+    }
+
+    return answer;
+}
+
+static std::vector<CodeNumber> rotated_copy(
+        const std::vector<CodeNumber>& values, const size_t start) {
+    std::vector<CodeNumber> result;
+    result.reserve(values.size());
+
+    const size_t n = values.size();
+    for (size_t i = 0; i < n; ++i) {
+        result.push_back(values.at((start + i) % n));
+    }
+
+    return result;
+}
+
+// Canonicalization treats a code sequence as equivalent under cyclic rotation
+// and path reversal. Keep that mathematical equivalence, but find the best
+// forward and reversed representatives with O(n) least-rotation passes.
 static void minimal_rotation(std::vector<CodeNumber>& code_numbers) {
 
-    // This must be a copy, not a reference, since we mutate code_numbers
-    auto min = code_numbers;
-
-    const auto size = code_numbers.size();
-
-    for (size_t i = 0; i < size; ++i) {
-        // rotate left
-        std::rotate(std::begin(code_numbers), std::next(std::begin(code_numbers)), std::end(code_numbers));
-
-        if (code_numbers < min) {
-            min = code_numbers;
-        }
+    if (code_numbers.size() <= 1) {
+        return;
     }
 
-    // After size rotations, the vector is now back to where it was before.
-    // Now we reverse it, and do it again
+    auto best = rotated_copy(code_numbers, least_rotation_index(code_numbers));
 
-    std::reverse(std::begin(code_numbers), std::end(code_numbers));
+    std::vector<CodeNumber> reversed(code_numbers.rbegin(), code_numbers.rend());
+    auto reversed_best = rotated_copy(reversed, least_rotation_index(reversed));
 
-    for (size_t i = 0; i < size; ++i) {
-        // rotate left
-        std::rotate(std::begin(code_numbers), std::next(std::begin(code_numbers)), std::end(code_numbers));
-
-        if (code_numbers < min) {
-            min = code_numbers;
-        }
+    if (reversed_best < best) {
+        best = std::move(reversed_best);
     }
 
-    code_numbers = min;
+    code_numbers = std::move(best);
 }
 
 static void validate(const std::vector<CodeNumber>& code_numbers) {
@@ -462,25 +490,33 @@ bool CodeSequence::is_stable() const{
 
 CodeType CodeSequence::type() const {
 
+    if (cached_type_) {
+        return *cached_type_;
+    }
+
     auto odd = is_odd();
     auto closed = is_closed();
     auto stable = is_stable();
 
+    CodeType result;
     if (!closed && stable && odd) {
-        return CodeType::OSO;
+        result = CodeType::OSO;
     } else if (!closed && stable && !odd) {
-        return CodeType::OSNO;
+        result = CodeType::OSNO;
     } else if (!closed && !stable) {
-        return CodeType::ONS;
+        result = CodeType::ONS;
     } else if (closed && stable) {
-        return CodeType::CS;
+        result = CodeType::CS;
     } else if (closed && !stable) {
-        return CodeType::CNS;
+        result = CodeType::CNS;
     } else {
         std::ostringstream err{};
         err << code_numbers << " cannot be given a code type";
         throw std::runtime_error(err.str());
     }
+
+    cached_type_ = result;
+    return result;
 }
 
 CodeNumber CodeSequence::number(size_t i) const {

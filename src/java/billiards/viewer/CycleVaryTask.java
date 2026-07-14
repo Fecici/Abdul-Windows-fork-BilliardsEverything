@@ -25,7 +25,6 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.set.sorted.mutable.TreeSortedSet;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -69,6 +68,9 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> implement
     final boolean CSIsSelected;
     final boolean OSOIsSelected;
     final boolean OSNOIsSelected;
+    private volatile PixelReader pixelReader;
+    private volatile double imgWidth;
+    private volatile double imgHeight;
     private volatile boolean gracefulCancelRequested = false;
 
     @Override
@@ -115,6 +117,11 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> implement
         AtomicInteger progress = new AtomicInteger(); // Create an integer which supports non-locking concurrent operations
         final int todo = this.coordList.size();
         this.updateProgress(0, todo);
+
+        initializePixelCache();
+        if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+            return this.partialResults.get();
+        }
 
         int emptyMax = 8; // Max number of empty pixels. Hardcoded for now//george jan3,2025 you can change the 8 to whatever
         int empty = 0; // Number of empty pixels
@@ -273,32 +280,58 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> implement
             final Vector2 coords = Vector2.create(points.get(i), points.get(i+1));
             out.add(coords);
         }
-        Collections.shuffle(out); // Randomize as an optimization
+        // Keep cycle traversal reproducible. Random shuffling made failures and
+        // partial progress hard to compare between runs and defeated spatial
+        // locality in the pixel/region checks.
         return Array.ofAll(out);
     }
 
-    // Runs a fast application thread task which determines the color of the pixel at a point
-    private int pixelColor(final Vector2 point) {
-        FutureTask<Integer> task = new FutureTask<Integer>(() -> {
-            final Image image = this.screenImage.getImage();
-            final PixelReader reader = image.getPixelReader();
-            final int midX = (int) this.screenMap.pixelX(point.x);
-            final int midY = (int) this.screenMap.pixelY(point.y);
-            return reader.getArgb(midX, midY);
-        });
-        Platform.runLater(task);
+    private void initializePixelCache() {
+        // Read the JavaFX image state once before the worker loop. The cached
+        // PixelReader removes a Platform.runLater round trip for every cycle
+        // coordinate while still respecting JavaFX ownership for ImageView access.
         try {
-            //System.err.println("//Found pixel color");
-            return task.get();
-        } catch(InterruptedException e) {
-            System.err.println("//Interruption when finding pixel color");
-            return -1;
-        } catch(ExecutionException e) {
-            System.err.println("//Failed to find pixel color");
+            final FutureTask<PixelReader> readerTask = new FutureTask<>(() -> {
+                final Image image = this.screenImage.getImage();
+                return image == null ? null : image.getPixelReader();
+            });
+            Platform.runLater(readerTask);
+            this.pixelReader = readerTask.get();
+
+            final FutureTask<Image> imageTask = new FutureTask<>(() -> this.screenImage.getImage());
+            Platform.runLater(imageTask);
+            final Image image = imageTask.get();
+            if (image != null) {
+                this.imgWidth = image.getWidth();
+                this.imgHeight = image.getHeight();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.gracefulCancelRequested = true;
+            this.pixelReader = null;
+        } catch (ExecutionException e) {
+            System.err.println("//Failed to initialize pixel cache");
             e.printStackTrace();
+            this.pixelReader = null;
+        }
+    }
+
+    // Determines the color of the pixel at a point using the cached screen image.
+    private int pixelColor(final Vector2 point) {
+        final PixelReader reader = this.pixelReader;
+        if (reader == null) {
             return -1;
         }
+        final int midX = (int) this.screenMap.pixelX(point.x);
+        final int midY = (int) this.screenMap.pixelY(point.y);
 
+        // CycleVary skips non-zero colors. Returning -1 for off-image
+        // probes preserves that skip behavior while preventing JavaFX's
+        // PixelReader bounds exception from killing the task.
+        if (midX < 0 || midY < 0 || midX >= this.imgWidth || midY >= this.imgHeight) {
+            return -1;
+        }
+        return reader.getArgb(midX, midY);
     }
 
     // Find the storage associated to a codeSequence if it exists. Return the error if not

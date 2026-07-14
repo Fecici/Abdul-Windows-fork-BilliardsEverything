@@ -148,7 +148,10 @@ Vector2<Interval> intersection_unchecked(const EquationGradient<Symbols, T>& eq0
     // The Newton object must be temporary, since it takes references
     const auto x = Newton<Symbols, T, S, decltype(inside)>{eq0, eq1, inside}.solve(init);
 
-    const Real fudge{"1e-45"};
+    // Match Newton's practical convergence tolerance. A 1e-45 interval is
+    // narrower than the solver can reliably certify on long OSNO inputs and
+    // can make the later interval sign check reject a valid root.
+    const Real fudge{"1e-25"};
 
     const Real x0_left = x[0] - fudge;
     const Real x0_right = x[0] + fudge;

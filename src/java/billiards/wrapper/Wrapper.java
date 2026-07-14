@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.collections.impl.factory.Lists;
 import org.eclipse.collections.api.list.MutableList;
@@ -37,7 +37,7 @@ public final class Wrapper {
         Native.register("backend");
     }
 
-    private static final AtomicBoolean NATIVE_VARY_RUNNING = new AtomicBoolean(false);
+    private static final ReentrantLock NATIVE_VARY_LOCK = new ReentrantLock(true);
 
     private static native void sqlite_error_logging();
     private static native void database_create(final String dbPath);
@@ -50,16 +50,18 @@ public final class Wrapper {
 
     private static void beginNativeVary(final String operationName) {
         // The C++ backend still uses one global cancel flag for VaryCS/Vary3/Vary4. Until that is replaced with a
-        // per-operation token, only one native vary operation may run at a time or cancel/reset can cross-contaminate.
-        if (!NATIVE_VARY_RUNNING.compareAndSet(false, true)) {
-            throw new IllegalStateException(
-                    "Another native vary operation is already running. Wait for it or cancel it before starting "
-                            + operationName + ".");
+        // per-operation token, only one native vary call may be inside the backend at a time. Use a fair lock instead
+        // of fail-fast rejection because one UI vary action can legitimately schedule several native shots internally.
+        try {
+            NATIVE_VARY_LOCK.lockInterruptibly();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while waiting to start " + operationName, e);
         }
     }
 
     private static void finishNativeVary() {
-        NATIVE_VARY_RUNNING.set(false);
+        NATIVE_VARY_LOCK.unlock();
     }
 
     public static void createDatabase(final String dbPath) {

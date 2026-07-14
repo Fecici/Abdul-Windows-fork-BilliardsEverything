@@ -72,7 +72,9 @@ boost::optional<IntervalPolygon> refine_polygon(const IntervalPolygon& polygon, 
 extern template boost::optional<IntervalPolygon> refine_polygon<Equation<Sin>>(const IntervalPolygon& polygon, const Equation<Sin>& curve);
 extern template boost::optional<IntervalPolygon> refine_polygon<Equation<Cos>>(const IntervalPolygon& polygon, const Equation<Cos>& curve);
 
-// QUESTION: what is this for? why is it needed?
+// Linear constraints are used when intersecting partial polygons from parallel
+// refinement batches. Keep this explicit instantiation with the sine/cosine
+// curve instantiations so callers share the same compiled implementation.
 extern template boost::optional<IntervalPolygon> refine_polygon<LinComArrZ<XYEta>>(const IntervalPolygon& polygon, const LinComArrZ<XYEta>& curve);
 
 boost::optional<IntervalPolygon> intersect_polygons(const IntervalPolygon& a, const IntervalPolygon& b);

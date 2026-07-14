@@ -8,10 +8,6 @@
 template <template <typename> class Trig>
 using EqVec = LinComVecZ<Trig<math::LinComArr<XY, Coeff16>>>;
 
-// TODO it might be nice to make all this thread local. That would reduce the
-// memory usage quite a bit. For that though, we would need proper move and copy
-// operators.
-
 class Evaluator {
   private:
     mpz_t quot;
@@ -31,6 +27,12 @@ class Evaluator {
     explicit Evaluator(const uint32_t prec);
 
     ~Evaluator();
+
+    // Cover recursion calls Evaluator-backed sign checks for many adjacent
+    // squares. Reusing one evaluator per worker thread preserves MPFR/MPFI
+    // scratch-state isolation while avoiding repeated heap allocation of the
+    // same temporaries inside hot cover paths.
+    static Evaluator& thread_local_instance(const uint32_t prec);
 
     template <template <typename> class Trig>
     bool is_positive(const Equation<Trig>& eq, const Coeff64 bx, const Coeff64 by,

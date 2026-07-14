@@ -88,6 +88,35 @@ BOOST_AUTO_TEST_CASE(test_order) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_order_all_rotations_and_reversals) {
+    const std::vector<std::vector<CodeNumber>> bases = {
+        {1, 1, 3},
+        {1, 2, 1, 2},
+        {1, 1, 2, 1, 1, 2},
+        {1, 1, 2, 1, 3, 2},
+        {1, 1, 2, 2, 1, 1, 3, 3},
+        {1, 1, 1, 1, 2, 1, 1, 1, 1, 2},
+    };
+
+    for (const auto& base : bases) {
+        const auto canonical = CodeSequence{base};
+        for (size_t offset = 0; offset < base.size(); ++offset) {
+            std::vector<CodeNumber> rotated;
+            rotated.reserve(base.size());
+            for (size_t i = 0; i < base.size(); ++i) {
+                rotated.push_back(base.at((offset + i) % base.size()));
+            }
+            BOOST_TEST(CodeSequence{rotated} == canonical);
+
+            // Canonicalization considers the billiard path up to cyclic shift
+            // and reversal. This locks down that math equivalence before the
+            // minimal-rotation implementation is optimized below it.
+            std::reverse(rotated.begin(), rotated.end());
+            BOOST_TEST(CodeSequence{rotated} == canonical);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_type) {
     const std::vector<std::pair<std::vector<CodeNumber>, CodeType>> types = {
         {{1, 1, 1}, CodeType::OSO},

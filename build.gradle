@@ -259,7 +259,10 @@ model {
                     cppCompiler.args '-I/opt/homebrew/include'
                     linker.args '-headerpad_max_install_names','-L/opt/homebrew/lib','-L/opt/homebrew/opt/','-lboost_unit_test_framework','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread','-lboost_system'
                 } else if (currentOs.isWindows()) {
-                    linker.args '-lboost_unit_test_framework-mt','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread-mt', '-lws2_32'
+                    // MSYS2/UCRT packages TBB 2021+ as tbb12. Keep the test
+                    // executable aligned with backend.dll or native tests fail
+                    // to link even when the production backend links cleanly.
+                    linker.args '-lboost_unit_test_framework-mt','-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb12','-lboost_thread-mt', '-lws2_32'
                 } else {
                     linker.args '-lgmp', '-lmpfr', '-lmpfi', '-lsqlite3', '-ltbb','-lboost_thread','-lboost_system'
                 }
@@ -284,6 +287,13 @@ model {
 
 task testBackend(type: Exec, dependsOn: 'testExecutable') {
     commandLine 'build/exe/test/test'
+
+    // The native test executable links the same GMP/MPFR/MPFI/TBB/Boost/SQLite
+    // DLLs as backend.dll. Gradle's old C++ plugin does not inherit the run
+    // task's PATH setup, so Windows tests need the MSYS2 bin directory here.
+    if (isWindows) {
+        environment 'PATH', "${msys2NativePrefix}/bin;" + System.getenv('PATH')
+    }
 
     // save the results here
     //standardOutput = new FileOutputStream('build/test-results/test.out')

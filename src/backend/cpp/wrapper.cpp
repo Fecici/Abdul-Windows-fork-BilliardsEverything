@@ -586,17 +586,45 @@ int32_t load_picture(const int32_t* const code_numbers_ptr,
 
         const auto code_type = code_sequence.type();
 
-        sqlite::PooledConnection conn{*pool};
+        // Keep database ownership separate from the expensive geometry work.
+        // AutoVary can run many storage jobs at once, and holding a pooled
+        // SQLite connection while calculate_stable/calculate_unstable runs can
+        // starve unrelated UI/database reads for seconds or minutes.
+        bool already_in_db = false;
+        {
+            sqlite::PooledConnection conn{*pool};
+            already_in_db = database::in(code_sequence, code_type, conn.db);
+        }
 
-        const auto in = save_to_database(code_sequence, code_type, conn.db);
+        if (!already_in_db) {
+            if (is_stable(code_type)) {
+                const auto stable = calculate_stable(code_sequence, code_type);
 
-        if (in) {
+                if (!stable) {
+                    return 0;
+                }
+
+                sqlite::PooledConnection conn{*pool};
+                database::save(code_sequence, code_type, *stable, conn.db);
+            } else {
+                const auto unstable = calculate_unstable(code_sequence, code_type);
+
+                if (!unstable) {
+                    return 0;
+                }
+
+                sqlite::PooledConnection conn{*pool};
+                database::save(code_sequence, code_type, *unstable, conn.db);
+            }
+        }
+
+        {
+            sqlite::PooledConnection conn{*pool};
             const auto picture = database::load_picture(code_sequence, code_type, conn.db);
             copy_to_cpicture(picture, cpicture);
+        }
 
-        };
-
-        return in;
+        return 1;
 
     } catch (const std::runtime_error& except) {
         std::cerr << "Calculation of " << code_numbers << " failed with error:\n"
@@ -628,8 +656,6 @@ int32_t load_picture_lr_expando(const int32_t* const code_numbers_ptr, const int
         const auto code_sequence = CodeSequence{code_numbers};
         const auto code_type = code_sequence.type();
 
-        sqlite::PooledConnection conn{*pool};
-
         //const auto base_lr = database::load_left_rights(base_code_sequence, base_code_type, conn.db);
         //const std::vector<CodeNumber> c {1,9,10,8,12,10,12,10,12,8,10,9,1,13,8,6,2,2,4,8,8,12,11,1,11,8,8,6,8,6,8,8,12,10,12,10,13,1,11,14,10,12,10,12,8,10,10,14,10,10,8,12,10,12,10,14,11,1,13,10,12,10,12,9,1,14};
         //std::string str = "11 1 25 0\n47 2 25 0\n47 2 18 1\n40 0 18 1\n40 0 57 0\n40 0 52 2\n11 1 52 2";
@@ -658,18 +684,55 @@ int32_t load_picture_lr_expando(const int32_t* const code_numbers_ptr, const int
                 left_rights.emplace_back(Vertex{left_number, left_branch}, Vertex{right_number, right_branch});
             }
 
-            const auto in1 = save_to_database(left_rights, code_sequence, code_type, conn.db);
+        // The parsed left/right pattern is pure input data; only the quick
+        // existence check, save, and final picture load need a SQLite
+        // connection. The expensive classification step runs connection-free.
+        bool already_in_db = false;
+        {
+            sqlite::PooledConnection conn{*pool};
+            already_in_db = database::in(code_sequence, code_type, conn.db);
+        }
 
-        //const auto in = save_to_database(base_code_sequence, base_lr, code_sequence, code_type, conn.db);
+        if (!already_in_db) {
+            if (is_stable(code_type)) {
+                const auto stable = calculate_stable(code_sequence, code_type, left_rights);
 
-        if (in1) {
+                if (!stable) {
+                    return 0;
+                }
+                if (stable->left_rights != left_rights) {
+                    throw std::runtime_error("The pattern changed do it in the slow way!");
+                }
 
+                sqlite::PooledConnection conn{*pool};
+                database::save(code_sequence, code_type, *stable, conn.db);
+            } else {
+                const auto unstable = calculate_unstable(code_sequence, code_type, left_rights);
 
+                if (!unstable) {
+                    return 0;
+                }
+
+                std::vector<LeftRight> calculated_left_rights;
+                for (const auto& lr_entry : unstable->left_rights) {
+                    calculated_left_rights.push_back(lr_entry);
+                }
+                if (calculated_left_rights != left_rights) {
+                    throw std::runtime_error("The pattern changed do it in the slow way!");
+                }
+
+                sqlite::PooledConnection conn{*pool};
+                database::save(code_sequence, code_type, *unstable, conn.db);
+            }
+        }
+
+        {
+            sqlite::PooledConnection conn{*pool};
             const auto picture = database::load_picture(code_sequence, code_type, conn.db);
             copy_to_cpicture(picture, cpicture);
-        };
+        }
 
-        return in1;
+        return 1;
 
     } catch (const std::runtime_error& except) {
 
@@ -703,18 +766,46 @@ int32_t load_picture_lr(const int32_t* const base_code_numbers_ptr, const int32_
         const auto code_sequence = CodeSequence{code_numbers};
         const auto code_type = code_sequence.type();
 
-        sqlite::PooledConnection conn{*pool};
-
-        const auto base_lr = database::load_left_rights(base_code_sequence, base_code_type, conn.db);
+        std::vector<LeftRight> base_lr;
+        bool already_in_db = false;
+        {
+            sqlite::PooledConnection conn{*pool};
+            base_lr = database::load_left_rights(base_code_sequence, base_code_type, conn.db);
+            already_in_db = database::in(code_sequence, code_type, conn.db);
+        }
 
         //const std::vector<CodeNumber> c {1,9,10,8,12,10,12,10,12,8,10,9,1,13,8,6,2,2,4,8,8,12,11,1,11,8,8,6,8,6,8,8,12,10,12,10,13,1,11,14,10,12,10,12,8,10,10,14,10,10,8,12,10,12,10,14,11,1,13,10,12,10,12,9,1,14};
         //std::string str = "11 1 25 0\n47 2 25 0\n47 2 18 1\n40 0 18 1\n40 0 57 0\n40 0 52 2\n11 1 52 2";
         //const CodeSequence code= new CodeSequence(c);
         //std::cout<<"sdasdasd"<<lr<<std::endl;
 
-        const auto in = save_to_database(base_code_sequence, base_lr, code_sequence, code_type, conn.db);
-        //std::cout << in << " : " << code_sequence << std::endl;
-        if (in) {
+        // Avoid holding the pooled connection while computing the derived
+        // left/right picture. The loaded base_lr is immutable input for the
+        // calculation; saving and verification reacquire short-lived handles.
+        if (!already_in_db) {
+            if (is_stable(code_type)) {
+                const auto stable = calculate_stable(code_sequence, code_type, base_lr);
+
+                if (!stable) {
+                    return 0;
+                }
+
+                sqlite::PooledConnection conn{*pool};
+                database::save(base_code_sequence, code_sequence, code_type, *stable, conn.db);
+            } else {
+                const auto unstable = calculate_unstable(code_sequence, code_type, base_lr);
+
+                if (!unstable) {
+                    return 0;
+                }
+
+                sqlite::PooledConnection conn{*pool};
+                database::save(base_code_sequence, code_sequence, code_type, *unstable, conn.db);
+            }
+        }
+
+        {
+            sqlite::PooledConnection conn{*pool};
 
             const auto lr = database::load_left_rights(code_sequence, code_type, conn.db);
 
@@ -728,9 +819,9 @@ int32_t load_picture_lr(const int32_t* const base_code_numbers_ptr, const int32_
 
             const auto picture = database::load_picture(code_sequence, code_type, conn.db);
             copy_to_cpicture(picture, cpicture);
-        };
+        }
 
-        return in;
+        return 1;
 
     } catch (const std::runtime_error& except) {
         //std::cerr << "Calculation of " << code_numbers << " failed with error:\n"
