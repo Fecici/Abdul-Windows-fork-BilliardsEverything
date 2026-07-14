@@ -44,7 +44,7 @@ def booleanPropertyOrEnv = { String propertyName, String envName, boolean defaul
 // Runtime/build knobs are project-local and temporary: pass -P... on the Gradle command line or set the matching env
 // var for the shell/IDE process. They do not change the machine-wide Java or MSYS2 installation.
 def billiardsAppXms = propertyOrEnv('billiardsXms', 'BILLIARDS_XMS', '2g')
-def billiardsAppXmx = propertyOrEnv('billiardsXmx', 'BILLIARDS_XMX', '10g')
+def billiardsAppXmx = propertyOrEnv('billiardsXmx', 'BILLIARDS_XMX', '6g')
 def billiardsDirectMemory = propertyOrEnv('billiardsDirectMemory', 'BILLIARDS_DIRECT_MEMORY', '2g')
 def billiardsShowVmSettings = booleanPropertyOrEnv('billiardsShowVmSettings', 'BILLIARDS_SHOW_VM_SETTINGS', false)
 def billiardsNativeDebug = booleanPropertyOrEnv('billiardsNativeDebug', 'BILLIARDS_NATIVE_DEBUG', false)
