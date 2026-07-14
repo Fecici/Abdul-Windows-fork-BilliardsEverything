@@ -185,8 +185,9 @@ public class SaveV3Window {
         catch (IOException e) {
             final Alert select = new Alert(AlertType.ERROR);
             String message = "Code sequences not saved.";
-            if (e.getMessage() != "") {
-                message += "\n" + e.getMessage();
+            final String detail = e.getMessage();
+            if (detail != null && !detail.isEmpty()) {
+                message += "\n" + detail;
             }
             select.setContentText(message);
             select.show();
@@ -230,8 +231,9 @@ public class SaveV3Window {
         catch(IOException e) {
             final Alert select = new Alert(AlertType.ERROR);
             String message = "Code sequences not saved.";
-            if (e.getMessage() != "") {
-                message += "\n" + e.getMessage();
+            final String detail = e.getMessage();
+            if (detail != null && !detail.isEmpty()) {
+                message += "\n" + detail;
             }
             select.setContentText(message);
             select.show();
@@ -256,8 +258,9 @@ public class SaveV3Window {
         catch (IOException e){
             final Alert select = new Alert(AlertType.ERROR);
             String message = "Code sequences not saved.";
-            if (e.getMessage() != "") {
-                message += "\n" + e.getMessage();
+            final String detail = e.getMessage();
+            if (detail != null && !detail.isEmpty()) {
+                message += "\n" + detail;
             }
             select.setContentText(message);
             select.show();

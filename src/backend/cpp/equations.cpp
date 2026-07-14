@@ -10,6 +10,7 @@
 #include "shooting_vectors.hpp"
 #include "trig_identities.hpp"
 #include "unfolding.hpp"
+#include "utils.hpp"
 
 #include <chrono>
 
@@ -210,13 +211,7 @@ static boost::optional<IntervalPolygon> calculate_final_polygon(const std::vecto
         return interval_polygon;
     }
 
-    unsigned int n_threads = std::thread::hardware_concurrency();
-    if (n_threads == 0) {
-        n_threads = 4;
-    }
-    if (n_threads > MAX_PARALLEL_THREADS) {
-        n_threads = MAX_PARALLEL_THREADS;
-    }
+    const unsigned int n_threads = billiards_worker_count(MAX_PARALLEL_THREADS);
 
     std::vector<const Equation<Sin>*> sin_ptrs;
     sin_ptrs.reserve(total_sin);

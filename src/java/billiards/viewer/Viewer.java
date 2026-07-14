@@ -555,6 +555,7 @@ public final class Viewer {
     final Button smallCoverButton = new Button("LiCover");
     final SmallCoverWindow smallCoverWindow;
     final CoverWindow coverWindow;
+    final StablesWindow stablesWindow;
 
     VaryWindowL varyWindow =  null;
     VaryWindowL middleVaryWindow = null;
@@ -598,7 +599,7 @@ public final class Viewer {
                 String.format("Small Cover %s", version), pool,
                 () -> loadCover("small_cover", executor, true), coverWindow, smallCoverAreas);
 
-        final StablesWindow stablesWindow = new StablesWindow(coverWindow);
+        stablesWindow = new StablesWindow(coverWindow);
 
 //        final CoverWindow2 coverWindow2 = new CoverWindow2(
 //                String.format("Cover %s", version), pool,
@@ -1259,13 +1260,13 @@ public final class Viewer {
                     }
                     // Label 6
                     renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                 });
                 task.setOnCancelled(e -> {
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                 });
                 task.setOnFailed(e -> {
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                     throw new RuntimeException(task.getException());
                 });
 
@@ -3892,6 +3893,19 @@ public final class Viewer {
         // Stage
         mainWindow.setTitle(windowTitle);
         mainWindow.setOnCloseRequest(event -> {
+            try {
+                saveChildWindowState();
+            } catch (final RuntimeException e) {
+                e.printStackTrace();
+                final Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Save Failed");
+                alert.setHeaderText("Could not save window state");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+                event.consume();
+                return;
+            }
+
             // close all the windows
             // TODOx? simply close all remaining windows directly instead
             // of using Platform.exit() (which causes a crash sometimes)
@@ -3899,6 +3913,14 @@ public final class Viewer {
             Platform.exit();
         });
         mainWindow.setScene(scene);
+    }
+
+    private void saveChildWindowState() {
+        // Java does not run a destructor for these child stages on application exit. Save explicitly so text typed into
+        // Cover, Small Cover, or Stables is persisted even when the user closes the main window first.
+        coverWindow.saveToFile();
+        smallCoverWindow.saveToFile();
+        stablesWindow.saveToFile();
     }
 
     // Do initial rendering
@@ -4175,17 +4197,17 @@ public final class Viewer {
             } catch (final NullPointerException exception) {
                 // this is when were iterating from a file, and the iteration window isn't open
             }
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
         });
         task.setOnCancelled(e -> {
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
         });
 
         // If the task throws an exception during the call phase,
         // simply close the window and throw the exception
         task.setOnFailed(e -> {
             //progress.close();
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
             throw new RuntimeException(task.getException());
         });
 
@@ -4269,18 +4291,18 @@ public final class Viewer {
             } catch (final NullPointerException exception) {
                 // this is when were iterating from a file, and the iterations window isn't open
             }
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
             renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
         });
         task.setOnCancelled(e -> {
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
         });
 
         // If the task throws an exception during the call phase,
         // simply close the window and throw the exception
         task.setOnFailed(e -> {
             //progress.close();
-            Utils.safeShutdownExecutor(drawExecutor);
+            Utils.shutdownExecutorAsync(drawExecutor);
             throw new RuntimeException(task.getException());
         });
 
@@ -4380,8 +4402,8 @@ public final class Viewer {
 
                     if (overallProgress.isCancelled()) { // It is possible for cancel to occur before the task is created
                         renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
-                        Utils.safeShutdownExecutor(storageExecutor);
-                        Utils.safeShutdownExecutor(shotExecutor);
+                        Utils.shutdownExecutorAsync(storageExecutor);
+                        Utils.shutdownExecutorAsync(shotExecutor);
                         overallProgress.close();
                         if(autoCover) coverWindow.show();
                     } else if (idx + step < end) {
@@ -4391,8 +4413,8 @@ public final class Viewer {
                     } else {
                         overallProgress.close();
 
-                        Utils.safeShutdownExecutor(storageExecutor);
-                        Utils.safeShutdownExecutor(shotExecutor);
+                        Utils.shutdownExecutorAsync(storageExecutor);
+                        Utils.shutdownExecutorAsync(shotExecutor);
 
                         // only render the screen after everything has been loaded
                         renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
@@ -4485,8 +4507,8 @@ public final class Viewer {
 
             if (overallProgress.isCancelled()) { // It is possible for cancel to occur before the task is created
                 renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
                 overallProgress.close();
                 if (autoCover) coverWindow.show();
                 if (autoSmallCover) smallCoverWindow.show();
@@ -4497,8 +4519,8 @@ public final class Viewer {
             } else {
                 overallProgress.close();
 
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
 
                 // only render the screen after everything has been loaded
                 renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
@@ -4540,8 +4562,8 @@ public final class Viewer {
             overallProgress.close();
 
             // Wait for orderly cancellation of unfinished tasks
-            Utils.safeShutdownExecutor(shotExecutor);
-            Utils.safeShutdownExecutor(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
 
             // only render the screen after everything has been loaded
             renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, executor);
@@ -4801,7 +4823,7 @@ public final class Viewer {
                     }
                 });
 
-                Utils.safeShutdownExecutor(drawExecutor);
+                Utils.shutdownExecutorAsync(drawExecutor);
                 progress.close();
 
                 if (tup._1.isPresent()) {
@@ -4829,12 +4851,12 @@ public final class Viewer {
             });
 
             task.setOnCancelled(e -> {
-                Utils.safeShutdownExecutor(drawExecutor);
+                Utils.shutdownExecutorAsync(drawExecutor);
                 progress.close();
             });
 
             task.setOnFailed(e -> {
-                Utils.safeShutdownExecutor(drawExecutor);
+                Utils.shutdownExecutorAsync(drawExecutor);
                 progress.close();
                 throw new RuntimeException(task.getException());
             });
@@ -4911,7 +4933,7 @@ public final class Viewer {
                         }
                     });
 
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                     progressTriples.close();
 
                     if (tup._1.isPresent()) {
@@ -4939,12 +4961,12 @@ public final class Viewer {
                 });
 
                 taskTriples.setOnCancelled(e -> {
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                     progressTriples.close();
                 });
 
                 taskTriples.setOnFailed(e -> {
-                    Utils.safeShutdownExecutor(drawExecutor);
+                    Utils.shutdownExecutorAsync(drawExecutor);
                     progressTriples.close();
                     throw new RuntimeException(taskTriples.getException());
                 });
@@ -7207,8 +7229,8 @@ public final class Viewer {
                 }
             });
 
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
 
             progress.close();
 
@@ -7259,8 +7281,8 @@ public final class Viewer {
             });
 
             // Wait for orderly cancellation of unfinished tasks 
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
 
             progress.close();
             // only render the screen after everything has been loaded
@@ -7349,8 +7371,8 @@ public final class Viewer {
                     // Run at the next hole
                     if(overallProgress.isCancelled()) { // It is possible for cancel to occur before the task is created
                         renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, drawExecutor);
-                        Utils.safeShutdownExecutor(storageExecutor);
-                        Utils.safeShutdownExecutor(shotExecutor);
+                        Utils.shutdownExecutorAsync(storageExecutor);
+                        Utils.shutdownExecutorAsync(shotExecutor);
                         if(overrideSS) {
                             System.out.printf("Overrided Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
                         }
@@ -7363,8 +7385,8 @@ public final class Viewer {
                         drawAutoPolyVary(max, maxSubdivisions, autoCover, autoSmallCover, overrideSS, currIdx + stepIdx, endIdx, stepIdx, area, overallProgress, step, colorOpt, drawExecutor, storageExecutor, shotExecutor, previousCodes);
                     } else {
                         renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, drawExecutor);
-                        Utils.safeShutdownExecutor(storageExecutor);
-                        Utils.safeShutdownExecutor(shotExecutor);
+                        Utils.shutdownExecutorAsync(storageExecutor);
+                        Utils.shutdownExecutorAsync(shotExecutor);
                         if (overrideSS) {
                             System.out.printf("Overrided Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
                         }
@@ -7530,8 +7552,8 @@ public final class Viewer {
             // Run at the next hole
             if(overallProgress.isCancelled()) { // It is possible for cancel to occur before the task is created
                 renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, drawExecutor);
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
                 if(overrideSS) {
                     System.out.printf("Overrided Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
                 }
@@ -7544,8 +7566,8 @@ public final class Viewer {
                 drawAutoPolyVary(max, maxSubdivisions, autoCover, autoSmallCover, overrideSS, currIdx + stepIdx, endIdx, stepIdx, area, overallProgress, step, colorOpt, drawExecutor, storageExecutor, shotExecutor, new ArrayList<>(storages));
             } else {
                 renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, drawExecutor);
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
                 if (overrideSS) {
                     System.out.printf("Overrided Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
                 }
@@ -7599,8 +7621,8 @@ public final class Viewer {
                 }
             });
             renderRegions(onScreenSequences, guideLinesImageView, regionsImageView, drawExecutor);
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
             if(overrideSS) {
                 System.out.printf("Overrided Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
             }
@@ -7613,8 +7635,8 @@ public final class Viewer {
 
         task.setOnFailed(e -> {
             //progress.close();
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
             overallProgress.close();
             // Propagate cancellation for Super
             step.ifPresent(integerSimpleObjectProperty -> integerSimpleObjectProperty.setValue(-1));

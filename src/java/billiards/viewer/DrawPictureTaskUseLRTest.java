@@ -23,11 +23,16 @@ import static billiards.viewer.Utils.verifyInfo;
 // of dealing with that?
 //
 // Who wrote this stupid code?
-public final class DrawPictureTaskUseLRTest extends Task<Array<Storage>> {
+public final class DrawPictureTaskUseLRTest extends Task<Array<Storage>> implements GracefullyCancelable {
     private final Array<Callable<Either<String, Storage>>> tasks;
     //public CopyOnWriteArrayList<ClassifiedCodeSequence> baseCodeSeq = new CopyOnWriteArrayList<>();
     public ArrayList<ClassifiedCodeSequence> baseCodeSeq = new ArrayList<>();
+    private volatile boolean gracefulCancelRequested = false;
 
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
 
 
     public DrawPictureTaskUseLRTest(Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
@@ -38,9 +43,12 @@ public final class DrawPictureTaskUseLRTest extends Task<Array<Storage>> {
         //classCodeSeqs = classCodeSeqs.removeAt(0);
         this.tasks = classCodeSeqs.map(classCodeSeq -> () -> {
 
-            // We could check here for Thread.interrupted() to see if we should
-            // cancel the task, but most of these operations are one-shot,
-            // so there's no point
+            // Respect cancellation before entering the native/database path.
+            // This class is available from the viewer, so queued validation
+            // work should stop when the JavaFX task is canceled.
+            if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+                return Either.left("// cancelled " + classCodeSeq);
+            }
             long start = System.currentTimeMillis();
 
             //System.out.println(Integer.toString(counter) + " : " + classCodeSeq.toString());
@@ -128,48 +136,64 @@ public final class DrawPictureTaskUseLRTest extends Task<Array<Storage>> {
         final ArrayList<Storage> storages = new ArrayList<>();
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
-        // This is where we do checking to see if we were cancelled
-        for (final Future<Either<String, Storage>> future : futures) {
-            if (this.isCancelled() || except.isPresent()) {
-                // There is no point in interrupting the thread, since we can't
-                // cancel the future while it is running
-                future.cancel(false);
-            } else {
-                try {
-                    final Either<String, Storage> either = future.get();
+        try {
+            // This is where we do checking to see if we were cancelled
+            for (final Future<Either<String, Storage>> future : futures) {
+                if (this.isCancelled() || except.isPresent()) {
+                    // Interrupt queued or interrupt-aware workers so canceled
+                    // validation does not keep using backend memory.
+                    future.cancel(true);
+                } else {
+                    try {
+                        if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                            // Preserve validation/storage work already running,
+                            // but stop queued Use-LR test work after Cancel.
+                            Utils.cancelQueuedFutures(futures);
+                            queuedWorkCancelled = true;
+                        }
 
-                    final String msg;
-                    if (either.isLeft()) {
-                        msg = either.getLeft();
-                    } else {
-                        final Storage storage = either.get();
-                        storages.add(storage);
-                        msg = storage.toString();
+                        final Either<String, Storage> either = future.get();
 
-                        //aug 25,2019 george thia shows the use left right and prints 1 3 3 for example as storage
-                        // System.out.print("storage: " + storage + "\n");
+                        final String msg;
+                        if (either.isLeft()) {
+                            msg = either.getLeft();
+                        } else {
+                            final Storage storage = either.get();
+                            storages.add(storage);
+                            msg = storage.toString();
 
-                    }
+                            //aug 25,2019 george thia shows the use left right and prints 1 3 3 for example as storage
+                            // System.out.print("storage: " + storage + "\n");
 
-                    System.out.println(msg);
-                    // this.updateMessage(msg);
+                        }
 
-                    progress += 1;
-                    this.updateProgress(progress, todo);
-                } catch (final ExecutionException e) {
-                    except = Optional.of(e);
-                } catch (final InterruptedException e) {
-                    if (!this.isCancelled()) {
-                        throw new RuntimeException(e);
+                        System.out.println(msg);
+                        // this.updateMessage(msg);
+
+                        progress += 1;
+                        this.updateProgress(progress, todo);
+                    } catch (final ExecutionException e) {
+                        except = Optional.of(e);
+                    } catch (final CancellationException e) {
+                        // Expected for queued futures suppressed by graceful cancel.
+                    } catch (final InterruptedException e) {
+                        Utils.cancelFutures(futures);
+                        Thread.currentThread().interrupt();
+                        if (!this.isCancelled()) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                     }
                 }
             }
+        } finally {
+            if (this.isCancelled() || except.isPresent()) {
+                Utils.cancelFutures(futures);
+            }
+            Utils.safeShutdownExecutor(executor, 30, TimeUnit.SECONDS);
         }
-
-        // TODO This does not cancel futures that are currently running
-        // (like when we hit cancel). Should we wait for them to finish?
-        executor.shutdown();
 
         if (except.isPresent()) {
             throw new RuntimeException(except.get());

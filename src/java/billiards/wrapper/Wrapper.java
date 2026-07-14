@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.collections.impl.factory.Lists;
 import org.eclipse.collections.api.list.MutableList;
@@ -36,20 +37,39 @@ public final class Wrapper {
         Native.register("backend");
     }
 
+    private static final AtomicBoolean NATIVE_VARY_RUNNING = new AtomicBoolean(false);
+
     private static native void sqlite_error_logging();
     private static native void database_create(final String dbPath);
     private static native void database_clear(final String dbPath);
+    private static native Pointer backend_last_error();
 
     public static void errorLogging() {
         sqlite_error_logging();
     }
 
+    private static void beginNativeVary(final String operationName) {
+        // The C++ backend still uses one global cancel flag for VaryCS/Vary3/Vary4. Until that is replaced with a
+        // per-operation token, only one native vary operation may run at a time or cancel/reset can cross-contaminate.
+        if (!NATIVE_VARY_RUNNING.compareAndSet(false, true)) {
+            throw new IllegalStateException(
+                    "Another native vary operation is already running. Wait for it or cancel it before starting "
+                            + operationName + ".");
+        }
+    }
+
+    private static void finishNativeVary() {
+        NATIVE_VARY_RUNNING.set(false);
+    }
+
     public static void createDatabase(final String dbPath) {
         database_create(dbPath);
+        throwIfBackendError("create database");
     }
 
     public static void clearDatabase(final String dbPath) {
         database_clear(dbPath);
+        throwIfBackendError("clear database");
     }
 
     private static native Pointer create_connection_pool(final String dbPath, final int poolSize);
@@ -57,11 +77,39 @@ public final class Wrapper {
 
 
     public static Pointer createConnectionPool(final String dbPath, final int poolSize) {
-        return create_connection_pool(dbPath, poolSize);
+        final Pointer pointer = create_connection_pool(dbPath, poolSize);
+        if (isNullPointer(pointer)) {
+            throw new RuntimeException("Failed to create native connection pool: " + backendLastError());
+        }
+        return pointer;
     }
 
     public static void destroyConnectionPool(final Pointer dbPtr) {
+        if (isNullPointer(dbPtr)) {
+            return;
+        }
         destroy_connection_pool(dbPtr);
+    }
+
+    private static boolean isNullPointer(final Pointer pointer) {
+        return pointer == null || Pointer.nativeValue(pointer) == 0;
+    }
+
+    private static String backendLastError() {
+        final Pointer error = backend_last_error();
+        if (isNullPointer(error)) {
+            return "unknown native error";
+        }
+
+        final String message = error.getString(0);
+        return message == null || message.isBlank() ? "unknown native error" : message;
+    }
+
+    private static void throwIfBackendError(final String operation) {
+        final String message = backendLastError();
+        if (!"unknown native error".equals(message)) {
+            throw new RuntimeException("Failed to " + operation + ": " + message);
+        }
     }
 
     public static native void backend_cancel();
@@ -364,7 +412,7 @@ public final class Wrapper {
         final CPicture cpicture = new CPicture();
         final int rval;
 
-        if (lr == "empty") {
+        if ("empty".equals(lr)) {
             rval = load_picture_lr(baseCodeNumbersArray, baseCodeNumbersLen,
                                          codeNumbersArray, codeNumbersLen,
                                          cpicture, pool.pointer);
@@ -632,17 +680,18 @@ public final class Wrapper {
 
     public static Optional<MutableList<ClassifiedCodeSequence>> varyCSCpp(int movesMin, int movesMax, double xAngle,
             double yAngle, String reqTypes) {
+        beginNativeVary("VaryCS");
         final CString result = new CString();
-        final int rval = vary_cs_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
-        if (rval > 0) {
-            try {
+        try {
+            final int rval = vary_cs_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
+            if (rval > 0) {
                 return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
-            } finally {
-                cleanupStringIfPresent(result);
             }
 
-        } else {
-            throw new RuntimeException("unknown return value for calculateGradient: " + rval);
+            throw new RuntimeException("unknown return value for VaryCS: " + rval);
+        } finally {
+            cleanupStringIfPresent(result);
+            finishNativeVary();
         }
     }
 
@@ -651,16 +700,18 @@ public final class Wrapper {
 
     public static Optional<MutableList<ClassifiedCodeSequence>> vary3Cpp(int movesMin, int movesMax,
             double initPosition, double xAngle, double yAngle, String reqTypes) {
+        beginNativeVary("Vary3");
         final CString result = new CString();
-        final int rval = vary_3_cpp(movesMin, movesMax, initPosition, xAngle, yAngle, result, reqTypes);
-        if (rval > 0) {
-            try {
+        try {
+            final int rval = vary_3_cpp(movesMin, movesMax, initPosition, xAngle, yAngle, result, reqTypes);
+            if (rval > 0) {
                 return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
-            } finally {
-                cleanupStringIfPresent(result);
             }
-        } else {
-            throw new RuntimeException("unknown return value for calculateGradient: " + rval);
+
+            throw new RuntimeException("unknown return value for Vary3: " + rval);
+        } finally {
+            cleanupStringIfPresent(result);
+            finishNativeVary();
         }
     }
 
@@ -669,24 +720,29 @@ public final class Wrapper {
 
     public static Optional<MutableList<ClassifiedCodeSequence>> vary4Cpp(int movesMin, int movesMax, double xAngle,
             double yAngle, String reqTypes) {
+        beginNativeVary("Vary4");
         final CString result = new CString();
-        final int rval = vary_4_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
-        if (rval > 0) {
-            try {
+        try {
+            final int rval = vary_4_cpp(movesMin, movesMax, xAngle, yAngle, result, reqTypes);
+            if (rval > 0) {
                 return Optional.of(parseNativeCodeSequences(result.string.getString(0)));
-            } finally {
-                cleanupStringIfPresent(result);
             }
-        } else {
-            throw new RuntimeException("unknown return value for calculateGradient: " + rval);
+
+            throw new RuntimeException("unknown return value for Vary4: " + rval);
+        } finally {
+            cleanupStringIfPresent(result);
+            finishNativeVary();
         }
     }
 
     private static MutableList<ClassifiedCodeSequence> parseNativeCodeSequences(final String strseq) {
         final int estimatedLines = (int) strseq.chars().filter(c -> c == '\n').count() + 1;
         final List<ClassifiedCodeSequence> tmp = new ArrayList<>(estimatedLines);
+        int badLines = 0;
+        int lineNumber = 0;
 
-        Arrays.stream(strseq.split("\\R")).forEach(line -> {
+        for (final String line : strseq.split("\\R")) {
+            lineNumber += 1;
             final String trimmed = line.trim();
             if (!trimmed.isEmpty()) {
                 try {
@@ -696,11 +752,19 @@ public final class Wrapper {
                     final IntList list = IntArrayList.newListWith(dirty);
                     final Optional<ClassifiedCodeSequence> codeSeq = Utils.convert(list);
                     codeSeq.ifPresent(tmp::add);
-                } catch (Exception ignored) {
-                    // Preserve existing behavior: malformed native output lines are skipped.
+                } catch (final RuntimeException e) {
+                    // Native vary output is supposed to be one integer sequence
+                    // per line. Treat malformed lines as a visible backend bug
+                    // instead of silently dropping codes from the result set.
+                    badLines += 1;
+                    System.err.println("Failed to parse native vary output line " + lineNumber + ": " + trimmed);
                 }
             }
-        });
+        }
+
+        if (badLines > 0) {
+            throw new IllegalStateException("Failed to parse " + badLines + " native vary output line(s)");
+        }
 
         return Lists.mutable.ofAll(tmp);
     }

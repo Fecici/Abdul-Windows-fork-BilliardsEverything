@@ -52,8 +52,12 @@ void iterateFireAway3(
 	else if (max >15000){usage=0.2;}
 	else if (max >10000){usage=0.3;}
 	else if (max >6000){usage = 0.4;};
-	const int MAX_INFLIGHT = std::max(1, compute_max_inflight(usage, 16384));
-	unsigned int cores = std::max(1u, std::thread::hardware_concurrency());
+	const unsigned int cores = billiards_worker_count();
+	const int memoryInflight = std::max(1, compute_max_inflight(usage, 16384));
+	// Keep the native task queue proportional to the worker pool. This matters
+	// on Windows laptops where GMP/MPFR allocations are outside the Java heap
+	// and a large queued backlog can push the machine into swap.
+	const int MAX_INFLIGHT = std::max(1, std::min(memoryInflight, static_cast<int>(cores * 4)));
     std::mutex codesFoundMutex;
     std::mutex errorMutex;
     bool workerFailed = false;

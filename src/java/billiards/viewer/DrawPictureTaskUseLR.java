@@ -21,12 +21,33 @@ import javafx.concurrent.Task;
 // of dealing with that?
 //
 // Who wrote this stupid code?
-public final class DrawPictureTaskUseLR extends Task<Array<Storage>> {
+public final class DrawPictureTaskUseLR extends Task<Array<Storage>> implements GracefullyCancelable {
     private final Array<Callable<Either<String, Storage>>> tasks;
     //public CopyOnWriteArrayList<ClassifiedCodeSequence> baseCodeSeq = new CopyOnWriteArrayList<>();
     //public ArrayList<ClassifiedCodeSequence> baseCodeSeq = new ArrayList<>();
-    private static ClassifiedCodeSequence breakPoint = null;
-    private static Object breakPointLock = new Object();
+    // The stop point belongs to one Use-LR run. Keeping it static leaked an
+    // empty-result stop from one viewer operation into the next operation.
+    private ClassifiedCodeSequence breakPoint = null;
+    private final Object breakPointLock = new Object();
+    private volatile boolean gracefulCancelRequested = false;
+
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
+
+    private ClassifiedCodeSequence currentBreakPoint() {
+        synchronized (breakPointLock) {
+            return breakPoint;
+        }
+    }
+
+    private void clearBreakPoint() {
+        synchronized (breakPointLock) {
+            breakPoint = null;
+        }
+    }
+
     public DrawPictureTaskUseLR(
             final Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
 
@@ -35,9 +56,12 @@ public final class DrawPictureTaskUseLR extends Task<Array<Storage>> {
         final ClassifiedCodeSequence baseCodeSeq = classCodeSeqs.get(0);
         this.tasks =  classCodeSeqs.map(classCodeSeq -> () -> {
 
-            // We could check here for Thread.interrupted() to see if we should
-            // cancel the task, but most of these operations are one-shot,
-            // so there's no point
+            // Respect cancellation before entering the native/database path.
+            // This avoids starting queued LR reuse work after the viewer has
+            // already canceled the JavaFX task.
+            if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+                return Either.left("// cancelled " + classCodeSeq);
+            }
             final Optional<Storage> opt = Database.loadStorageUseLR("empty",baseCodeSeq, classCodeSeq, pool);
             if (opt.isPresent()) {
                 return Either.right(opt.get());
@@ -69,60 +93,79 @@ public final class DrawPictureTaskUseLR extends Task<Array<Storage>> {
         final ArrayList<Storage> storages = new ArrayList<>();
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
-        // This is where we do checking to see if we were cancelled
-        for (final Future<Either<String, Storage>> future : futures) {
-            if (this.isCancelled() || except.isPresent()) {
-                // There is no point in interrupting the thread, since we can't
-                // cancel the future while it is running
-                future.cancel(false);
-            } else {
-                try {
-                    final Either<String, Storage> either = future.get();
+        try {
+            // This is where we do checking to see if we were cancelled
+            for (final Future<Either<String, Storage>> future : futures) {
+                if (this.isCancelled() || except.isPresent()) {
+                    // Interrupt queued or interrupt-aware workers so canceled
+                    // LR reuse work does not continue behind the UI.
+                    future.cancel(true);
+                } else {
+                    try {
+                        if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                            // User cancel should preserve any LR reuse work
+                            // already running, while preventing queued codes.
+                            Utils.cancelQueuedFutures(futures);
+                            queuedWorkCancelled = true;
+                        }
 
-                    final String msg;
-                    if (either.isLeft()) {
-                        msg = either.getLeft();
-                    } else {
-                        final Storage storage = either.get();
-                        storages.add(storage);
-                        msg = storage.toString();
+                        final Either<String, Storage> either = future.get();
 
-                        //aug 25,2019 george thia shows the use left right and prints 1 3 3 for example as storage
-                        // System.out.print("storage: " + storage + "\n");
+                        final String msg;
+                        if (either.isLeft()) {
+                            msg = either.getLeft();
+                        } else {
+                            final Storage storage = either.get();
+                            storages.add(storage);
+                            msg = storage.toString();
 
-                    }
-                    String temp = "// empty set " + breakPoint;
-                    //System.out.println("temp"+temp);
-                    //System.out.println("msg"+msg);
-                    if (msg.equals(temp)) {
-                        System.out.println("Stop at " + breakPoint);
-                        breakPoint = null;
+                            //aug 25,2019 george thia shows the use left right and prints 1 3 3 for example as storage
+                            // System.out.print("storage: " + storage + "\n");
+
+                        }
+                        final ClassifiedCodeSequence stopPoint = currentBreakPoint();
+                        String temp = "// empty set " + stopPoint;
+                        //System.out.println("temp"+temp);
+                        //System.out.println("msg"+msg);
+                        if (msg.equals(temp)) {
+                            System.out.println("Stop at " + stopPoint);
+                            clearBreakPoint();
+                            Utils.cancelQueuedFutures(futures);
+                            break;
+                        }
+                        else if (msg.contains("// empty set ")) {
+                            String msg2 = msg.replace("// empty set ","Stop at ");
+                            System.out.println(msg2);
+                            clearBreakPoint();
+                            Utils.cancelQueuedFutures(futures);
+                            break;
+                        }
+                        System.out.println(msg);
+                        // this.updateMessage(msg);
+                        progress += 1;
+                        this.updateProgress(progress, todo);
+                    } catch (final ExecutionException e) {
+                        except = Optional.of(e);
+                    } catch (final CancellationException e) {
+                        // Expected for queued futures suppressed by graceful cancel.
+                    } catch (final InterruptedException e) {
+                        Utils.cancelFutures(futures);
+                        Thread.currentThread().interrupt();
+                        if (!this.isCancelled()) {
+                            throw new RuntimeException(e);
+                        }
                         break;
-                    }
-                    else if (msg.contains("// empty set ")) {
-                        String msg2 = msg.replace("// empty set ","Stop at ");
-                        System.out.println(msg2);
-                        breakPoint = null;
-                        break;
-                    }
-                    System.out.println(msg);
-                    // this.updateMessage(msg);
-                    progress += 1;
-                    this.updateProgress(progress, todo);
-                } catch (final ExecutionException e) {
-                    except = Optional.of(e);
-                } catch (final InterruptedException e) {
-                    if (!this.isCancelled()) {
-                        throw new RuntimeException(e);
                     }
                 }
             }
+        } finally {
+            if (this.isCancelled() || except.isPresent()) {
+                Utils.cancelFutures(futures);
+            }
+            Utils.safeShutdownExecutor(executor, 30, TimeUnit.SECONDS);
         }
-
-        // TODO This does not cancel futures that are currently running
-        // (like when we hit cancel). Should we wait for them to finish?
-        executor.shutdown();
 
         if (except.isPresent()) {
             throw new RuntimeException(except.get());

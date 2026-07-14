@@ -33,17 +33,16 @@ import static billiards.viewer.Utils.readFromFile;
 public final class SmallCoverWindow {
 
     // ------------------------------------------------------------
-    private static String polygonString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_polygon.txt");
-    static String stablesString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_stables.txt");
-    static String triplesString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_triples.txt");
-    static String digitsString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_digits.txt");
-    private static String emptyString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_empty.txt");
-    static String magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_magnifications.txt");
+    private String polygonString;
+    private String stablesString;
+    private String triplesString;
+    private String digitsString;
+    private String emptyString;
+    private String magnificationsString;
     //private static String halfTripleString = Utils.readFromFile(Viewer.tmpDir + "/cover_half_triples.txt");
 
-    // WARNING: Global mutable state
-    // Other classes which need to synchronize their polygon with the cover should listen to this property
-    public static SimpleObjectProperty<String> polyStringProperty = new SimpleObjectProperty<>(polygonString);
+    // Intentional shared notification channel kept for compatibility; saved small-cover text is instance-local.
+    public static SimpleObjectProperty<String> polyStringProperty = new SimpleObjectProperty<>("");
 
     // ------------------------------------------------------------
 
@@ -77,6 +76,8 @@ public final class SmallCoverWindow {
         stage.setOnCloseRequest(event -> saveToFile());
 
         base.setOnMouseExited(event -> saveToFile());
+
+        loadFromFile();
 
         topText.setText(polygonString);
         bottomText.setText(stablesString);
@@ -279,6 +280,17 @@ public final class SmallCoverWindow {
         Utils.writeToFile(Viewer.tmpDir + "/small_cover_empty.txt", emptyString);
         //Utils.writeToFile(Viewer.tmpDir + "/cover_half_triples.txt", halfTripleString);
 
+    }
+
+    private void loadFromFile() {
+        // Reading on construction keeps this window in sync with disk and avoids stale class-initializer state.
+        polygonString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_polygon.txt");
+        stablesString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_stables.txt");
+        triplesString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_triples.txt");
+        digitsString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_digits.txt");
+        emptyString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_empty.txt");
+        magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/small_cover_magnifications.txt");
+        polyStringProperty.setValue(polygonString);
     }
 
     public void appendStablesInfo(String stable) {

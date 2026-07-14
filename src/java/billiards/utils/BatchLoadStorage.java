@@ -25,29 +25,38 @@ public class BatchLoadStorage {
     public static ArrayList<Storage> batchLoadStorage(Collection<ClassifiedCodeSequence> codes, ConnectionPool pool) {
         final MutableList<Future<Either<String, Storage>>> futures = new FastList<>();
 
-        ExecutorService executor = Executors.newFixedThreadPool(Utils.numThreads);
+        final ExecutorService executor = Executors.newFixedThreadPool(Utils.numThreads);
 
-        for (ClassifiedCodeSequence code : codes) {
-            futures.add(executor.submit(() -> loadStorage(code, pool)));
+        try {
+            for (ClassifiedCodeSequence code : codes) {
+                futures.add(executor.submit(() -> loadStorage(code, pool)));
+            }
+
+            int taskCount = 0;
+            int taskCompleted = 0;
+            ArrayList<Either<String, Storage>> result = new ArrayList<>();
+
+            for (Future<Either<String, Storage>> future : futures) {
+                taskCompleted += checkStatus(future, !(taskCount++ == taskCompleted), result);
+            }
+
+            ArrayList<Storage> storages = new ArrayList<>();
+
+            for (Either<String, Storage> e : result) {
+                if (e.isRight()) storages.add(e.get());
+            }
+
+            return storages;
+        } catch (final RuntimeException e) {
+            // Batch loads are often launched from UI workflows. If one worker
+            // fails, stop the queued native/database loads before returning the
+            // error to the caller.
+            Utils.cancelFutures(futures);
+            throw e;
+        } finally {
+            Utils.safeShutdownExecutor(executor, 30, TimeUnit.SECONDS);
         }
 
-        int taskCount = 0;
-        int taskCompleted = 0;
-        ArrayList<Either<String, Storage>> result = new ArrayList<>();
-
-        for (Future<Either<String, Storage>> future : futures) {
-            taskCompleted += checkStatus(future, !(taskCount++ == taskCompleted), result);
-        }
-
-        ArrayList<Storage> storages = new ArrayList<>();
-
-        for (Either<String, Storage> e : result) {
-            if (e.isRight()) storages.add(e.get());
-        }
-
-        executor.shutdown();
-
-        return storages;
     }
 
     // Find the storage associated to a codeSequence if it exists. Return the error if not

@@ -2,6 +2,7 @@
 #include "conversion.hpp"
 
 #include "bounding_inequalities.hpp"
+#include "utils.hpp"
 
 static std::vector<LinComArrZ<XYEtaPhi>> calculate_angles(const std::vector<std::pair<CodeNumber, XYZ>>& code_nums_angles) {
 
@@ -124,32 +125,29 @@ static LinComArrZ<XYEta> remove_phi(const LinComArrZ<XYEtaPhi>& equation) {
    * This function is updated to calcualte new code parallel at the same time
    */
 static std::set<LinComArrZ<XYEta>> eliminate_phi(const std::set<LinComArrZ<XYEtaPhi>>& positive_phi, const std::set<LinComArrZ<XYEtaPhi>>& negative_phi) {
-    unsigned int concurrency = std::thread::hardware_concurrency();
-    if (concurrency == 0) concurrency = 4;
+    const unsigned int concurrency = billiards_worker_count();
 
     // Convert positive_phi to vector for indexing/chunking
     std::vector<LinComArrZ<XYEtaPhi>> pos_vec(positive_phi.begin(), positive_phi.end());
     std::size_t n = pos_vec.size();
-
-    // detect number of thread in computer
-    std::size_t block_size;
-    std::size_t task_num;
-    if (n < 200) {
-        block_size = (n + concurrency - 1) / concurrency;
-        task_num = concurrency;
-    } else {
-        block_size = 1; 
-        task_num = (n / block_size) + 1;
+    const std::size_t task_num = billiards_task_count(n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+
+    // Keep the number of local result buffers bounded. The old large-input
+    // branch created roughly one task/vector per positive equation, which is
+    // exactly the kind of memory spike that hurts Windows release machines.
+    const std::size_t block_size = billiards_block_size(n, task_num);
 
     // Each thread accumulates in a chunked vector instead of a set to save RAM
     std::vector<std::vector<LinComArrZ<XYEta>>> thread_zero_phi(task_num);
-    boost::asio::thread_pool pool(task_num);
+    boost::asio::thread_pool pool(concurrency);
 
     // Memory budget: ~24MB per thread
     const size_t MAX_BUFFER_SIZE = 1000000;
 
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         std::size_t begin = t * block_size;
         std::size_t end = std::min(begin + block_size, n);
 
@@ -191,7 +189,7 @@ static std::set<LinComArrZ<XYEta>> eliminate_phi(const std::set<LinComArrZ<XYEta
 
     // Merge flat vectors back into the expected std::set return type
     std::set<LinComArrZ<XYEta>> zero_phi;
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         zero_phi.insert(thread_zero_phi[t].begin(), thread_zero_phi[t].end());
     }
 
@@ -205,21 +203,13 @@ static std::set<LinComArrZ<XYEta>> first_inequalities(const std::vector<std::pai
 
     auto theta_angles = calculate_angles(code_nums_angles);
 
-    // assign max compuatation thread according to computer performence
-    // if large set, small blocksize to allow time for memory swap
-    unsigned int concurrency = std::thread::hardware_concurrency();
-    if (concurrency == 0) concurrency = 4;
+    const unsigned int concurrency = billiards_worker_count();
     std::size_t n = code_nums_angles.size();
-    std::size_t block_size;
-    std::size_t tasks_num;
-    if (n<200){
-        block_size = (n + concurrency - 1) / concurrency;
-        tasks_num = concurrency;
-    }else{
-        block_size = 1; 
-        tasks_num = (n/block_size)+1;
+    const std::size_t tasks_num = billiards_task_count(n, concurrency);
+    if (tasks_num == 0) {
+        return {};
     }
-    // use block size to serpate the word.
+    const std::size_t block_size = billiards_block_size(n, tasks_num);
     
 
     boost::asio::thread_pool pool(concurrency);
@@ -230,7 +220,7 @@ static std::set<LinComArrZ<XYEta>> first_inequalities(const std::vector<std::pai
 
     // unfortunately, C++ doesn't have a zip feature, so
     // we have to just iterate
-    for (unsigned int t = 0; t < tasks_num; ++t) {
+    for (std::size_t t = 0; t < tasks_num; ++t) {
         std::size_t begin = t * block_size;
         std::size_t end = std::min(begin + block_size, n);
 
@@ -267,7 +257,7 @@ static std::set<LinComArrZ<XYEta>> first_inequalities(const std::vector<std::pai
 
     // Merge all thread sets into global sets
     std::set<LinComArrZ<XYEtaPhi>> positive_phi, negative_phi;
-    for (unsigned int t = 0; t < tasks_num; ++t) {
+    for (std::size_t t = 0; t < tasks_num; ++t) {
         positive_phi.insert(thread_positive_phi[t].begin(), thread_positive_phi[t].end());
         negative_phi.insert(thread_negative_phi[t].begin(), thread_negative_phi[t].end());
     }

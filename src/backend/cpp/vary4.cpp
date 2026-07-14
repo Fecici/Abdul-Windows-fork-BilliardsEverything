@@ -201,7 +201,10 @@ std::vector<TriangleStart> lazySort(std::vector<TriangleStart> array) {
 std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_t movesMax,
 		const float64_t xAngle, const float64_t yAngle,const std::string reqType) {
 
-    unsigned int cores = std::max(1u, std::thread::hardware_concurrency());  // get cores
+    // Use the same bounded native worker count as the other backends. A raw
+    // hardware_concurrency value can be zero, and large core counts create too
+    // many expensive MPFR/GMP jobs for normal release machines.
+    const unsigned int cores = billiards_worker_count();
 
 		
 	TriangleBilliard4 startBilliard = TriangleBilliard4::create(xAngle, yAngle);
@@ -230,7 +233,7 @@ std::vector<std::vector<int32_t>> fireAway4(const int32_t movesMin, const int32_
     std::atomic<int> inflight {0};
 
     // Optional: limit inflight to reduce memory pressure
-    const int MAX_INFLIGHT = cores;
+    const int MAX_INFLIGHT = static_cast<int>(cores);
 
     for (const auto& T : sortStarts) {
         // Wait if too many inflight

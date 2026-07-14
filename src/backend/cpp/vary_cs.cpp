@@ -85,8 +85,12 @@ void iterateFireAwayCS2(
     else if (max >15000){usage=0.1;}
     else if (max >10000){usage=0.2;}
     else if (max >6000){usage = 0.3;};
-    const int MAX_INFLIGHT = std::max(1, compute_max_inflight(usage, 16384));  // tune based on memory
-    unsigned int cores = std::max(1u, std::thread::hardware_concurrency());
+    const unsigned int cores = billiards_worker_count();
+    const int memoryInflight = std::max(1, compute_max_inflight(usage, 16384));
+    // The memory estimate can still allow a huge Boost.Asio queue on 16GB+
+    // machines. Cap queued native classification work relative to worker
+    // count so VaryCS does not swamp RAM before workers can drain it.
+    const int MAX_INFLIGHT = std::max(1, std::min(memoryInflight, static_cast<int>(cores * 4)));
     std::mutex codesFoundMutex;
     std::mutex errorMutex;
     bool workerFailed = false;

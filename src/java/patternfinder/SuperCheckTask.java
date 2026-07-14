@@ -28,6 +28,11 @@ public final class SuperCheckTask extends Task<String>{
 		final Array<String> blockArray = Array.of(blocks);
 	    this.pool = pool;
 		this.tasks = blockArray.map(block -> () -> {
+			// Stop queued verification blocks before they enter the database or
+			// native backend after the JavaFX task is canceled.
+			if (this.isCancelled() || Thread.currentThread().isInterrupted()) {
+				return "";
+			}
 			if (block.contains("empty")) {
 				return "";
 			}
@@ -98,32 +103,42 @@ public final class SuperCheckTask extends Task<String>{
         int progress = 0;
         final int todo = futures.size();
 
-        for (final Future<String> future : futures) {
-        	if (this.isCancelled() || except.isPresent()) {
-                future.cancel(false);
-            } else {
-            	try {
-                    final String testedBlock = future.get();
+        try {
+            for (final Future<String> future : futures) {
+                if (this.isCancelled() || except.isPresent()) {
+                    // Interrupt queued or interrupt-aware verification work so
+                    // a canceled super-check does not continue using backend RAM.
+                    future.cancel(true);
+                } else {
+                    try {
+                        final String testedBlock = future.get();
 
-                    if (!testedBlock.startsWith("removePls")) result.append(testedBlock + "\n\n");
+                        if (!testedBlock.startsWith("removePls")) result.append(testedBlock + "\n\n");
 
-                    else antiResult.append(testedBlock.replace("removePls", "")+ "\n\n");
+                        else antiResult.append(testedBlock.replace("removePls", "")+ "\n\n");
 
-                    progress += 1;
-                    this.updateProgress(progress, todo);
+                        progress += 1;
+                        this.updateProgress(progress, todo);
 
-            	} catch (final ExecutionException e) {
-                    except = Optional.of(e);
+                    } catch (final ExecutionException e) {
+                        except = Optional.of(e);
 
-                } catch (final InterruptedException e) {
-                    if (!this.isCancelled()) {
-                        throw new RuntimeException(e);
+                    } catch (final InterruptedException e) {
+                        Utils.cancelFutures(futures);
+                        Thread.currentThread().interrupt();
+                        if (!this.isCancelled()) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                     }
                 }
             }
+        } finally {
+            if (this.isCancelled() || except.isPresent()) {
+                Utils.cancelFutures(futures);
+            }
+            Utils.safeShutdownExecutor(executor, 30, java.util.concurrent.TimeUnit.SECONDS);
         }
-
-        executor.shutdown();
 
         Utils.writeToFile(Viewer.tmpDir + "/superFails.txt", antiResult.toString());
 

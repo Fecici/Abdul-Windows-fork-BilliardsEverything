@@ -18,15 +18,17 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.Math;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import javafx.application.Platform;
@@ -48,8 +50,43 @@ import javaslang.control.Either;
 // add option to draw picture when searching
 
 public final class Utils {
-    // TODO find the best value for this. Easy case, make dynamic and use half as default
-    public static final int numThreads = (int) (Runtime.getRuntime().availableProcessors() * 0.5);
+    // Keep the default conservative because each Java worker can enter native
+    // GMP/MPFR code that allocates outside the Java heap. The property/env
+    // override lets a debug or release launcher tune this without editing code.
+    public static final int numThreads = configuredThreadCount();
+
+    private static int configuredThreadCount() {
+        final int fallback = defaultThreadCount();
+        final String propertyValue = System.getProperty("billiards.threads");
+        if (propertyValue != null && !propertyValue.isBlank()) {
+            return parseThreadCount("billiards.threads", propertyValue, fallback);
+        }
+
+        final String envValue = System.getenv("BILLIARDS_THREADS");
+        if (envValue != null && !envValue.isBlank()) {
+            return parseThreadCount("BILLIARDS_THREADS", envValue, fallback);
+        }
+
+        return fallback;
+    }
+
+    private static int defaultThreadCount() {
+        return Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
+    }
+
+    private static int parseThreadCount(final String source, final String rawValue, final int fallback) {
+        try {
+            final int parsed = Integer.parseInt(rawValue.trim());
+            if (parsed > 0) {
+                return parsed;
+            }
+        } catch (final NumberFormatException e) {
+            // Fall through to the warning below.
+        }
+
+        System.err.println("Ignoring invalid " + source + "=" + rawValue + "; using " + fallback + " threads");
+        return fallback;
+    }
 
     public static Optional<ImmutableIntList> splitString(String textCodeSeq) {
 
@@ -75,13 +112,20 @@ public final class Utils {
 
     // Initialize orderly shutdown of an executorService and block the calling thread until complete. Returns true if successful
     public static boolean safeShutdownExecutor(ExecutorService executor) {
+        return safeShutdownExecutor(executor, 600, TimeUnit.SECONDS);
+    }
+
+    // Same shutdown sequence as above, but with a caller-selected timeout for
+    // app shutdown paths where a 20 minute JavaFX-thread wait is worse than a
+    // reported incomplete shutdown.
+    public static boolean safeShutdownExecutor(ExecutorService executor, long timeout, TimeUnit unit) {
         executor.shutdown(); // Prevent further submissions
         try {
-            if(!executor.awaitTermination(600, TimeUnit.SECONDS)) {
+            if(!executor.awaitTermination(timeout, unit)) {
                 // Attempt cancellation again, if necessary
                 executor.shutdownNow();
-                if(!executor.awaitTermination(600, TimeUnit.SECONDS)) {
-                    System.err.println("Warning: Executor not terminated after 20 minutes");
+                if(!executor.awaitTermination(timeout, unit)) {
+                    System.err.println("Warning: Executor not terminated after " + timeout + " " + unit);
                     return false;
                 }
             }
@@ -93,11 +137,47 @@ public final class Utils {
         }
     }
 
+    // JavaFX event handlers run on the application thread. Use this helper from
+    // callbacks so Windows/macOS/Linux UIs do not hang while a native/database
+    // worker is draining or timing out during shutdown.
+    public static void shutdownExecutorAsync(final ExecutorService executor) {
+        if (executor == null) {
+            return;
+        }
+
+        final Thread shutdownThread = new Thread(
+                () -> safeShutdownExecutor(executor, 30, TimeUnit.SECONDS),
+                "executor-shutdown");
+        shutdownThread.setDaemon(true);
+        shutdownThread.start();
+    }
+
+    // Cancel queued and running futures with interruption. The native backend is
+    // not guaranteed to stop a long GMP/MPFR calculation immediately, but this
+    // prevents queued database/native work from continuing after a user cancel.
+    public static void cancelFutures(final Iterable<? extends Future<?>> futures) {
+        for (final Future<?> future : futures) {
+            future.cancel(true);
+        }
+    }
+
+    // User-facing Cancel is supposed to save progress. This variant prevents
+    // not-yet-started futures from beginning, but lets already-running
+    // database/native work finish and return its Storage if it can.
+    public static void cancelQueuedFutures(final Iterable<? extends Future<?>> futures) {
+        for (final Future<?> future : futures) {
+            future.cancel(false);
+        }
+    }
+
     // converts a side sequence to a code sequence
     public static Optional<ClassifiedCodeSequence> convert(final IntList codeList) {
 
         final MutableIntList newCode = IntArrayList.newList(codeList);
         final int len = newCode.size();
+        if (len == 0) {
+            return Optional.empty();
+        }
         int count = 0;
 
         while (newCode.get(0) == newCode.get(newCode.size() - 1) && count < len + 1) {
@@ -133,10 +213,20 @@ public final class Utils {
 
     public static void writeToFile(final String path, final String contents) {
         try {
-            if (!Files.exists(Paths.get(path))) {
-                Files.createFile(Paths.get(path));
+            final Path filePath = Paths.get(path);
+            final Path parent = filePath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
             }
-            Files.write(Paths.get(path), contents.getBytes());
+            // Use UTF-8 and create parents so Windows shortcuts, Gradle, and
+            // IDE launches do not fail just because cwd-specific folders are
+            // missing on a fresh install.
+            Files.writeString(
+                    filePath,
+                    contents,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
@@ -161,13 +251,16 @@ public final class Utils {
         try {
 
             final Path path = Paths.get(string);
+            final Path parent = path.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
 
             if (!Files.exists(path)) {
                 Files.createFile(path);
             }
 
-            final byte[] bytes = Files.readAllBytes(path);
-            return new String(bytes, Charset.defaultCharset());
+            return Files.readString(path, StandardCharsets.UTF_8);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

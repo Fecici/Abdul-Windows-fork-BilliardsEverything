@@ -16,6 +16,9 @@ public class Convert {
 
         final MutableIntList newCode = IntArrayList.newList(codeList);
         final int len = newCode.size();
+        if (len == 0) {
+            return Optional.empty();
+        }
         int count = 0;
         
         while (newCode.get(0) == newCode.get(newCode.size() - 1) && count < len + 1) {

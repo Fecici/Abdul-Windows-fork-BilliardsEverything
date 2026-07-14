@@ -31,14 +31,14 @@ public class CoverWindow3 {
 
     // WARNING: Global mutable state
     // ------------------------------------------------------------
-    private static String polygonString = Utils.readFromFile(Viewer.tmpDir + "/cover_polygon.txt");
+    private String polygonString;
     //private static String stablesString = Utils.readFromFile(Viewer.tmpDir + "/cover_stables.txt");
     //private static String triplesString = Utils.readFromFile(Viewer.tmpDir + "/cover_triples.txt");
     //private static String unstableString = Utils.readFromFile(Viewer.tmpDir + "/cover_unstables.txt");
-    private static String digitsString = Utils.readFromFile(Viewer.tmpDir + "/cover_digits.txt");
-    private static String emptyString = Utils.readFromFile(Viewer.tmpDir + "/cover_empty.txt");
-    private static String magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/cover_magnifications.txt");
-    private static String halfTripleString = Utils.readFromFile(Viewer.tmpDir + "/cover_unstables.txt");
+    private String digitsString;
+    private String emptyString;
+    private String magnificationsString;
+    private String halfTripleString;
 
     // ------------------------------------------------------------
 
@@ -75,6 +75,8 @@ public class CoverWindow3 {
         stage.setTitle(windowTitle);
 
         base.setOnMouseExited(event -> saveToFile());
+
+        loadFromFile();
 
         topText.setText(polygonString);
         //bottomText.setText(unstableString);
@@ -308,6 +310,15 @@ public class CoverWindow3 {
         Utils.writeToFile(Viewer.tmpDir + "/cover_empty.txt", emptyString);
         Utils.writeToFile(Viewer.tmpDir + "/cover_unstables.txt", halfTripleString);
 
+    }
+
+    private void loadFromFile() {
+        // Load saved text per window instance; static file-backed fields went stale across cwd/path changes.
+        polygonString = Utils.readFromFile(Viewer.tmpDir + "/cover_polygon.txt");
+        digitsString = Utils.readFromFile(Viewer.tmpDir + "/cover_digits.txt");
+        emptyString = Utils.readFromFile(Viewer.tmpDir + "/cover_empty.txt");
+        magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/cover_magnifications.txt");
+        halfTripleString = Utils.readFromFile(Viewer.tmpDir + "/cover_unstables.txt");
     }
 
     private static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {

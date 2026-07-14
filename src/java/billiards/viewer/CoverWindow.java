@@ -38,17 +38,17 @@ import static billiards.utils.Polygon.cleanPolygon;
 public final class CoverWindow {
 
     // ------------------------------------------------------------
-    private static String polygonString = Utils.readFromFile(Viewer.tmpDir + "/cover_polygon.txt");
-    static String stablesString = Utils.readFromFile(Viewer.tmpDir + "/cover_stables.txt");
-    static String triplesString = Utils.readFromFile(Viewer.tmpDir + "/cover_triples.txt");
-    static String digitsString = Utils.readFromFile(Viewer.tmpDir + "/cover_digits.txt");
-    private static String emptyString = Utils.readFromFile(Viewer.tmpDir + "/cover_empty.txt");
-    static String magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/cover_magnifications.txt");
+    private String polygonString;
+    private String stablesString;
+    private String triplesString;
+    private String digitsString;
+    private String emptyString;
+    private String magnificationsString;
     //private static String halfTripleString = Utils.readFromFile(Viewer.tmpDir + "/cover_half_triples.txt");
  
-    // WARNING: Global mutable state
-    // Other classes which need to synchronize their polygon with the cover should listen to this property
-    public static SimpleObjectProperty<String> polyStringProperty = new SimpleObjectProperty<>(polygonString);
+    // Intentional shared notification channel: vary windows listen here so their polygon text follows the active
+    // cover polygon. The actual saved text now lives on each CoverWindow instance instead of static mutable fields.
+    public static SimpleObjectProperty<String> polyStringProperty = new SimpleObjectProperty<>("");
 
     // ------------------------------------------------------------
 
@@ -89,6 +89,8 @@ public final class CoverWindow {
         stage.setOnCloseRequest(event -> saveToFile());
 
         base.setOnMouseExited(event -> saveToFile());
+
+        loadFromFile();
 
         topText.setText(polygonString);
         bottomText.setText(stablesString);
@@ -172,37 +174,57 @@ public final class CoverWindow {
             if (mrr) {
 
                 final String cleanedPolygon = cleanPolygon(polygonString);
-                final String cleanedStablesPre = cleanStables(stablesString, pool);
-                final Tuple2<String, String> cleanedTriplesPre = cleanTriples(triplesString, pool);
-                //final Tuple2<String , String> cleanedHalfTriplePre = cleanHalfTriples(halfTripleString, pool);
-                //ArrayLit<Tuple2<tring,String>> temp = cleanedHalfTriplePre._1.split("\n");
-                /*if (!halfTripleString.isEmpty()) {
-                    final String cleanedHalfTriples = cleanedHalfTriplePre._1;
-                    final String cleanedStables = (cleanedStablesPre + '\n' + cleanedHalfTriplePre._2).trim();
-                    //final String cleanedStables = cleanedStablesPre.trim();
-                    // Stables in the half triple
-                    //final String cleanedStableshalf = (cleanedHalfTriplePre._2).trim();
-                    // Stables
-                    //final String cleanedStables = (cleanedStablesPre).trim();
-                    //final String[] cleanedStables_str = cleanedStables.split("\n");
-                    //final String[] cleanedStablesHalf_str = cleanedStableshalf.split("\n");
-                    //final String[] cleanedHalftriples_str = cleanedHalfTriples.split("\n");
+                final boolean addToSmallCover = viewer.smallCoverWindow != null && addToSmallCoverCB.isSelected();
 
-                    if (diagonalCheckBox.isSelected()) {
-                        Wrapper.coverWrapperDiagonal(cleanedPolygon, cleanedStables, cleanedHalfTriples, digits, magnifications, empty, mrr, pool);
-                    }
-                    else {
-                        Wrapper.coverWrapperHalf(cleanedPolygon, cleanedStables, cleanedHalfTriples, digits, magnifications, empty, mrr, pool);
-                    }
-                }*/
-                //else {
-                final String cleanedTriples = cleanedTriplesPre._1;
-                final String cleanedStables = (cleanedStablesPre + '\n' + cleanedTriplesPre._2).trim();
-//                System.out.println(cleanedStables);
+                calcBtn.setDisable(true);
 
-                String res = Wrapper.coverWrapper(cleanedPolygon, cleanedStables, cleanedTriples, digits, magnifications, empty, mrr, pool);
-                if (viewer.smallCoverWindow != null && addToSmallCoverCB.isSelected()) viewer.smallCoverWindow.addPolygons(res);
-                //}
+                // Cover can spend minutes in native GMP/MPFR work. Run that
+                // work off the JavaFX Application Thread so the window can
+                // repaint and the OS does not mark the app as unresponsive.
+                final javafx.concurrent.Task<String> task = new javafx.concurrent.Task<String>() {
+                    @Override
+                    protected String call() {
+                        final String cleanedStablesPre = cleanStables(stablesString, pool);
+                        final Tuple2<String, String> cleanedTriplesPre = cleanTriples(triplesString, pool);
+                        final String cleanedTriples = cleanedTriplesPre._1;
+                        final String cleanedStables = (cleanedStablesPre + '\n' + cleanedTriplesPre._2).trim();
+
+                        return Wrapper.coverWrapper(cleanedPolygon, cleanedStables, cleanedTriples,
+                                digits, magnifications, empty, true, pool);
+                    }
+                };
+
+                task.setOnSucceeded(e -> {
+                    calcBtn.setDisable(false);
+                    final String res = task.getValue();
+
+                    if (addToSmallCover) {
+                        viewer.smallCoverWindow.addPolygons(res);
+                    }
+
+                    loadCover.run();
+                    System.out.println(windowTitle.replace("Cover", "BilliardViewer"));
+                    saveToFile();
+                    redoInfo();
+                    stage.close();
+                });
+
+                task.setOnFailed(e -> {
+                    calcBtn.setDisable(false);
+                    final Throwable failure = task.getException();
+                    final Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Cover Failed");
+                    alert.setHeaderText("Cover calculation failed");
+                    alert.setContentText(failure == null ? "Unknown cover error" : failure.getMessage());
+                    alert.show();
+                    if (failure != null) {
+                        failure.printStackTrace();
+                    }
+                });
+
+                final Thread thread = new Thread(task, "cover-calculation");
+                thread.setDaemon(true);
+                thread.start();
             } else {
 
                 final DirectoryChooser chooser = new DirectoryChooser();
@@ -215,17 +237,45 @@ public final class CoverWindow {
                     return;
                 }
 
-                Wrapper.coverWrapperAll(dir.getPath(), pool, magnifications);
+                final String dirPath = dir.getPath();
+                calcBtn.setDisable(true);
+
+                // The all-cover path is also native-heavy, so it gets the same
+                // JavaFX Task treatment as the normal MRR cover calculation.
+                final javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+                    @Override
+                    protected Void call() {
+                        Wrapper.coverWrapperAll(dirPath, pool, magnifications);
+                        return null;
+                    }
+                };
+
+                task.setOnSucceeded(e -> {
+                    calcBtn.setDisable(false);
+                    loadCover.run();
+                    System.out.println(windowTitle.replace("Cover", "BilliardViewer"));
+                    saveToFile();
+                    redoInfo();
+                    stage.close();
+                });
+
+                task.setOnFailed(e -> {
+                    calcBtn.setDisable(false);
+                    final Throwable failure = task.getException();
+                    final Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Cover Failed");
+                    alert.setHeaderText("Cover calculation failed");
+                    alert.setContentText(failure == null ? "Unknown cover error" : failure.getMessage());
+                    alert.show();
+                    if (failure != null) {
+                        failure.printStackTrace();
+                    }
+                });
+
+                final Thread thread = new Thread(task, "cover-all-calculation");
+                thread.setDaemon(true);
+                thread.start();
             }
-
-            loadCover.run();
-
-            System.out.println(windowTitle.replace("Cover", "BilliardViewer"));
-
-            saveToFile();
-            redoInfo();
-
-            stage.close();
         });
 
         autoVaryBtn.setText("AutoVary");
@@ -327,6 +377,34 @@ public final class CoverWindow {
         Utils.writeToFile(Viewer.tmpDir + "/cover_empty.txt", emptyString);
         //Utils.writeToFile(Viewer.tmpDir + "/cover_half_triples.txt", halfTripleString);
 
+    }
+
+    private void loadFromFile() {
+        // Load per window construction instead of class initialization so a cwd/path change or external file edit is
+        // reflected the next time the cover window is created.
+        polygonString = Utils.readFromFile(Viewer.tmpDir + "/cover_polygon.txt");
+        stablesString = Utils.readFromFile(Viewer.tmpDir + "/cover_stables.txt");
+        triplesString = Utils.readFromFile(Viewer.tmpDir + "/cover_triples.txt");
+        digitsString = Utils.readFromFile(Viewer.tmpDir + "/cover_digits.txt");
+        emptyString = Utils.readFromFile(Viewer.tmpDir + "/cover_empty.txt");
+        magnificationsString = Utils.readFromFile(Viewer.tmpDir + "/cover_magnifications.txt");
+        polyStringProperty.setValue(polygonString);
+    }
+
+    String getStablesString() {
+        return stablesString;
+    }
+
+    String getTriplesString() {
+        return triplesString;
+    }
+
+    String getDigitsString() {
+        return digitsString;
+    }
+
+    String getMagnificationsString() {
+        return magnificationsString;
     }
 
     static Tuple2<String, String> cleanTriples(final String string, final ConnectionPool pool) {

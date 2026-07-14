@@ -45,7 +45,7 @@ public final class ProgressWithStatus {
 
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> {
-            task.cancel();
+            requestCancel(task);
             stage.close();
         });
 
@@ -66,7 +66,7 @@ public final class ProgressWithStatus {
         cancelButton.setText("Cancel");
         cancelButton.setOnAction(event -> {
             Wrapper.backend_cancel();
-            task.cancel();
+            requestCancel(task);
             stage.close();
         });
         
@@ -92,5 +92,13 @@ public final class ProgressWithStatus {
     public void show() {
         stage.centerOnScreen();
         stage.show();
+    }
+
+    private static void requestCancel(final Task<?> task) {
+        if (task instanceof GracefullyCancelable) {
+            ((GracefullyCancelable) task).requestGracefulCancel();
+        } else {
+            task.cancel();
+        }
     }
 }

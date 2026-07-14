@@ -821,15 +821,17 @@ public class CycleVaryWindow {
                 final int digits;
                 final int magnifications;
                 try {
-                    digits = Integer.parseInt(CoverWindow.digitsString);
-                    magnifications = Integer.parseInt(CoverWindow.magnificationsString);
+                    // Read from the active cover window instance. These values used to be static CoverWindow fields,
+                    // which made repeated windows share stale input after file/path changes.
+                    digits = Integer.parseInt(viewer.coverWindow.getDigitsString());
+                    magnifications = Integer.parseInt(viewer.coverWindow.getMagnificationsString());
                 } catch (final NumberFormatException e) {
                     throw new RuntimeException(e);
                 }
 
                 final String cleanedPolygon = cleanPolygon(polygonString);
-                final String cleanedStablesPre = CoverWindow.cleanStables(CoverWindow.stablesString, viewer.pool);
-                final Tuple2<String, String> cleanedTriplesPre = CoverWindow.cleanTriples(CoverWindow.triplesString, viewer.pool);
+                final String cleanedStablesPre = CoverWindow.cleanStables(viewer.coverWindow.getStablesString(), viewer.pool);
+                final Tuple2<String, String> cleanedTriplesPre = CoverWindow.cleanTriples(viewer.coverWindow.getTriplesString(), viewer.pool);
 
                 final String cleanedTriples = cleanedTriplesPre._1;
                 final String cleanedStables = (cleanedStablesPre + '\n' + cleanedTriplesPre._2).trim();
@@ -1072,8 +1074,8 @@ public class CycleVaryWindow {
             // Run at the next hole
             if(overallProgress.isCancelled()) { // It is possible for cancel to occur before the task is created
                 viewer.callRenderRegions();
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
                 if(overrideSS) {
                     System.out.printf("Override Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
                 }
@@ -1086,8 +1088,8 @@ public class CycleVaryWindow {
                 drawCycleVary(max, maxSubdivisions, autoCover, overrideSS, currIdx + stepIdx, endIdx, stepIdx, area, overallProgress, step, colorOpt, drawExecutor, storageExecutor, shotExecutor);
             } else {
                 viewer.callRenderRegions();
-                Utils.safeShutdownExecutor(storageExecutor);
-                Utils.safeShutdownExecutor(shotExecutor);
+                Utils.shutdownExecutorAsync(storageExecutor);
+                Utils.shutdownExecutorAsync(shotExecutor);
 
                 if(overrideSS) {
                     System.out.printf("Override Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
@@ -1163,8 +1165,8 @@ public class CycleVaryWindow {
                 }
             });
             viewer.callRenderRegions();
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
             if(overrideSS) {
                 System.out.printf("Override Side Sum maximums: CS - %d, OSO - %d, OSNO - %d%n", max[3], max[4], max[5]);
             }
@@ -1177,8 +1179,8 @@ public class CycleVaryWindow {
 
         task.setOnFailed(e -> {
             //progress.close();
-            Utils.safeShutdownExecutor(storageExecutor);
-            Utils.safeShutdownExecutor(shotExecutor);
+            Utils.shutdownExecutorAsync(storageExecutor);
+            Utils.shutdownExecutorAsync(shotExecutor);
             overallProgress.close();
             // Propagate cancellation for Super
             step.ifPresent(integerSimpleObjectProperty -> integerSimpleObjectProperty.setValue(-1));

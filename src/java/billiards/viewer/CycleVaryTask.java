@@ -27,6 +27,7 @@ import org.eclipse.collections.impl.set.sorted.mutable.TreeSortedSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -39,7 +40,7 @@ Both these processes are multithreaded. Because of this, the task does not perfo
 
 If only the final result is required, you can just call get() on this task after it finishes.
  * */
-public final class CycleVaryTask extends Task<ObservableList<Storage>> {
+public final class CycleVaryTask extends Task<ObservableList<Storage>> implements GracefullyCancelable {
     // Expose task property representing partial results
     private ReadOnlyObjectWrapper<ObservableList<Storage>> partialResults =
             new ReadOnlyObjectWrapper<>(
@@ -68,6 +69,12 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> {
     final boolean CSIsSelected;
     final boolean OSOIsSelected;
     final boolean OSNOIsSelected;
+    private volatile boolean gracefulCancelRequested = false;
+
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
 
     // Constructor takes a list of points to vary at
     public CycleVaryTask(
@@ -119,11 +126,14 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> {
             // By taking a second to check the pixel color, we can potentially avoid all other work for this coord.
             int color = pixelColor(coord);
             this.updateProgress(progress.incrementAndGet(), todo);
+            if(this.gracefulCancelRequested) {
+                break;
+            }
             if(color != 0) continue; 
             try {
                 localCodes = autoCodesFiltered(coord, shotExecutor);
             } catch(RuntimeException e) {
-                if(this.isCancelled() || Thread.interrupted()) {
+                if(this.gracefulCancelRequested || this.isCancelled() || Thread.interrupted()) {
                     break;
                 } else {
                     System.err.println("Terminating because of uncaught exception when finding codeSet");
@@ -182,12 +192,23 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> {
 
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
         // If one of the futures throws an exception (like a failed to
         // calculate exception), we need to save it, cancel the rest of
         // the futures, and then throw that exception to bubble up the stack
         for (final Future<Either<String, Storage>> future : futures) {
-            except = checkStatus(future);
+            if (except.isPresent()) {
+                future.cancel(true);
+            } else {
+                if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                    // Cancel queued storage loads, but let already-running
+                    // loads finish so their partialResults are preserved.
+                    Utils.cancelQueuedFutures(futures);
+                    queuedWorkCancelled = true;
+                }
+                except = checkStatus(future);
+            }
         }
 
         if (except.isPresent()) {
@@ -215,6 +236,8 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> {
                 // One of the futures threw an exception during its calculation,
                 // so we need to cancel the rest of the futures
                 except = Optional.of(e);
+            } catch (final CancellationException e) {
+                // Expected for queued futures suppressed by graceful cancel.
             } catch (final InterruptedException e) {
                 if (!this.isCancelled()) {
                     throw new RuntimeException(e);
@@ -281,7 +304,11 @@ public final class CycleVaryTask extends Task<ObservableList<Storage>> {
     // Find the storage associated to a codeSequence if it exists. Return the error if not
     private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
         // Check to see if cancel was called
-        if(this.isCancelled() || Thread.interrupted()) {
+        if(this.gracefulCancelRequested || this.isCancelled()) {
+            System.out.println("//Cancel detected before loadStorage");
+            return Either.left("");
+        }
+        if(Thread.interrupted()) {
             // Note that this method is intended to be submitted to an executor, hence this interrupts the thread inside the threadpool
             Thread.currentThread().interrupt();
             System.out.println("//Cancel detected before loadStorage");

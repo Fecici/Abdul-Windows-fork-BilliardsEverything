@@ -7,20 +7,33 @@ import billiards.wrapper.Wrapper;
 import javaslang.collection.Array;
 
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javafx.concurrent.Task;
 
-public final class DontDrawPictureTask extends Task<Void> {
+public final class DontDrawPictureTask extends Task<Void> implements GracefullyCancelable {
     private final Array<Callable<String>> tasks;
+    private volatile boolean gracefulCancelRequested = false;
+
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
 
     public DontDrawPictureTask(final Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool) {
 
         this.tasks = classCodeSeqs.map(classCodeSeq -> () -> {
+            // Stop queued saves before they enter the native backend after the
+            // user cancels a no-draw database load.
+            if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+                return "//cancelled " + classCodeSeq;
+            }
 
             final boolean nonEmpty = Wrapper.saveToDatabase(classCodeSeq, pool);
 
@@ -50,42 +63,60 @@ public final class DontDrawPictureTask extends Task<Void> {
         final Array<Future<String>> futures = this.tasks.map(task -> executor.submit(task));
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
         int progress = 0;
         final int todo = futures.size();
 
         this.updateProgress(progress, todo);
 
-        for (final Future<String> future : futures) {
-            if (this.isCancelled() || except.isPresent()) {
-                // No point in interrupting the thread, because we can't
-                // cancel the future if it has already begun
-                future.cancel(false);
-            } else {
-                try {
-                    // When running the futures on multiple threads, it seems
-                    // that we update the message and progress too often
-                    // for the event loop in the Viewer to register it.
-                    // So we have updated this several times by the time
-                    // the Viewer gets around to checking that it has been
-                    // modified. So we just print it.
-                    final String msg = future.get();
-                    System.out.println(msg);
-                    // this.updateMessage(msg);
+        try {
+            for (final Future<String> future : futures) {
+                if (this.isCancelled() || except.isPresent()) {
+                    // Interrupt queued or interrupt-aware saves so canceling a
+                    // large import does not continue filling the database.
+                    future.cancel(true);
+                } else {
+                    try {
+                        if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                            // For no-draw imports, Cancel means save the DB
+                            // writes already running and suppress queued writes.
+                            Utils.cancelQueuedFutures(futures);
+                            queuedWorkCancelled = true;
+                        }
 
-                    progress += 1;
-                    this.updateProgress(progress, todo);
-                } catch (final ExecutionException e) {
-                    except = Optional.of(e);
-                } catch (final InterruptedException e) {
-                    if (!this.isCancelled()) {
-                        throw new RuntimeException(e);
+                        // When running the futures on multiple threads, it seems
+                        // that we update the message and progress too often
+                        // for the event loop in the Viewer to register it.
+                        // So we have updated this several times by the time
+                        // the Viewer gets around to checking that it has been
+                        // modified. So we just print it.
+                        final String msg = future.get();
+                        System.out.println(msg);
+                        // this.updateMessage(msg);
+
+                        progress += 1;
+                        this.updateProgress(progress, todo);
+                    } catch (final ExecutionException e) {
+                        except = Optional.of(e);
+                    } catch (final CancellationException e) {
+                        // Expected for queued futures suppressed by graceful cancel.
+                    } catch (final InterruptedException e) {
+                        Utils.cancelFutures(futures);
+                        Thread.currentThread().interrupt();
+                        if (!this.isCancelled()) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                     }
                 }
             }
+        } finally {
+            if (this.isCancelled() || except.isPresent()) {
+                Utils.cancelFutures(futures);
+            }
+            Utils.safeShutdownExecutor(executor, 30, TimeUnit.SECONDS);
         }
-
-        executor.shutdown();
 
         if (except.isPresent()) {
             throw new RuntimeException(except.get());

@@ -519,8 +519,13 @@ public final class Database {
             if (codeNumbers.length != OEPatternArray[i].length()) return false;
 
             for (int j = 0; j < codeNumbers.length; ++j) {
-                if ((Integer.parseInt(codeNumbers[i]) % 2 == 0 && OEPatternArray[i].charAt(i) != 'E')
-                        || (Integer.parseInt(codeNumbers[i]) % 2 == 1 && OEPatternArray[i].charAt(i) != 'O'))
+                // The outer index selects the comma-separated group; the inner
+                // index selects the number inside that group. Using i here made
+                // later digits validate against the wrong parity character.
+                final int codeNumber = Integer.parseInt(codeNumbers[j].trim());
+                final char expectedParity = OEPatternArray[i].charAt(j);
+                if ((codeNumber % 2 == 0 && expectedParity != 'E')
+                        || (codeNumber % 2 == 1 && expectedParity != 'O'))
                     return false;
             }
         }

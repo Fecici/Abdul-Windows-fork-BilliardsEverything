@@ -29,7 +29,9 @@ public final class ProgressMultiTask {
     private Task<?> task; // We don't care what task return type is
     private boolean boundTask = false;
     private long completed;
-    private boolean cancelled = false;
+    // Read by recursive task-control callbacks after the FX cancel handler
+    // writes it, so keep visibility explicit across threads.
+    private volatile boolean cancelled = false;
     private final long total;
     private final String formatString;
 
@@ -54,7 +56,7 @@ public final class ProgressMultiTask {
         // IMPORTANT: This progress must be closed from the enclosing scope, not from here.
         stage.setOnCloseRequest(event -> {
             cancelled = true;
-            if(boundTask) this.task.cancel();
+            if(boundTask) requestCancel(this.task);
             //stage.close();
         });
 
@@ -70,7 +72,7 @@ public final class ProgressMultiTask {
         cancelButton.setOnAction(event -> {
             cancelled = true;
             Wrapper.backend_cancel();
-            if(boundTask) this.task.cancel();
+            if(boundTask) requestCancel(this.task);
             //stage.close();
         });
         
@@ -109,6 +111,14 @@ public final class ProgressMultiTask {
 
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    private static void requestCancel(final Task<?> task) {
+        if (task instanceof GracefullyCancelable) {
+            ((GracefullyCancelable) task).requestGracefulCancel();
+        } else {
+            task.cancel();
+        }
     }
 }
     

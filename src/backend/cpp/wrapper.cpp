@@ -29,6 +29,8 @@ Note: If you want to print the following stuffs, search for the labels to locate
 #include "vary_cs.hpp"
 #include "vary3.hpp"
 #include "vary4.hpp"
+#include <exception>
+#include <stdexcept>
 #include <boost/optional/optional_io.hpp>
 
 // Java <-> C++
@@ -52,58 +54,131 @@ static char* to_cstr(const std::string& str) {
     return c_str;
 }
 
+namespace {
+
+thread_local std::string backend_error_message;
+
+void clear_backend_error() {
+    backend_error_message.clear();
+}
+
+void remember_backend_error(const char* const operation, const std::exception& except) {
+    backend_error_message = std::string(operation) + " failed: " + except.what();
+    std::cerr << backend_error_message << std::endl;
+}
+
+void remember_unknown_backend_error(const char* const operation) {
+    backend_error_message = std::string(operation) + " failed: unknown native exception";
+    std::cerr << backend_error_message << std::endl;
+}
+
+}
+
+const char* backend_last_error() {
+    return backend_error_message.c_str();
+}
+
 void sqlite_error_logging() {
     sqlite::error_logging();
 }
 
 void database_create(const char* const db_path) {
-    database::create(db_path);
+    clear_backend_error();
+    try {
+        if (db_path == nullptr) {
+            throw std::invalid_argument("database path is null");
+        }
+        database::create(db_path);
+    } catch (const std::exception& except) {
+        remember_backend_error("database_create", except);
+    } catch (...) {
+        remember_unknown_backend_error("database_create");
+    }
 }
 
 void database_clear(const char* const db_path) {
-    database::clear(db_path);
+    clear_backend_error();
+    try {
+        if (db_path == nullptr) {
+            throw std::invalid_argument("database path is null");
+        }
+        database::clear(db_path);
+    } catch (const std::exception& except) {
+        remember_backend_error("database_clear", except);
+    } catch (...) {
+        remember_unknown_backend_error("database_clear");
+    }
 }
 
 sqlite::ConnectionPool* create_connection_pool(const char* const db_path, const int32_t pool_size) {
-
-    const std::string path = db_path;
-
-    const auto lambda = [&] {
-        constexpr auto flags = sqlite::Open::Readwrite | sqlite::Open::Fullmutex;
-
-        // TODO are there extra flags we want to open the database with,
-        // or some other pragmas we want to execute?
-        sqlite::Database db{path, flags};
-
-        // A prepare only prepares the first statement in the string
-        std::string journal_mode{};
-        db.prepare("pragma journal_mode = wal;").bind().exec(journal_mode);
-
-        if (journal_mode != "wal") {
-            throw std::runtime_error("unable to set wal; journal mode = " + journal_mode);
+    clear_backend_error();
+    try {
+        if (db_path == nullptr) {
+            throw std::invalid_argument("database path is null");
+        }
+        if (pool_size <= 0) {
+            throw std::invalid_argument("connection pool size must be positive");
         }
 
-        db.prepare("pragma synchronous = full;").bind().exec();
+        const std::string path = db_path;
 
-        int64_t synchronous{};
-        db.prepare("pragma synchronous;").bind().exec(synchronous);
+        const auto lambda = [&] {
+            constexpr auto flags = sqlite::Open::Readwrite | sqlite::Open::Fullmutex;
 
-        if (synchronous != 2) {
-            throw std::runtime_error("unable to set full; synchronous = " + std::to_string(synchronous));
-        }
+            // TODO are there extra flags we want to open the database with,
+            // or some other pragmas we want to execute?
+            sqlite::Database db{path, flags};
 
-        return db;
-    };
+            // A prepare only prepares the first statement in the string
+            std::string journal_mode{};
+            db.prepare("pragma journal_mode = wal;").bind().exec(journal_mode);
 
-    sqlite::ConnectionPool* pool = new sqlite::ConnectionPool{lambda, boost::numeric_cast<size_t>(pool_size)};
+            if (journal_mode != "wal") {
+                throw std::runtime_error("unable to set wal; journal mode = " + journal_mode);
+            }
 
-    return pool;
+            db.prepare("pragma synchronous = full;").bind().exec();
+
+            int64_t synchronous{};
+            db.prepare("pragma synchronous;").bind().exec(synchronous);
+
+            if (synchronous != 2) {
+                throw std::runtime_error("unable to set full; synchronous = " + std::to_string(synchronous));
+            }
+
+            return db;
+        };
+
+        // This exported function is called from JNA. Never let C++
+        // exceptions cross that ABI boundary; Java checks null and reads
+        // backend_last_error() for the detailed reason.
+        sqlite::ConnectionPool* pool = new sqlite::ConnectionPool{lambda, boost::numeric_cast<size_t>(pool_size)};
+
+        return pool;
+    } catch (const std::exception& except) {
+        remember_backend_error("create_connection_pool", except);
+        return nullptr;
+    } catch (...) {
+        remember_unknown_backend_error("create_connection_pool");
+        return nullptr;
+    }
 }
 
 void destroy_connection_pool(const sqlite::ConnectionPool* const pool) {
-    std::cout << "Started with "<< pool->start_size() << " DB connections\n";
-    std::cout << "Ending with " << pool->curr_size() << " DB connections" << std::endl;
-    delete pool;
+    clear_backend_error();
+    try {
+        if (pool == nullptr) {
+            return;
+        }
+
+        std::cout << "Started with "<< pool->start_size() << " DB connections\n";
+        std::cout << "Ending with " << pool->curr_size() << " DB connections" << std::endl;
+        delete pool;
+    } catch (const std::exception& except) {
+        remember_backend_error("destroy_connection_pool", except);
+    } catch (...) {
+        remember_unknown_backend_error("destroy_connection_pool");
+    }
 }
 
 // -1 failure

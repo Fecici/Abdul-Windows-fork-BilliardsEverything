@@ -23,6 +23,34 @@ ext.msys2NativePrefix = (
                 : "${defaultMsys2Root}/ucrt64")
 ).replace('\\', '/')
 
+def propertyOrEnv = { String propertyName, String envName, String defaultValue ->
+    def propertyValue = findProperty(propertyName)
+    if (propertyValue != null && propertyValue.toString().trim()) {
+        return propertyValue.toString().trim()
+    }
+
+    def envValue = System.getenv(envName)
+    if (envValue != null && envValue.trim()) {
+        return envValue.trim()
+    }
+
+    return defaultValue
+}
+
+def booleanPropertyOrEnv = { String propertyName, String envName, boolean defaultValue ->
+    propertyOrEnv(propertyName, envName, defaultValue.toString()).toBoolean()
+}
+
+// Runtime/build knobs are project-local and temporary: pass -P... on the Gradle command line or set the matching env
+// var for the shell/IDE process. They do not change the machine-wide Java or MSYS2 installation.
+def billiardsAppXms = propertyOrEnv('billiardsXms', 'BILLIARDS_XMS', '2g')
+def billiardsAppXmx = propertyOrEnv('billiardsXmx', 'BILLIARDS_XMX', '10g')
+def billiardsDirectMemory = propertyOrEnv('billiardsDirectMemory', 'BILLIARDS_DIRECT_MEMORY', '2g')
+def billiardsShowVmSettings = booleanPropertyOrEnv('billiardsShowVmSettings', 'BILLIARDS_SHOW_VM_SETTINGS', false)
+def billiardsNativeDebug = booleanPropertyOrEnv('billiardsNativeDebug', 'BILLIARDS_NATIVE_DEBUG', false)
+def billiardsNativeCpuTuned = booleanPropertyOrEnv('billiardsNativeCpuTuned', 'BILLIARDS_NATIVE_CPU_TUNED', false)
+def billiardsNativeLto = booleanPropertyOrEnv('billiardsNativeLto', 'BILLIARDS_NATIVE_LTO', false)
+
 mainClassName = 'billiards.viewer.Main'
 
 repositories {
@@ -104,19 +132,21 @@ sourceSets {
     }
 }
 
-applicationDefaultJvmArgs = ['-server', 
-                            '-Djna.library.path=./build/libs/backend/shared/', 
+applicationDefaultJvmArgs = ['-server',
+                            "-Djna.library.path=${projectDir}/build/libs/backend/shared",
                             //'-Xss1000m',
                             '-Xss2m',
-                            '-Xms2g', 
-                            '-Xmx10g', 
-                            '-XX:MaxDirectMemorySize=2g', 
-                            '-XX:NativeMemoryTracking=summary', 
-                            '-XX:+UnlockDiagnosticVMOptions',
-                            '-XshowSettings:vm']
+                            "-Xms${billiardsAppXms}",
+                            "-Xmx${billiardsAppXmx}",
+                            "-XX:MaxDirectMemorySize=${billiardsDirectMemory}",
+                            '-XX:+UnlockDiagnosticVMOptions']
 
-sourceCompatibility = 1.17
-targetCompatibility = 1.17
+if (billiardsShowVmSettings) {
+    applicationDefaultJvmArgs += ['-XX:NativeMemoryTracking=summary', '-XshowSettings:vm']
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 model {
 
@@ -142,9 +172,22 @@ model {
 
             binaries.all {
 
-                cppCompiler.define "NDEBUG"
-                cppCompiler.args '-O3', '-march=native', '-ftrapv'
-                if (!currentOs.isWindows()) {
+                if (billiardsNativeDebug) {
+                    // Debug mode keeps assertions enabled and preserves useful C++ stack frames/locals for GDB or LLDB.
+                    // Use -Og instead of -O0 because verify.cpp contains unused legacy helper functions that reference
+                    // unimplemented half-triple predicates; at -O0 GCC still emits them and the DLL link fails.
+                    cppCompiler.args '-g3', '-Og', '-fno-omit-frame-pointer'
+                } else {
+                    cppCompiler.define "NDEBUG"
+                    if (billiardsNativeCpuTuned) {
+                        // Opt-in speed build for the local CPU only. Do not use this for binaries distributed to
+                        // other Windows machines, because -march=native can emit unsupported instructions there.
+                        cppCompiler.args '-O3', '-march=native', '-ftrapv'
+                    } else {
+                        cppCompiler.args '-O2', '-mtune=generic', '-ftrapv'
+                    }
+                }
+                if (billiardsNativeLto && !currentOs.isWindows() && !billiardsNativeDebug) {
                     cppCompiler.args '-flto'
                 }
                 if (currentOs.isWindows()) {
@@ -191,9 +234,18 @@ model {
 
             binaries.all {
 
-                cppCompiler.define "NDEBUG"
-                cppCompiler.args '-O3', '-march=native', '-ftrapv'
-                if (!currentOs.isWindows()) {
+                if (billiardsNativeDebug) {
+                    // Match the backend library mode so test failures are debuggable with the same symbols/frames.
+                    cppCompiler.args '-g3', '-Og', '-fno-omit-frame-pointer'
+                } else {
+                    cppCompiler.define "NDEBUG"
+                    if (billiardsNativeCpuTuned) {
+                        cppCompiler.args '-O3', '-march=native', '-ftrapv'
+                    } else {
+                        cppCompiler.args '-O2', '-mtune=generic', '-ftrapv'
+                    }
+                }
+                if (billiardsNativeLto && !currentOs.isWindows() && !billiardsNativeDebug) {
                     cppCompiler.args '-flto'
                 }
                 if (currentOs.isWindows()) {
@@ -252,20 +304,20 @@ run.doFirst {
     
     if (isMac) {
         environment 'DYLD_LIBRARY_PATH', backendSharedDir
-        jvmArgs = [
+        jvmArgs += [
             '--module-path', configurations.runtimeClasspath.asPath,
             '--add-modules', 'javafx.controls,javafx.fxml'
         ]
     }
     else if (isLinux) {
         environment 'LD_LIBRARY_PATH', backendSharedDir
-        jvmArgs = [
+        jvmArgs += [
             '--module-path', '/usr/share/openjfx/lib',
             '--add-modules', 'javafx.controls,javafx.fxml'
         ]
     } else {
         environment 'PATH', "${backendSharedDir};${msys2NativePrefix}/bin;" + System.getenv('PATH')
-        jvmArgs = [
+        jvmArgs += [
             '--module-path', configurations.runtimeClasspath.asPath,
             '--add-modules', 'javafx.controls,javafx.fxml'
         ]

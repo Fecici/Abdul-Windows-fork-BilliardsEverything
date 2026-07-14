@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -42,7 +43,7 @@ Both these processes are multithreaded. Because of this, the task does not perfo
 
 If only the final result is required, you can just call get() on this task after it finishes.
  * */
-public final class PolyVaryTask extends Task<ObservableList<Storage>> {
+public final class PolyVaryTask extends Task<ObservableList<Storage>> implements GracefullyCancelable {
     // Expose task property representing partial results
     private ReadOnlyObjectWrapper<ObservableList<Storage>> partialResults =
             new ReadOnlyObjectWrapper<>(
@@ -69,6 +70,12 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> {
     private final PixelRadianMap screenMap;
     private final int mode;
     private final int numGroupToPrint;
+    private volatile boolean gracefulCancelRequested = false;
+
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
 
     // Constructor takes a list of points to vary at
     public PolyVaryTask(
@@ -143,11 +150,14 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> {
             // By taking a second to check the pixel color, we can potentially avoid all other work for this coord.
             int color = pixelColor(coord);
             this.updateProgress(progress.incrementAndGet(), todo);
+            if(this.gracefulCancelRequested) {
+                break;
+            }
             if(color != 0) continue; 
             try {
                 localCodes = autoCodesFiltered(coord, shotExecutor);
             } catch(RuntimeException e) {
-                if(this.isCancelled() || Thread.interrupted()) {
+                if(this.gracefulCancelRequested || this.isCancelled() || Thread.interrupted()) {
                     break;
                 } else {
                     System.err.println("Terminating because of uncaught exception when finding codeSet");
@@ -203,7 +213,14 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> {
                 throw new NotImplementedException("Invalid mode value for PolyVaryTask");
             }
 
+            boolean queuedWorkCancelled = false;
             for (final Future<Either<String, Storage>> future : futures) {
+                if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                    // Keep already-running storage loads so Cancel can save
+                    // completed progress, but suppress queued loads.
+                    Utils.cancelQueuedFutures(futures);
+                    queuedWorkCancelled = true;
+                }
                 Either<String, Storage> either = checkStatus(future);
 
                 if (either != null) {
@@ -236,6 +253,8 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> {
                 // One of the futures threw an exception during its calculation,
                 // so we need to cancel the rest of the futures
                 throw new RuntimeException(e);
+            } catch (final CancellationException e) {
+                // Expected for queued futures suppressed by graceful cancel.
             } catch (final InterruptedException e) {
                 if (!this.isCancelled()) {
                     throw new RuntimeException(e);
@@ -303,7 +322,11 @@ public final class PolyVaryTask extends Task<ObservableList<Storage>> {
     // Find the storage associated to a codeSequence if it exists. Return the error if not
     private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
         // Check to see if cancel was called
-        if(this.isCancelled() || Thread.interrupted()) {
+        if(this.gracefulCancelRequested || this.isCancelled()) {
+            System.out.println("//Cancel detected before loadStorage");
+            return Either.left("");
+        }
+        if(Thread.interrupted()) {
             // Note that this method is intended to be submitted to an executor, hence this interrupts the thread inside the threadpool
             Thread.currentThread().interrupt();
             System.out.println("//Cancel detected before loadStorage");

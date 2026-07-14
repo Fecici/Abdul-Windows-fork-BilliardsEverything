@@ -2,6 +2,7 @@
 #include "conversion.hpp"
 #include "division.hpp"
 #include "trig_identities.hpp"
+#include "utils.hpp"
 
 static std::vector<Vertex> find_path(const Vertex& start, const Vertex& end) {
 
@@ -289,19 +290,14 @@ std::set<std::pair<Equation<Sin>, Equation<Cos>>> Unfolding::get_all_vectors() c
     size_t left_n = left_vertices.size() - 1;
     size_t right_n = right_vertices.size() - 1;
 
-    // detect number of thread in computer
-    // if large set, small blocksize to allow time for memory swap
-    unsigned int concurrency = std::thread::hardware_concurrency() ;
-    if (concurrency == 0) concurrency = 4;
-    std::size_t block_size;
-    std::size_t task_num;
-    if (left_n<200){
-        block_size = (left_n + concurrency - 1) / concurrency;
-        task_num =concurrency;
-    }else{
-        block_size = 10000; 
-        task_num = (left_n/block_size)+1;
+    const unsigned int concurrency = billiards_worker_count();
+    const std::size_t task_num = billiards_task_count(left_n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+    // One local set per worker-sized chunk keeps memory bounded. The older
+    // large-input branch could allocate many sets before any useful work ran.
+    const std::size_t block_size = billiards_block_size(left_n, task_num);
 
     std::vector<std::set<std::pair<Equation<Sin>, Equation<Cos>>>> thread_sets(task_num);
 
@@ -310,7 +306,7 @@ std::set<std::pair<Equation<Sin>, Equation<Cos>>> Unfolding::get_all_vectors() c
 
 
 
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         size_t begin = t * block_size;
         size_t end = std::min(begin + block_size, left_n);
 
@@ -346,26 +342,19 @@ Curves Unfolding::generate_curves(const Equation<T>& shooting_vector_x, const Eq
     size_t left_n = left_vertices.size() - 1;
     size_t right_n = right_vertices.size() - 1;
 
-    // assign max compuatation thread according to computer performence
-    // detect number of thread in computer
-    // if large set, small blocksize to allow time for memory swap
-    unsigned int concurrency = std::thread::hardware_concurrency() ;
-    std::size_t block_size;
-    std::size_t task_num;
-    if (shooting_vector_x.size()<200){
-        block_size = (left_n + concurrency - 1) / concurrency;
-        task_num = concurrency;
-    }else{
-        block_size = 1; 
-        task_num = (left_n/block_size)+1;
+    const unsigned int concurrency = billiards_worker_count();
+    const std::size_t task_num = billiards_task_count(left_n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+    const std::size_t block_size = billiards_block_size(left_n, task_num);
     // Each thread will fill its own Curves
     std::vector<Curves> thread_curves(task_num);
     boost::asio::thread_pool pool(concurrency);
 
 
 
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         size_t begin = t * block_size;
         size_t end = std::min(begin + block_size, left_n);
 
@@ -417,24 +406,17 @@ Curves Unfolding::generate_curves(const Equation<T>& shooting_vector_x, const Eq
     size_t left_n = left_vertices.size() - 1;
     size_t right_n = right_vertices.size() - 1;
 
-    // detect number of thread in computer
-    // if large set, small blocksize to allow time for memory swap
-    unsigned int concurrency = std::thread::hardware_concurrency();
-    if (concurrency == 0) concurrency = 4;
-    std::size_t block_size;
-    std::size_t task_num;
-    if (shooting_vector_x.size()<200){
-        block_size = (left_n + concurrency - 1) / concurrency;
-        task_num = concurrency;
-    }else{
-        block_size = 1; 
-        task_num = (left_n + block_size - 1) / block_size;
+    const unsigned int concurrency = billiards_worker_count();
+    const std::size_t task_num = billiards_task_count(left_n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+    const std::size_t block_size = billiards_block_size(left_n, task_num);
 
     // Each thread will fill its own Inserter
     std::vector<Inserter> thread_inserters;
     thread_inserters.reserve(task_num);
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         thread_inserters.emplace_back(center, rx, ry);
     }
 
@@ -492,25 +474,17 @@ CurvesLR Unfolding::generate_curves_lr(const Equation<T>& shooting_vector_x, con
     size_t left_n = left_vertices.size() - 1;
     size_t right_n = right_vertices.size() - 1;
 
-    // detect number of thread in computer
-    // if large set, small blocksize to allow time for memory swap
-    unsigned int concurrency = std::thread::hardware_concurrency();
-    if (concurrency == 0) concurrency = 4;
-
-    std::size_t block_size;
-    std::size_t task_num;
-    if (shooting_vector_x.size()<200){
-        block_size = (left_n + concurrency - 1) / concurrency;
-        task_num = concurrency;
-    }else{
-        block_size = 1; 
-        task_num = (left_n + block_size - 1) / block_size;
+    const unsigned int concurrency = billiards_worker_count();
+    const std::size_t task_num = billiards_task_count(left_n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+    const std::size_t block_size = billiards_block_size(left_n, task_num);
 
     std::vector<CurvesLR> thread_curves(task_num);
     boost::asio::thread_pool pool(concurrency);
 
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         size_t begin = t * block_size;
         size_t end = std::min(begin + block_size, left_n);
 
@@ -577,26 +551,21 @@ template CurvesLR Unfolding::generate_curves_lr(const Equation<Cos>& shooting_ve
    */
 template <template <typename> class T, template <typename> class S>
 CurvesLR Unfolding::generate_curves_lr(const Equation<T>& shooting_vector_x, const Equation<S>& shooting_vector_y, const std::vector<LeftRight>& left_rights) const {
-    unsigned int concurrency = std::thread::hardware_concurrency() ;
-    if (concurrency == 0) concurrency = 4;
+    const unsigned int concurrency = billiards_worker_count();
     
     // detect number of thread in computer
     // if large set, small blocksize to allow time for memory swap
     boost::asio::thread_pool pool(concurrency);
     size_t n = left_rights.size();
-    std::size_t block_size;
-    std::size_t task_num;
-    if (shooting_vector_x.size()<150){
-        block_size = (n + concurrency - 1) / concurrency;
-        task_num = concurrency;
-    }else{
-        block_size = 1; 
-        task_num = (n/block_size)+1;
+    const std::size_t task_num = billiards_task_count(n, concurrency);
+    if (task_num == 0) {
+        return {};
     }
+    const std::size_t block_size = billiards_block_size(n, task_num);
     std::vector<CurvesLR> thread_curves(task_num);
 
 
-    for (unsigned int t = 0; t < task_num; ++t) {
+    for (std::size_t t = 0; t < task_num; ++t) {
         size_t begin = t * block_size;
         size_t end = std::min(begin + block_size, n);
 

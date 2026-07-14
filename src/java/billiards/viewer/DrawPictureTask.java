@@ -11,6 +11,7 @@ import javaslang.control.Either;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -24,12 +25,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 
-public final class DrawPictureTask extends Task<Array<Storage>> {
+public final class DrawPictureTask extends Task<Array<Storage>> implements GracefullyCancelable {
     protected final Array<Callable<Either<String, Storage>>> tasks;
     protected final boolean print;
     protected final boolean detailed;
 
     private final ExecutorService executor;
+    private volatile boolean gracefulCancelRequested = false;
     private ReadOnlyObjectWrapper<ObservableList<Storage>> partialResults =
             new ReadOnlyObjectWrapper<>(
                     this, 
@@ -48,22 +50,38 @@ public final class DrawPictureTask extends Task<Array<Storage>> {
         return this.partialResults.getReadOnlyProperty();
     }
 
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
+
     public DrawPictureTask(
         final Array<ClassifiedCodeSequence> classCodeSeqs, final ConnectionPool pool, final ExecutorService executor, boolean print, boolean detailed) {
         this.print = print;
         this.detailed = detailed;
         this.executor = executor;
         this.tasks = classCodeSeqs.map(classCodeSeq -> () -> {
-            // We could check here for Thread.interrupted() to see if we should
-            // cancel the task, but this operation is one-shot,
-            // so there's not much point
+            // Respect cancellation before entering the native/database path.
+            // Some backend calls cannot be interrupted once they are inside
+            // GMP/MPFR, but queued work should not start after a user cancel.
+            if (this.gracefulCancelRequested || this.isCancelled() || Thread.currentThread().isInterrupted()) {
+                return Either.left("//cancelled " + classCodeSeq);
+            }
 
             // Load from database if code already exists. If not, calculate
             final Optional<Storage> opt = Database.loadStorage(classCodeSeq, pool);
 
             if (opt.isPresent()) {
                 final Storage storage = opt.get();
-                Platform.runLater(() -> this.partialResults.get().add(storage));
+                if (!this.isCancelled()) {
+                    Platform.runLater(() -> {
+                        // The cancel can arrive after scheduling runLater; guard
+                        // again so stale partials are not added to the viewer.
+                        if (!this.isCancelled()) {
+                            this.partialResults.get().add(storage);
+                        }
+                    });
+                }
                 return Either.right(storage);
             } else {
                 return Either.left("//empty set " + classCodeSeq);
@@ -86,6 +104,7 @@ public final class DrawPictureTask extends Task<Array<Storage>> {
         final ArrayList<Storage> storages = new ArrayList<>();
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
         // If one of the futures throws an exception (like a failed to
         // calculate exception), we need to save it, cancel the rest of
@@ -97,11 +116,20 @@ public final class DrawPictureTask extends Task<Array<Storage>> {
                 // If the task was cancelled, or one of the futures threw an
                 // exception, we need to cancel the rest of the futures
 
-                // There is no point in interrupting the thread, since we can't
-                // cancel the future while it is running
-                future.cancel(false);
+                // Interrupting will not stop every native calculation, but it
+                // does stop queued Java work and any interrupt-aware database
+                // path before more memory is allocated.
+                future.cancel(true);
             } else {
                 try {
+                    if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                        // Cancel only work that has not started. Running work is
+                        // allowed to finish so the Cancel button still saves
+                        // completed progress.
+                        Utils.cancelQueuedFutures(futures);
+                        queuedWorkCancelled = true;
+                    }
+
                     final Either<String, Storage> either = future.get();
 
                     final String msg;
@@ -140,20 +168,22 @@ public final class DrawPictureTask extends Task<Array<Storage>> {
                     // One of the futures threw an exception during its calculation,
                     // so we need to cancel the rest of the futures
                     except = Optional.of(e);
+                } catch (final CancellationException e) {
+                    // Expected for queued futures suppressed by graceful cancel.
                 } catch (final InterruptedException e) {
+                    Utils.cancelFutures(futures);
+                    Thread.currentThread().interrupt();
                     if (!this.isCancelled()) {
                         throw new RuntimeException(e);
                     }
+                    break;
                 }
             }
         }
 
-        // TODO This does not cancel futures that are currently running
-        // (like when we hit cancel or a future throws an exception). Should we wait for them to
-        // finish?
-
         // If there is an exception that happened, throw it now after shutting down the executor
         if (except.isPresent()) {
+            Utils.cancelFutures(futures);
             throw new RuntimeException(except.get());
         }
 

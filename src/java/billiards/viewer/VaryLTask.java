@@ -12,6 +12,7 @@ import javaslang.control.Either;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -33,7 +34,7 @@ Both these processes are multithreaded. Because of this, the task does not perfo
 
 If only the final result is required, you can just call get() on this task after it finishes.
  * */
-public final class VaryLTask extends Task<ObservableList<Storage>> {
+public final class VaryLTask extends Task<ObservableList<Storage>> implements GracefullyCancelable {
     // Expose task property representing partial results
     private final ReadOnlyObjectWrapper<ObservableList<Storage>> partialResults =
             new ReadOnlyObjectWrapper<>(
@@ -67,6 +68,12 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
     private final int step;
     private final int end;
     private final int codesFound;
+    private volatile boolean gracefulCancelRequested = false;
+
+    @Override
+    public void requestGracefulCancel() {
+        this.gracefulCancelRequested = true;
+    }
 
     // Constructor takes a list of points to vary at
     public VaryLTask(
@@ -134,7 +141,7 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
         try {
             localCodes = autoCodesFiltered(coord, shotExecutor);
         } catch(RuntimeException e) {
-            if(this.isCancelled() || Thread.interrupted()) {
+            if(this.gracefulCancelRequested || this.isCancelled() || Thread.interrupted()) {
                 return this.partialResults.get();
             } else {
                 System.err.println("Terminating because of uncaught exception when finding codeSet");
@@ -265,12 +272,27 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
         }
 
         Optional<ExecutionException> except = Optional.empty();
+        boolean queuedWorkCancelled = false;
 
         // If one of the futures throws an exception (like a failed to
         // calculate exception), we need to save it, cancel the rest of
         // the futures, and then throw that exception to bubble up the stack
         for (final Future<Either<String, Storage>> future : futures) {
-            checkStatus(future, except);
+            if (except.isPresent()) {
+                future.cancel(true);
+            } else {
+                if (this.gracefulCancelRequested && !queuedWorkCancelled) {
+                    // Stop queued loads after Cancel; preserve Storage from
+                    // loads already running so progress is saved.
+                    Utils.cancelQueuedFutures(futures);
+                    queuedWorkCancelled = true;
+                }
+                except = checkStatus(future);
+            }
+        }
+
+        if (except.isPresent()) {
+            throw new RuntimeException(except.get());
         }
 
         return this.partialResults.get();
@@ -298,8 +320,8 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
     }
 
     // Cancel or detect execution errors; This is where we do checking to see if we were cancelled
-    private void checkStatus(final Future<Either<String, Storage>> future, Optional<ExecutionException> except) {
-        if (this.isCancelled() || except.isPresent()) {
+    private Optional<ExecutionException> checkStatus(final Future<Either<String, Storage>> future) {
+        if (this.isCancelled()) {
             // If the task was cancelled, or one of the futures threw an
             // exception, we need to cancel the rest of the futures
             //System.out.println("//Cancelling submitted future");
@@ -309,14 +331,18 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
                 future.get();
             } catch (final ExecutionException e) {
                 // One of the futures threw an exception during its calculation,
-                // so we need to cancel the rest of the futures
-                except = Optional.of(e);
+                // so return it to the caller; assigning an Optional parameter
+                // here would only change this stack frame.
+                return Optional.of(e);
+            } catch (final CancellationException e) {
+                // Expected for queued futures suppressed by graceful cancel.
             } catch (final InterruptedException e) {
                 if (!this.isCancelled()) {
                     throw new RuntimeException(e);
                 }
             }
         }
+        return Optional.empty();
     }
 
     // Calculates codeSequence set at a specific coordinate 
@@ -344,7 +370,11 @@ public final class VaryLTask extends Task<ObservableList<Storage>> {
     // Find the storage associated to a codeSequence if it exists. Return the error if not
     private Either<String, Storage> loadStorage(final ClassifiedCodeSequence classCodeSeq) {
         // Check to see if cancel was called
-        if(this.isCancelled() || Thread.interrupted()) {
+        if(this.gracefulCancelRequested || this.isCancelled()) {
+            System.out.println("//Cancel detected before loadStorage");
+            return Either.left("");
+        }
+        if(Thread.interrupted()) {
             // Note that this method is intended to be submitted to an executor, hence this interrupts the thread inside the threadpool
             Thread.currentThread().interrupt();
             System.out.println("//Cancel detected before loadStorage");
